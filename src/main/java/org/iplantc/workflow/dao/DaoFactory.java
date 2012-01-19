@@ -1,0 +1,130 @@
+package org.iplantc.workflow.dao;
+
+import org.iplantc.persistence.dao.WorkspaceDao;
+import org.iplantc.persistence.dao.listing.AnalysisGroupDao;
+import org.iplantc.persistence.dao.listing.RatingListingDao;
+import org.iplantc.persistence.dao.user.UserDao;
+
+/**
+ * A factory for generating data access objects.
+ * 
+ * @author Dennis Roberts
+ */
+public interface DaoFactory {
+
+    /**
+     * Creates and returns a data access object for data formats.
+     * 
+     * @return the new data access object.
+     */
+    public DataFormatDao getDataFormatDao();
+
+    /**
+     * Creates and returns a data access object for deployed components.
+     * 
+     * @return the new data access object.
+     */
+    public DeployedComponentDao getDeployedComponentDao();
+
+    /**
+     * Creates and returns a data access object for info types.
+     * 
+     * @return the new data access object.
+     */
+    public InfoTypeDao getInfoTypeDao();
+
+    /**
+     * Creates and returns a data access object for multiplicities.
+     * 
+     * @return the new data access object.
+     */
+    public MultiplicityDao getMultiplicityDao();
+
+    /**
+     * Creates and returns a data access object for notification sets.
+     * 
+     * @return the new data access object.
+     */
+    public NotificationSetDao getNotificationSetDao();
+
+    /**
+     * Creates and returns a data access object for property types.
+     * 
+     * @return the new data access object.
+     */
+    public PropertyTypeDao getPropertyTypeDao();
+
+    /**
+     * Creates and returns a data access object for rule types.
+     * 
+     * @return the new data access object.
+     */
+    public RuleTypeDao getRuleTypeDao();
+
+    /**
+     * Creates and returns a data access object for templates.
+     * 
+     * @return the new data access object.
+     */
+    public TemplateDao getTemplateDao();
+
+    /**
+     * Creates and returns a data access object for properties.
+     * 
+     * @return the new data access object.
+     */
+    public PropertyDao getPropertyDao();
+
+    /**
+     * Creates and returns a data access object for template groups.
+     * 
+     * @return the new data access object.
+     */
+    public TemplateGroupDao getTemplateGroupDao();
+
+    /**
+     * Creates and returns a data access object for analysis groups.
+     * 
+     * @return the new data access object.
+     */
+    public AnalysisGroupDao getAnalysisGroupDao();
+
+    /**
+     * Creates and returns a data access object for analysis rating listings.
+     * 
+     * @return the new data access object.
+     */
+    public RatingListingDao getRatingListingDao();
+
+    /**
+     * Creates and returns a data access object for transformation activities.
+     * 
+     * @return the new data access object.
+     */
+    public TransformationActivityDao getTransformationActivityDao();
+
+    /**
+     * Creates and returns a data access object for value types.
+     * 
+     * @return the new data access object.
+     */
+    public ValueTypeDao getValueTypeDao();
+
+    /**
+     * Creates and returns a data access object for workspaces.
+     * 
+     * @return the new data access object.
+     */
+    public WorkspaceDao getWorkspaceDao();
+    
+    /**
+     * Gets the UserDao.
+     */
+    public UserDao getUserDao();
+    
+    /**
+     * Gets the current RatingDao implementation.
+     * @return 
+     */
+    public RatingDao getRatingDao();
+}

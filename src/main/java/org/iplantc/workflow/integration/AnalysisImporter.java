@@ -1,0 +1,269 @@
+package org.iplantc.workflow.integration;
+
+import static org.iplantc.workflow.integration.util.AnalysisImportUtils.findExistingAnalysis;
+
+import org.apache.commons.lang.StringUtils;
+import org.iplantc.persistence.dto.user.User;
+import org.iplantc.persistence.dto.workspace.Workspace;
+
+import org.iplantc.workflow.WorkflowException;
+import org.iplantc.workflow.core.TransformationActivity;
+import org.iplantc.workflow.dao.DaoFactory;
+import org.iplantc.workflow.dao.TransformationActivityDao;
+import org.iplantc.workflow.integration.json.TitoAnalysisUnmarshaller;
+import org.iplantc.workflow.integration.util.HeterogeneousRegistry;
+import org.iplantc.workflow.integration.util.JsonUtils;
+import org.iplantc.workflow.integration.util.NullHeterogeneousRegistry;
+import org.iplantc.workflow.service.WorkspaceInitializer;
+import org.iplantc.workflow.template.groups.TemplateGroup;
+import org.iplantc.workflow.util.ListUtils;
+import org.iplantc.workflow.util.Predicate;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+/**
+ * Used to import analyses from JSON objects. Each analysis consists of an ID, name and description along with a list
+ * of steps in the analysis and a list of input-to-output mappings. The format of the input is:
+ * 
+ * <pre>
+ * <code>
+ * {   "analysis_id": &lt;analysis_id&gt;,
+ *     "analysis_name": &lt;analysis_name&gt;,
+ *     "description": &lt;analysis_description&gt;,
+ *     "type": &lt;analysis_type&gt;,
+ *     "steps": [
+ *         {   "id": &lt;step_id&gt;,
+ *             "name": &lt;step_name&gt;,
+ *             "template_id": &lt;template_id&gt;,
+ *             "description": &lt;step_description&gt;,
+ *             "config": {
+ *                 &lt;property_id_1&gt;: &lt;property_value_1&gt;,
+ *                 &lt;property_id_2&gt;: &lt;property_value_2&gt;,
+ *                 ...,
+ *                 &lt;property_id_n&gt;: &lt;property_value_n&gt;
+ *             }
+ *         },
+ *         ...
+ *     ],
+ *     "mappings": [
+ *         {   "source_step": &lt;source_step_name&gt;,
+ *            "target_step": &lt;target_step_name&gt;,
+ *             "map": {
+ *                 &lt;output_id_1&gt;: &lt;input_id_1&gt;,
+ *                 &lt;output_id_2&gt;: &lt;input_id_2&gt;,
+ *                 ...,
+ *                 &lt;output_id_n&gt;: &lt;input_id_n&gt;
+ *             }
+ *         },
+ *         ...
+ *     ]
+ * }
+ * </code>
+ * </pre>
+ * 
+ * @author Dennis Roberts
+ */
+public class AnalysisImporter implements ObjectImporter, ObjectVetter<TransformationActivity> {
+
+    /**
+     * Used to create data access objects.
+     */
+    private DaoFactory daoFactory;
+
+    /**
+     * Used to retrieve or import a template group.
+     */
+    private TemplateGroupImporter templateGroupImporter;
+
+    /**
+     * Used to implement a user's workspace.
+     */
+    private WorkspaceInitializer workspaceInitializer;
+
+    /**
+     * The registry of named objects.
+     */
+    private HeterogeneousRegistry registry = new NullHeterogeneousRegistry();
+
+    /**
+     * True if existing analyses with the same name should be replaced.
+     */
+    private boolean replaceExisting;
+
+    /**
+     * True if we should allow vetted analyses to be updated.
+     */
+    private boolean updateVetted;
+
+    /**
+     * Enables replacement of existing analyses with the same name.
+     */
+    @Override
+    public void enableReplacement() {
+        replaceExisting = true;
+    }
+
+    /**
+     * Disables replacement of existing analyses with the same name.
+     */
+    @Override
+    public void disableReplacement() {
+        replaceExisting = false;
+    }
+
+    /**
+     * Initializes a new analysis importer instance.
+     * 
+     * @param daoFactory the factory used to create data access objects.
+     * @param TemplateGroupImporter used to import template groups.
+     * @param WorkspaceInitializer used to initialize user's workspaces.
+     */
+    public AnalysisImporter(DaoFactory daoFactory, TemplateGroupImporter templateGroupImporter,
+            WorkspaceInitializer workspaceInitializer) {
+        this(daoFactory, templateGroupImporter, workspaceInitializer, false);
+    }
+
+    /**
+     * Initializes a new analysis importer instance.
+     * 
+     * @param daoFactory the factory used to create data access objects.
+     * @param TemplateGroupImporter used to import template groups.
+     * @param WorkspaceInitializer used to initialize user's workspaces.
+     * @param updateVetted true if we should allow vetted analyses to be replaced.
+     */
+    public AnalysisImporter(DaoFactory daoFactory, TemplateGroupImporter templateGroupImporter,
+            WorkspaceInitializer workspaceInitializer, boolean updateVetted) {
+        this.daoFactory = daoFactory;
+        this.templateGroupImporter = templateGroupImporter;
+        this.workspaceInitializer = workspaceInitializer;
+        this.updateVetted = updateVetted;
+    }
+
+    /**
+     * Sets the registry of named objects.
+     * 
+     * @param registry the new registry.
+     */
+    public void setRegistry(HeterogeneousRegistry registry) {
+        this.registry = registry == null ? new NullHeterogeneousRegistry() : registry;
+    }
+
+    /**
+     * Determines if an Analysis has been vetted.
+     * 
+     * @param username
+     *  Fully qualified name of user.
+     * @param analysis
+     *  Analysis to check
+     * @return 
+     *  True if the analysis is vetted, false otherwise.
+     */
+    @Override
+    public boolean isObjectVetted(String username, TransformationActivity analysis) {
+        final long workspaceId = getWorkspaceId(username);
+        return ListUtils.any(new Predicate<TemplateGroup>() {
+            @Override
+            public Boolean call(TemplateGroup arg) {
+                return workspaceId != arg.getWorkspaceId();
+            }
+        }, daoFactory.getTemplateGroupDao().findTemplateGroupsContainingAnalysis(analysis));
+    }
+
+    /**
+     * Imports an analysis.
+     * 
+     * @param json the JSON object to import.
+     * @throws JSONException if the JSON object we receive is invalid.
+     */
+    @Override
+    public void importObject(JSONObject json) throws JSONException {
+        String analysisId = JsonUtils.nonEmptyOptString(json, null, "analysis_id", "id");
+        String analysisName = json.optString("analysis_name");
+        TitoAnalysisUnmarshaller unmarshaller = new TitoAnalysisUnmarshaller(daoFactory, registry);
+        unmarshaller.setWorkspaceInitializer(workspaceInitializer);
+        TransformationActivityDao analysisDao = daoFactory.getTransformationActivityDao();
+
+        TransformationActivity analysis = unmarshaller.fromJson(json);
+        TransformationActivity existingAnalysis = findExistingAnalysis(analysisDao, analysisId, analysisName);
+
+        String username = getUsername(json, analysis);
+
+        if (existingAnalysis == null) {
+            initializeWorkspace(username);
+            analysisDao.save(analysis);
+            templateGroupImporter.addAnalysisToWorkspace(username, analysis);
+        }
+        else if (replaceExisting) {
+            if (updateVetted || !isObjectVetted(username, existingAnalysis)) {
+                existingAnalysis.copy(analysis);
+                analysisDao.save(existingAnalysis);
+                analysis = existingAnalysis;
+            }
+            else {
+                throw new VettedWorkflowObjectException("Cannot replace analysis: vetted analysis found.");
+            }
+        }
+        else {
+            throw new WorkflowException("a duplicate analysis was found and replacement is not enabled");
+        }
+        registry.add(TransformationActivity.class, analysis.getName(), analysis);
+    }
+
+    /**
+     * Imports a list of analyses.
+     * 
+     * @param array the JSON array to import.
+     * @throws JSONException if the JSON array we receive is invalid.
+     */
+    @Override
+    public void importObjectList(JSONArray array) throws JSONException {
+        for (int i = 0; i < array.length(); i++) {
+            importObject(array.getJSONObject(i));
+        }
+    }
+
+    /**
+     * Initializes the user's workspace.
+     *
+     * @param username the fully qualified username.
+     */
+    private void initializeWorkspace(String username) {
+        workspaceInitializer.initializeWorkspace(daoFactory, username);
+    }
+
+    /**
+     * Gets the workspace identifier.
+     * 
+     * @param username the name of the user.
+     * @return the workspace ID.
+     * @throws WorkflowException if the integrator's workspace isn't found.
+     */
+    private long getWorkspaceId(String username) throws WorkflowException {
+        User user = daoFactory.getUserDao().findByUsername(username);
+        Workspace workspace = daoFactory.getWorkspaceDao().findByUser(user);
+        if (workspace == null) {
+            throw new WorkflowException("workspace not found for " + username);
+        }
+        return workspace.getId();
+    }
+
+    /**
+     * Gets the name of the user importing the analysis.
+     *
+     * @param json the JSON object representing the analysis being imported.
+     * @param analysis the analysis being imported.
+     * @return the fully qualified username.
+     * @throws WorkflowException if the username isn't found.
+     */
+    private String getUsername(JSONObject json, TransformationActivity analysis) throws WorkflowException {
+        String username = json.optString("full_username");
+        if (StringUtils.isEmpty(username)) {
+            username = analysis.getIntegrationDatum().getIntegratorEmail();
+        }
+        if (StringUtils.isEmpty(username)) {
+            throw new WorkflowException("username not provided for analysis: " + analysis.getName());
+        }
+        return username;
+    }
+}
