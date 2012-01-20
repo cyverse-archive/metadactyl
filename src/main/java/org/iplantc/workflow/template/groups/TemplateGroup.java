@@ -1,6 +1,5 @@
 package org.iplantc.workflow.template.groups;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -217,19 +216,6 @@ public class TemplateGroup implements NamedAndUnique {
                 return !template.isDeleted();
             }
         }, templates);
-    }
-
-    public List<TransformationActivity> getAllAnalyses() {
-        List<TransformationActivity> allAnalyses = new ArrayList<TransformationActivity>();
-        addAllAnalyses(allAnalyses);
-        return allAnalyses;
-    }
-
-    private void addAllAnalyses(List<TransformationActivity> allAnalyses) {
-        allAnalyses.addAll(templates);
-        for (TemplateGroup group : sub_groups) {
-            group.addAllAnalyses(allAnalyses);
-        }
     }
 
     public boolean inPublicWorkspace(DaoFactory daoFactory) {

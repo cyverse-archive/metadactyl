@@ -18,7 +18,7 @@ import org.iplantc.workflow.service.dto.pipelines.AnalysisValidationDto;
  * @author Dennis Roberts
  */
 public class Analysis extends AbstractDto {
-    
+
     /**
      * The analysis identifier.
      */
@@ -78,6 +78,18 @@ public class Analysis extends AbstractDto {
      */
     @JsonField(name = "wiki_url")
     private String wikiUrl;
+
+    /**
+     * True if the analysis is deleted.
+     */
+    @JsonField(name = "deleted")
+    private boolean deleted;
+
+    /**
+     * True if the analysis is disabled.
+     */
+    @JsonField(name = "disabled")
+    private boolean disabled;
 
     /**
      * The list of deployed components used by the analysis.
@@ -162,6 +174,20 @@ public class Analysis extends AbstractDto {
     }
 
     /**
+     * @return true if the analysis is deleted.
+     */
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    /**
+     * @return true if the analysis is disabled.
+     */
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    /**
      * @return the list of deployed components used by the analysis.
      */
     public List<DeployedComponentDto> getDeployedComponents() {
@@ -205,6 +231,8 @@ public class Analysis extends AbstractDto {
         this.integratorName = StringUtils.defaultString(analysis.getIntegratorName());
         this.integrationDate = dateAsLong(analysis.getIntegrationDate());
         this.wikiUrl = StringUtils.defaultString(analysis.getWikiUrl());
+        this.deleted = analysis.isDeleted();
+        this.disabled = analysis.isDisabled();
         this.deployedComponents = new DeployedComponentListDto(analysis).getDeployedComponents();
         this.pipelineEligibility = new AnalysisValidationDto(analysis);
     }

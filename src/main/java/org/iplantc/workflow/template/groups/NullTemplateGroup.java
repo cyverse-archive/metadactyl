@@ -74,14 +74,6 @@ public class NullTemplateGroup extends TemplateGroup {
      * @{inheritDoc}
      */
     @Override
-    public List<TransformationActivity> getAllAnalyses() {
-        return new ArrayList<TransformationActivity>();
-    }
-
-    /**
-     * @{inheritDoc}
-     */
-    @Override
     public String getDescription() {
         return "";
     }

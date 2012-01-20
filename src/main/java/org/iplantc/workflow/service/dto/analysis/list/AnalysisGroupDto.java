@@ -104,7 +104,7 @@ public class AnalysisGroupDto extends AbstractDto {
         this.name = group.getName();
         this.id = group.getId();
         this.description = StringUtils.defaultString(group.getDescription());
-        this.analyses = extractAnalyses(group);
+        this.analyses = extractActiveAnalyses(group);
         this.analysisCount = group.getAnalysisCount();
         this.isPublic = group.isPublic();
     }
@@ -124,18 +124,18 @@ public class AnalysisGroupDto extends AbstractDto {
     }
 
     /**
-     * Extracts the analyses from the template group.
+     * Extracts the active analyses from the template group.
      * 
      * @param group the template group represented by this DTO.
      * @return the list of analysis data transfer objects.
      */
-    private List<Analysis> extractAnalyses(AnalysisGroup group) {
+    private List<Analysis> extractActiveAnalyses(AnalysisGroup group) {
         return ListUtils.map(new Lambda<AnalysisListing, Analysis>() {
             @Override
             public Analysis call(AnalysisListing arg) {
                 return new Analysis(arg);
             }
-        }, group.getAllAnalyses());
+        }, group.getAllActiveAnalyses());
     }
 
     /**
@@ -153,6 +153,6 @@ public class AnalysisGroupDto extends AbstractDto {
             public Analysis call(AnalysisListing arg) {
                 return new Analysis(arg, favorites, userRatings);
             }
-        }, group.getAllAnalyses());
+        }, group.getAllActiveAnalyses());
     }
 }

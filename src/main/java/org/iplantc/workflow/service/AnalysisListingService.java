@@ -103,7 +103,7 @@ public class AnalysisListingService {
                 AnalysisGroupFinder analysisGroupFinder = new AnalysisGroupFinder(daoFactory);
                 Workspace workspace = new WorkspaceInitializerImpl().getWorkspace(daoFactory);
                 AnalysisGroup favoritesGroup = analysisGroupFinder.findFavoritesGroup();
-                Set<AnalysisListing> favorites = new HashSet<AnalysisListing>(favoritesGroup.getAllAnalyses());
+                Set<AnalysisListing> favorites = new HashSet<AnalysisListing>(favoritesGroup.getAllActiveAnalyses());
                 AnalysisGroup group = analysisGroupFinder.findGroup(analysisGroupId);
                 Map<Long, Integer> userRatings = loadUserRatings(workspace.getUser(), daoFactory);
                 return new AnalysisGroupDto(group, favorites, userRatings).toString();
