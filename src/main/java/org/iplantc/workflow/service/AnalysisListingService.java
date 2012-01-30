@@ -120,6 +120,43 @@ public class AnalysisListingService {
     }
 
     /**
+     * Lists all analyses, that are visible to a user, that contain the given
+     * searchTerm in the name or description.
+     *
+     * @return a JSON string representing the list of public analyses.
+     */
+    public String searchAnalyses(final String searchTerm) {
+        return new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<String>() {
+            @Override
+            public String perform(Session session) {
+                DaoFactory daoFactory = new HibernateDaoFactory(session);
+
+                AnalysisGroupFinder analysisGroupFinder = new AnalysisGroupFinder(daoFactory);
+                Workspace workspace = new WorkspaceInitializerImpl().getWorkspace(daoFactory);
+
+                List<AnalysisGroup> groups = analysisGroupFinder.findDefaultGroups(workspace);
+                for (AnalysisGroup group : groups) {
+                    group.filterAllAnalysesByNameOrDesc(session, searchTerm);
+                }
+
+                AnalysisGroup favoritesGroup = analysisGroupFinder.findFavoritesGroup();
+                Set<AnalysisListing> favorites = new HashSet<AnalysisListing>(favoritesGroup.getAllActiveAnalyses());
+                Map<Long, Integer> userRatings = loadUserRatings(workspace.getUser(), daoFactory);
+
+                return new AnalysisGroupList(groups, favorites, userRatings).toString();
+            }
+
+            private Map<Long, Integer> loadUserRatings(User user, DaoFactory daoFactory) {
+                Map<Long, Integer> result = new HashMap<Long, Integer>();
+                for (RatingListing rating : daoFactory.getRatingListingDao().findByUser(user)) {
+                    result.put(new Long(rating.getAnalysisId()), rating.getUserRating());
+                }
+                return result;
+            }
+        });
+    }
+
+    /**
      * Finds analysis groups.
      */
     private class AnalysisGroupFinder {
@@ -148,15 +185,29 @@ public class AnalysisListingService {
         }
 
         /**
-         * Finds and returns the list of root analysis groups that are visible to the user with the specified workspace.
-         * 
+         * Finds and returns the list of root analysis groups that are visible
+         * to the user with the specified workspace token.
+         *
          * @param workspaceToken either the workspace id or the user's e-mail address
          * @return the list of root analysis groups that are visible to the user
          */
         public List<AnalysisGroup> findDefaultGroups(String workspaceToken) {
+            return findDefaultGroups(getWorkspace(workspaceToken));
+        }
+
+        /**
+         * Finds and returns the list of root analysis groups that are visible
+         * to the user with the specified workspace.
+         *
+         * @param workspace the user's workspace
+         * @return the list of root analysis groups that are visible to the user
+         */
+        public List<AnalysisGroup> findDefaultGroups(Workspace workspace) {
             List<AnalysisGroup> groups = new ArrayList<AnalysisGroup>();
-            addRootGroupForUser(groups, workspaceToken);
+
+            addRootGroupForUser(groups, workspace);
             addPublicGroups(groups);
+
             return groups;
         }
 
@@ -222,10 +273,9 @@ public class AnalysisListingService {
          * Adds the root analysis group for a user to a list of analysis groups.
          * 
          * @param groups the list of analysis groups
-         * @param workspaceToken either the workspace ID or the user's e-mail address
+         * @param workspace the user's workspace
          */
-        private void addRootGroupForUser(List<AnalysisGroup> groups, String workspaceToken) {
-            Workspace workspace = getWorkspace(workspaceToken);
+        private void addRootGroupForUser(List<AnalysisGroup> groups, Workspace workspace) {
             if (workspace != null) {
                 AnalysisGroup templateGroup = getRootAnalysisGroupForWorkspace(workspace);
                 if (templateGroup != null) {
