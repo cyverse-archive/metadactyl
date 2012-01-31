@@ -608,7 +608,15 @@ class DateFieldInfo extends FieldInfo {
     @Override
     public String extract(JSONObject state) {
         String dateString = super.extract(state);
-        return StringUtils.isBlank(dateString) ? "" : convertDateString(dateString);
+        if (StringUtils.isBlank(dateString)) {
+            return "";
+        }
+        else if (StringUtils.isNumeric(dateString)) {
+            return dateString;
+        }
+        else {
+            return convertDateString(dateString);
+        }
     }
 
     /**
