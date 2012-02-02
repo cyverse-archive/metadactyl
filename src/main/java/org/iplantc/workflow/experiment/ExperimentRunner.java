@@ -2,14 +2,11 @@ package org.iplantc.workflow.experiment;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
 import net.sf.json.JSONObject;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
@@ -18,9 +15,9 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.iplantc.files.service.FileInfoService;
 import org.iplantc.hibernate.util.HibernateAccessor;
+import org.iplantc.workflow.client.OsmClient;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
-import org.iplantc.workflow.client.OsmClient;
 import org.iplantc.workflow.service.mule.UserInfoRetrieverImpl;
 import org.iplantc.workflow.user.UserDetails;
 

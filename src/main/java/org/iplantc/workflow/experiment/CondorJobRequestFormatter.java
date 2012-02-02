@@ -7,17 +7,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.iplantc.files.service.FileInfoService;
 import org.iplantc.persistence.dto.step.TransformationStep;
+import org.iplantc.persistence.dto.transformation.Transformation;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
@@ -27,7 +26,6 @@ import org.iplantc.workflow.experiment.dto.JobConstructor;
 import org.iplantc.workflow.model.Property;
 import org.iplantc.workflow.model.PropertyGroup;
 import org.iplantc.workflow.model.Template;
-import org.iplantc.persistence.dto.transformation.Transformation;
 import org.iplantc.workflow.user.UserDetails;
 
 /**
@@ -37,16 +35,26 @@ import org.iplantc.workflow.user.UserDetails;
 public class CondorJobRequestFormatter implements JobRequestFormatter {
 
     private static final int JSON_INDENT = 4;
+
     private static final String CONDOR_TYPE = "condor";
+
     private static final Logger LOG = Logger.getLogger(CondorJobRequestFormatter.class);
+
     private static final List<String> REFERENCE_GENOME_INFO_TYPES = Arrays.asList("ReferenceSequence",
             "ReferenceAnnotation", "ReferenceGenome");
+
     private static final Pattern FILE_URL_PATTERN = Pattern.compile("^(?:file://|/)");
+
     private DaoFactory daoFactory;
+
     private FileInfoService fileInfo;
+
     private UrlAssembler urlAssembler;
+
     private UserDetails userDetails;
+
     private JSONObject experiment;
+
     private boolean debug;
 
     public CondorJobRequestFormatter(DaoFactory daoFactory, FileInfoService fileInfo, UrlAssembler urlAssembler,
@@ -61,7 +69,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
     @Override
     public JSONObject formatJobRequest() {
-         JobConstructor jobConstructor = new JobConstructor("submit", CONDOR_TYPE);
+        JobConstructor jobConstructor = new JobConstructor("submit", CONDOR_TYPE);
         jobConstructor.setExperimentJson(experiment);
 
         String analysisId = experiment.getString("analysis_id");
@@ -128,11 +136,15 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             finalConfig.put("output", outputs_section);
             step1.put("config", finalConfig);
 
-            /** retrieve component for template **/
+            /**
+             * retrieve component for template *
+             */
             String componentId = template.getComponent();
             step1.put("component", new DeployedComponentFormatter(daoFactory).formatComponent(componentId));
 
-            /** assemble the job JSON request **/
+            /**
+             * assemble the job JSON request *
+             */
             stepArray.add(step1);
 
         }
@@ -156,7 +168,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
             if (transformation.containsProperty(outputObject.getId())) {
                 param.put("value", transformation.getValueForProperty(outputObject.getId()));
-            } else {
+            }
+            else {
                 param.put("value", outputObject.getName());
             }
 
@@ -171,7 +184,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         formatLogOutput(template, outputs_section);
     }
 
-     private void formatDefinedOutputs(Template template, JSONArray outputs_section) {
+    private void formatDefinedOutputs(Template template, JSONArray outputs_section) {
         for (DataObject outputObject : template.getOutputs()) {
             JSONObject out = new JSONObject();
 
@@ -301,8 +314,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     }
 
     /**
-     * Formats a property using the value contained in the transformation.  Note that the property's omit-if-blank
-     * setting is ignored for properties whose values are obtained from the transformation.  This was done to maintain
+     * Formats a property using the value contained in the transformation. Note that the property's omit-if-blank
+     * setting is ignored for properties whose values are obtained from the transformation. This was done to maintain
      * backward compatibility.
      *
      * @param property the property.
@@ -328,10 +341,12 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             if (inputJson != null) {
                 result.add(inputJson);
             }
-        } else {
+        }
+        else {
             if (!input.getMultiplicityName().equals("many")) {
                 result.add(createInputJson(path, input));
-            } else {
+            }
+            else {
                 LOG.warn("File IDs: " + path);
 
                 JSONArray jsonFiles = (JSONArray) JSONSerializer.toJSON(path);
@@ -354,7 +369,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         JSONObject json = null;
         try {
             json = (JSONObject) JSONSerializer.toJSON(path);
-        } catch (Exception ignore) {
+        }
+        catch (Exception ignore) {
         }
         return json;
     }
@@ -363,7 +379,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         if (LOG.isDebugEnabled()) {
             try {
                 LOG.debug(label + ": " + input.toJson().toString(JSON_INDENT));
-            } catch (Exception ignore) {
+            }
+            catch (Exception ignore) {
             }
         }
     }
@@ -429,7 +446,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         List<String> paths = new ArrayList<String>();
         if (dataObject.getMultiplicityName().equals("single")) {
             paths.addAll(getPathsForSingleInput(stepName, dataObject, dataInfo));
-        } else {
+        }
+        else {
             paths.addAll(getPathsForMultipleInputs(dataInfo));
         }
         return paths;
@@ -447,7 +465,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
      * Gets the list of paths to use for a single input file, which may be empty. This is brittle, but we need to treat
      * reference genomes as a special case because an input object is not created for reference genomes. I'm afraid a
      * complete refactoring of this class would be required to find a better solution, though.
-     * 
+     *
      * @param stepName the name of the current transformation step.
      * @param input the data object representing the input object.
      * @param dataInfo the list of input objects.
@@ -463,7 +481,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             if (!StringUtils.isBlank(resolvedPath)) {
                 result.add(resolvedPath);
             }
-        } else if (dataInfo.size() > 0) {
+        }
+        else if (dataInfo.size() > 0) {
             result.add(dataInfo.getJSONObject(0).getString("property"));
         }
         return result;
@@ -475,7 +494,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
     /**
      * Returns an array of objects representing the given input objects
-     * 
+     *
      * @param dataobject the data object for which the param needs to be retrieved
      * @param path the relative path to the file.
      */
@@ -507,7 +526,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             JSONObject jsonInput = getJSONProperty(jstep, originalName);
             if (jsonInput != null) {
                 return jsonInput.getString("value");
-            } else {
+            }
+            else {
                 throw new WorkflowException("A value for property " + step.getName() + "_" + originalName
                         + " needs to be input in order to be used in a mapping.");
             }
@@ -515,7 +535,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
         if (transformation.containsProperty(originalName)) {
             return transformation.getPropertyValues().get(originalName);
-        } else {
+        }
+        else {
             String templateId = transformation.getTemplate_id();
             Template template = daoFactory.getTemplateDao().findById(templateId);
             if (template == null) {
@@ -529,7 +550,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         String retval = null;
         try {
             retval = template.getOutputName(originalName);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new WorkflowException("unable to determine the output name for " + originalName, e);
         }
         return retval;
@@ -572,15 +594,20 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         String propertyTypeName = property.getPropertyTypeName();
         if (propertyTypeName.equals("Selection") || propertyTypeName.equals("ValueSelection")) {
             CollectionUtils.addIgnoreNull(jprops, formatSelectionProperty(property, value));
-        } else if (propertyTypeName.equals("Flag")) {
+        }
+        else if (propertyTypeName.equals("Flag")) {
             CollectionUtils.addIgnoreNull(jprops, formatFlagProperty(property, value));
-        } else if (propertyTypeName.equals("QuotedText")) {
+        }
+        else if (propertyTypeName.equals("QuotedText")) {
             CollectionUtils.addIgnoreNull(jprops, formatQuotedTextProperty(property, value));
-        } else if (propertyTypeName.equals("BarcodeSelector") || propertyTypeName.equals("ClipperSelector")) {
+        }
+        else if (propertyTypeName.equals("BarcodeSelector") || propertyTypeName.equals("ClipperSelector")) {
             CollectionUtils.addIgnoreNull(jprops, formatBarcodeSelectorProperty(property, value, inputs, workspaceId));
-        } else if (propertyTypeName.equals("Input")) {
+        }
+        else if (propertyTypeName.equals("Input")) {
             jprops.addAll(formatInputProperties(property, value, stepName));
-        } else {
+        }
+        else {
             CollectionUtils.addIgnoreNull(jprops, formatDefaultProperty(property, value));
         }
 
@@ -599,9 +626,9 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     }
 
     /**
-     * Formats a bar code selector property.  Note that this method ignores the property's omitIfBlank setting.
-     * This is a highly specialized type of property that is currently deprecated, so special handling of optional
-     * properties is not required for this type of property at this time.
+     * Formats a bar code selector property. Note that this method ignores the property's omitIfBlank setting. This is a
+     * highly specialized type of property that is currently deprecated, so special handling of optional properties is
+     * not required for this type of property at this time.
      *
      * @param property the property.
      * @param value the property value.
@@ -612,12 +639,13 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     protected JSONObject formatBarcodeSelectorProperty(Property property, String value, JSONArray inputs,
             long workspaceId) {
         JSONObject jprop = initialPropertyJson(property);
-        String filename = null;
-        String url = null;
+        String filename;
+        String url;
         if (value.contains("/")) {
             filename = basename(value);
             url = urlAssembler.assembleUrl(value);
-        } else {
+        }
+        else {
             JSONObject resolvedFileInfo = resolveBarcodeFile(value, workspaceId);
             filename = resolvedFileInfo.getString("file_name");
             url = resolvedFileInfo.getString("url");
@@ -652,10 +680,10 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     }
 
     /**
-     * Formats a flag property.  Note that this method ignores the property's omit-if-blank setting, which isn't
-     * required for flag properties, which are always omitted if the option selected by the user corresponds to a
-     * missing command-line flag.
-     * 
+     * Formats a flag property. Note that this method ignores the property's omit-if-blank setting, which isn't required
+     * for flag properties, which are always omitted if the option selected by the user corresponds to a missing
+     * command-line flag.
+     *
      * @param property the property being formatted.
      * @param value the property value.
      * @return the formatted property or null if the property should not be included on the command line.
@@ -685,19 +713,20 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     }
 
     private JSONObject formatSelectionProperty(Property property, String arg) {
-        JSONObject result = null;
+        JSONObject result;
         if (isJsonObject(arg)) {
             result = formatNewStyleSelectionProperty(property, arg);
-        } else {
+        }
+        else {
             result = formatOldStyleSelectionProperty(property, arg);
         }
         return result;
     }
 
     /**
-     * Formats an old-style selection property.  Note that this method ignores the property's omit-if-blank setting,
-     * which isn't required for old-style properties because the property and value are both encoded in the value
-     * that is specified for each selection.
+     * Formats an old-style selection property. Note that this method ignores the property's omit-if-blank setting,
+     * which isn't required for old-style properties because the property and value are both encoded in the value that
+     * is specified for each selection.
      *
      * @param property the property.
      * @param arg the argument.
@@ -721,9 +750,9 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     }
 
     /**
-     * Formats a new-style selection property.  Note that this method ignores the property's omit-if-blank setting,
-     * which isn't required for new-style selection properties because the name and value are specified separately
-     * for each selection.
+     * Formats a new-style selection property. Note that this method ignores the property's omit-if-blank setting, which
+     * isn't required for new-style selection properties because the name and value are specified separately for each
+     * selection.
      *
      * @param property the property.
      * @param arg the argument.
@@ -749,7 +778,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
     /**
      * Determines whether or not the given string represents a JSON object.
-     * 
+     *
      * @param value the string to check.
      * @return true if the string represents a JSON object.
      */
@@ -757,7 +786,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         try {
             JSON json = JSONSerializer.toJSON(value);
             return !json.isArray();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return false;
         }
     }

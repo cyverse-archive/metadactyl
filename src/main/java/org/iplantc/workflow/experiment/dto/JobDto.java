@@ -1,7 +1,6 @@
 package org.iplantc.workflow.experiment.dto;
 
 import java.util.UUID;
-
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 
@@ -12,21 +11,24 @@ import net.sf.json.JsonConfig;
  */
 public class JobDto {
   private String uuid;
-  
+
   private String name;
   private String description;
   /** @todo Should this be an enum? */
   private String requestType;
   private String executionTarget;
   private boolean notify;
-  
+
   private String workspaceId;
   private String username;
-  
+
   private String analysisName;
   private String analysisId;
   private String analysisDescription;
-  
+
+  private String outputDir;
+  private boolean createOutputSubdir;
+
   /**
    * Creates a new JobDto.
    */
@@ -135,6 +137,22 @@ public class JobDto {
 
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  public String getOutputDir() {
+    return outputDir;
+  }
+
+  public void setOutputDir(String outputDir) {
+    this.outputDir = outputDir;
+  }
+
+  public boolean getCreateOutputSubdir() {
+      return createOutputSubdir;
+  }
+
+  public void setCreateOutputSubdir(boolean createOutputSubdir) {
+      this.createOutputSubdir = createOutputSubdir;
   }
 
   public JSONObject toJson() {

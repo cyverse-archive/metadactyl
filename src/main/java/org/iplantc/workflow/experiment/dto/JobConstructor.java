@@ -1,7 +1,6 @@
 package org.iplantc.workflow.experiment.dto;
 
 import net.sf.json.JSONObject;
-
 import org.iplantc.workflow.core.TransformationActivity;
 
 /**
@@ -43,8 +42,10 @@ public class JobConstructor {
     job.setDescription(experimentJson.optString("description", ""));
     job.setNotify(experimentJson.getBoolean("notify"));
     job.setWorkspaceId(experimentJson.getString("workspace_id"));
+    job.setOutputDir(experimentJson.optString("output_dir", ""));
+    job.setCreateOutputSubdir(experimentJson.optBoolean("create_output_subdir", true));
   }
-  
+
   /**
    * Sets the Analysis variables on the Job object.
    * 

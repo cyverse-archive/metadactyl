@@ -1,13 +1,10 @@
 package org.iplantc.workflow.experiment;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-
 import org.iplantc.persistence.dto.components.DeployedComponent;
 import org.iplantc.persistence.dto.step.TransformationStep;
+import org.iplantc.persistence.dto.transformation.Transformation;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.mock.MockDaoFactory;
 import org.iplantc.workflow.data.DataObject;
@@ -17,10 +14,13 @@ import org.iplantc.workflow.model.Property;
 import org.iplantc.workflow.model.PropertyGroup;
 import org.iplantc.workflow.model.PropertyType;
 import org.iplantc.workflow.model.Template;
-import org.iplantc.persistence.dto.transformation.Transformation;
 import org.iplantc.workflow.user.UserDetails;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for org.iplantc.workflow.experiment.FapiJobRequestFormatter.
