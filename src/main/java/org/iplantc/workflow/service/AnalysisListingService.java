@@ -22,7 +22,6 @@ import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupDto;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupHierarchyList;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupList;
-import org.iplantc.workflow.service.mule.WorkspaceInitializerImpl;
 
 /**
  * A service used to list analyses.
@@ -42,6 +41,11 @@ public class AnalysisListingService {
     private int favoritesAnalysisGroupIndex;
 
     /**
+     * Used to initialize the user's workspace.
+     */
+    private WorkspaceInitializer workspaceInitializer;
+
+    /**
      * @param sessionFactory the Hibernate session factory.
      */
     public void setSessionFactory(SessionFactory sessionFactory) {
@@ -53,6 +57,13 @@ public class AnalysisListingService {
      */
     public void setFavoritesAnalysisGroupIndex(int favoritesAnalysisGroupIndex) {
         this.favoritesAnalysisGroupIndex = favoritesAnalysisGroupIndex;
+    }
+
+    /**
+     * @param workspaceInitializer used to initialize the user's workspace.
+     */
+    public void setWorkspaceInitializer(WorkspaceInitializer workspaceInitializer) {
+        this.workspaceInitializer = workspaceInitializer;
     }
 
     /**
@@ -101,7 +112,7 @@ public class AnalysisListingService {
             public String perform(Session session) {
                 DaoFactory daoFactory = new HibernateDaoFactory(session);
                 AnalysisGroupFinder analysisGroupFinder = new AnalysisGroupFinder(daoFactory);
-                Workspace workspace = new WorkspaceInitializerImpl().getWorkspace(daoFactory);
+                Workspace workspace = workspaceInitializer.getWorkspace(daoFactory);
                 AnalysisGroup favoritesGroup = analysisGroupFinder.findFavoritesGroup();
                 Set<AnalysisListing> favorites = new HashSet<AnalysisListing>(favoritesGroup.getAllActiveAnalyses());
                 AnalysisGroup group = analysisGroupFinder.findGroup(analysisGroupId);
@@ -132,7 +143,7 @@ public class AnalysisListingService {
                 DaoFactory daoFactory = new HibernateDaoFactory(session);
 
                 AnalysisGroupFinder analysisGroupFinder = new AnalysisGroupFinder(daoFactory);
-                Workspace workspace = new WorkspaceInitializerImpl().getWorkspace(daoFactory);
+                Workspace workspace = workspaceInitializer.getWorkspace(daoFactory);
 
                 List<AnalysisGroup> groups = analysisGroupFinder.findDefaultGroups(workspace);
                 for (AnalysisGroup group : groups) {
@@ -218,7 +229,7 @@ public class AnalysisListingService {
          * @throws WorkflowException if the user doesn't have a favorites group
          */
         public AnalysisGroup findFavoritesGroup() {
-            Workspace workspace = new WorkspaceInitializerImpl().getWorkspace(daoFactory);
+            Workspace workspace = workspaceInitializer.getWorkspace(daoFactory);
             AnalysisGroup root = daoFactory.getAnalysisGroupDao().findById(workspace.getRootAnalysisGroupId());
             if (root == null) {
                 throw new WorkflowException("user's workspace is not initializeed");
