@@ -12,7 +12,6 @@ import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
 import org.iplantc.workflow.integration.json.TitoIntegrationDatumMashaller;
 import org.iplantc.workflow.service.dto.AnalysisId;
-import org.iplantc.workflow.service.mule.MetadataRetrieverImpl;
 import org.iplantc.workflow.service.mule.UserInfoRetrieverImpl;
 import org.iplantc.workflow.user.UserDetails;
 
@@ -41,7 +40,7 @@ public class AnalysisEditService {
     /**
      * Used to retrieve analyses.
      */
-    private MetadataRetriever metadataRetriever;
+    private WorkflowExportService workflowExportService;
 
     /**
      * @param sessionFactory the Hibernate session factory.
@@ -58,11 +57,17 @@ public class AnalysisEditService {
     }
 
     /**
+     * @param workflowExportService used to retrieve analyses.
+     */
+    public void setWorkflowExportService(WorkflowExportService workflowExportService) {
+        this.workflowExportService = workflowExportService;
+    }
+
+    /**
      * The default constructor.
      */
     public AnalysisEditService() {
         userInfoRetriever = new UserInfoRetrieverImpl();
-        metadataRetriever = new MetadataRetrieverImpl();
     }
 
     /**
@@ -179,7 +184,7 @@ public class AnalysisEditService {
      * @return the analysis.
      */
     private JSONObject exportAnalysis(DaoFactory daoFactory, String analysisId) {
-        return metadataRetriever.getTemplateFromAnalysis(daoFactory, analysisId);
+        return JSONObject.fromObject(workflowExportService.getTemplateFromAnalysis(daoFactory, analysisId));
     }
 
     /**
