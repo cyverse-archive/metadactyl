@@ -35,6 +35,11 @@ public class AnalysisCategorizationService {
     private int favoritesAnalysisGroupIndex;
 
     /**
+     * Used to initialize the user's workspace.
+     */
+    private WorkspaceInitializer workspaceInitializer;
+
+    /**
      * @param devAnalysisGroupIndex the development analysis group index.
      */
     public void setDevAnalysisGroupIndex(int devAnalysisGroupIndex) {
@@ -53,6 +58,13 @@ public class AnalysisCategorizationService {
      */
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
+    }
+
+    /**
+     * @param workspaceInitializer used to initialize the user's workspace.
+     */
+    public void setWorkspaceInitializer(WorkspaceInitializer workspaceInitializer) {
+        this.workspaceInitializer = workspaceInitializer;
     }
 
     /**
@@ -112,6 +124,7 @@ public class AnalysisCategorizationService {
      */
     private AnalysisCategorizer createAnalysisCategorizer(Session session) {
         DaoFactory daoFactory = new HibernateDaoFactory(session);
-        return new AnalysisCategorizer(daoFactory, devAnalysisGroupIndex, favoritesAnalysisGroupIndex);
+        return new AnalysisCategorizer(daoFactory, devAnalysisGroupIndex, favoritesAnalysisGroupIndex,
+                workspaceInitializer);
     }
 }

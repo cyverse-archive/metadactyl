@@ -16,7 +16,6 @@ import org.iplantc.workflow.service.dto.CategorizedAnalysis;
 import org.iplantc.workflow.service.dto.AnalysisCategoryList;
 import org.iplantc.workflow.service.dto.FailedCategorization;
 import org.iplantc.workflow.service.dto.FavoriteUpdateRequest;
-import org.iplantc.workflow.service.mule.WorkspaceInitializerImpl;
 import org.iplantc.workflow.template.groups.TemplateGroup;
 
 import static org.iplantc.workflow.util.ListUtils.conjoin;
@@ -44,14 +43,21 @@ public class AnalysisCategorizer {
     private int favoritesAnalysisGroupIndex;
 
     /**
+     * Used to initialize the user's workspace.
+     */
+    private WorkspaceInitializer workspaceInitializer;
+
+    /**
      * @param daoFactory used to obtain data access objects.
      * @param devAnalysisGroupIndex the index of the development analysis group.
      * @param favoritesAnalysisGroupIndex the index of the favorites analysis group.
      */
-    public AnalysisCategorizer(DaoFactory daoFactory, int devAnalysisGroupIndex, int favoritesAnalysisGroupIndex) {
+    public AnalysisCategorizer(DaoFactory daoFactory, int devAnalysisGroupIndex, int favoritesAnalysisGroupIndex,
+            WorkspaceInitializer workspaceInitializer) {
         this.daoFactory = daoFactory;
         this.devAnalysisGroupIndex = devAnalysisGroupIndex;
         this.favoritesAnalysisGroupIndex = favoritesAnalysisGroupIndex;
+        this.workspaceInitializer = workspaceInitializer;
     }
 
     /**
@@ -93,7 +99,6 @@ public class AnalysisCategorizer {
     public FailedCategorizationList categorizeAnalyses(AnalysisCategoryList categories) {
         FailedCategorizationList failures = new FailedCategorizationList();
         Set<String> seen = new HashSet<String>();
-        WorkspaceInitializer workspaceInitializer = new WorkspaceInitializerImpl();
         TemplateGroupPathResolver resolver = new TemplateGroupPathResolver(daoFactory, workspaceInitializer);
         for (CategorizedAnalysis category : categories) {
             try {
