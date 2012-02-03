@@ -302,7 +302,7 @@ public class AnalysisListingService {
          * @return the workspace or null if a workspace can't be found
          */
         private Workspace getWorkspace(String workspaceToken) {
-            Workspace workspace = null;
+            Workspace workspace;
             if (StringUtils.isNumeric(workspaceToken)) {
                 workspace = daoFactory.getWorkspaceDao().findById(Long.parseLong(workspaceToken));
             }

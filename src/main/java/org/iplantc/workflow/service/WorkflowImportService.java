@@ -29,7 +29,6 @@ import org.iplantc.workflow.integration.TemplateImporter;
 import org.iplantc.workflow.integration.WorkflowImporter;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistry;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistryImpl;
-import org.iplantc.workflow.service.mule.WorkspaceInitializerImpl;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -61,16 +60,24 @@ public class WorkflowImportService {
     private int favoritesAnalysisGroupIndex;
 
     /**
+     * Used to initialize the user's workspace if necessary.
+     */
+    private WorkspaceInitializer workspaceInitializer;
+
+    /**
      * Initializes a new workflow import service.
      * 
      * @param sessionFactory the database sessionFactory.
      * @param devAnalysisGroupIndex the index of the analysis group used for tool development.
+     * @param favoritesAnalysisGroupIndex the index of the analysis group used to store the user's favorites.
+     * @param workspaceInitializer used to initialize the user's workspace if necessary.
      */
     public WorkflowImportService(SessionFactory sessionFactory, String devAnalysisGroupIndex,
-            String favoritesAnalysisGroupIndex) {
+            String favoritesAnalysisGroupIndex, WorkspaceInitializer workspaceInitializer) {
         this.sessionFactory = sessionFactory;
         this.devAnalysisGroupIndex = parseAnalysisGroupIndex(devAnalysisGroupIndex, "development");
         this.favoritesAnalysisGroupIndex = parseAnalysisGroupIndex(favoritesAnalysisGroupIndex, "favorites");
+        this.workspaceInitializer = workspaceInitializer;
     }
 
     /**
@@ -132,7 +139,6 @@ public class WorkflowImportService {
     private AnalysisImporter createAnalysisImporter(Session session, HeterogeneousRegistry registry,
             boolean updateVetted) {
         DaoFactory daoFactory = new HibernateDaoFactory(session);
-        WorkspaceInitializer workspaceInitializer = new WorkspaceInitializerImpl();
         TemplateGroupImporter templateGroupImporter = createTemplateGroupImporter(daoFactory);
         AnalysisImporter analysisImporter =
                 new AnalysisImporter(daoFactory, templateGroupImporter, workspaceInitializer, updateVetted);
@@ -167,7 +173,6 @@ public class WorkflowImportService {
             HeterogeneousRegistry registry) {
         DaoFactory daoFactory = new HibernateDaoFactory(session);
         TemplateGroupImporter templateGroupImporter = createTemplateGroupImporter(daoFactory);
-        WorkspaceInitializer workspaceInitializer = new WorkspaceInitializerImpl();
         AnalysisGeneratingTemplateImporter templateImporter = new AnalysisGeneratingTemplateImporter(daoFactory,
                 templateGroupImporter, workspaceInitializer);
         templateImporter.setRegistry(registry);
