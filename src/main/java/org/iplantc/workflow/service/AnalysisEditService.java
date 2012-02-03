@@ -12,7 +12,6 @@ import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
 import org.iplantc.workflow.integration.json.TitoIntegrationDatumMashaller;
 import org.iplantc.workflow.service.dto.AnalysisId;
-import org.iplantc.workflow.service.mule.UserInfoRetrieverImpl;
 import org.iplantc.workflow.user.UserDetails;
 
 /**
@@ -35,7 +34,7 @@ public class AnalysisEditService {
     /**
      * Used to get the user's details.
      */
-    private UserInfoRetriever userInfoRetriever;
+    private UserService userService;
 
     /**
      * Used to retrieve analyses.
@@ -57,17 +56,17 @@ public class AnalysisEditService {
     }
 
     /**
+     * @param userService used to get the user's details.
+     */
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    /**
      * @param workflowExportService used to retrieve analyses.
      */
     public void setWorkflowExportService(WorkflowExportService workflowExportService) {
         this.workflowExportService = workflowExportService;
-    }
-
-    /**
-     * The default constructor.
-     */
-    public AnalysisEditService() {
-        userInfoRetriever = new UserInfoRetrieverImpl();
     }
 
     /**
@@ -113,7 +112,7 @@ public class AnalysisEditService {
      * @return the (possibly new) analysis identifier.
      */
     private String editAnalysis(DaoFactory daoFactory, String analysisId) {
-        UserDetails userDetails = userInfoRetriever.getCurrentUserDetails();
+        UserDetails userDetails = userService.getCurrentUserDetails();
         String username = userDetails.getShortUsername();
         String email = userDetails.getEmail();
         String fullUsername = userDetails.getUsername();
@@ -137,7 +136,7 @@ public class AnalysisEditService {
      * @return the new analysis identifier.
      */
     private String copyAnalysis(DaoFactory daoFactory, String analysisId) {
-        UserDetails userDetails = userInfoRetriever.getCurrentUserDetails();
+        UserDetails userDetails = userService.getCurrentUserDetails();
         String username = userDetails.getShortUsername();
         String email = userDetails.getEmail();
         String fullUsername = userDetails.getUsername();

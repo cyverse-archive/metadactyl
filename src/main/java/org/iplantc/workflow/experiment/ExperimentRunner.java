@@ -18,7 +18,7 @@ import org.iplantc.hibernate.util.HibernateAccessor;
 import org.iplantc.workflow.client.OsmClient;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
-import org.iplantc.workflow.service.mule.UserInfoRetrieverImpl;
+import org.iplantc.workflow.service.UserService;
 import org.iplantc.workflow.user.UserDetails;
 
 /**
@@ -32,6 +32,8 @@ public class ExperimentRunner extends HibernateAccessor {
     private static final Logger JsonLogger = Logger.getLogger("JsonLogger");
 
     private FileInfoService fileInfo;
+
+    private UserService userService;
 
     private String executionUrl;
     private UrlAssembler urlAssembler;
@@ -70,7 +72,7 @@ public class ExperimentRunner extends HibernateAccessor {
 
         try {
             long workspaceId = Long.parseLong(experiment.getString("workspace_id"));
-            UserDetails userDetails = new UserInfoRetrieverImpl().getCurrentUserDetails();
+            UserDetails userDetails = userService.getCurrentUserDetails();
 
             JSONObject job = formatJobRequest(experiment, session, userDetails);
             submitJob(job);
@@ -111,6 +113,10 @@ public class ExperimentRunner extends HibernateAccessor {
 
     public void setFileInfo(FileInfoService fileInfo) {
         this.fileInfo = fileInfo;
+    }
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     public String getExecutionUrl() {
