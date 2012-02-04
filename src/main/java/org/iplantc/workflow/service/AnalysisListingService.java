@@ -22,6 +22,7 @@ import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupDto;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupHierarchyList;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupList;
+import org.iplantc.workflow.service.dto.analysis.list.AnalysisSearchList;
 
 /**
  * A service used to list analyses.
@@ -146,15 +147,11 @@ public class AnalysisListingService {
                 Workspace workspace = workspaceInitializer.getWorkspace(daoFactory);
 
                 List<AnalysisGroup> groups = analysisGroupFinder.findDefaultGroups(workspace);
-                for (AnalysisGroup group : groups) {
-                    group.filterAllAnalysesByNameOrDesc(session, searchTerm);
-                }
-
                 AnalysisGroup favoritesGroup = analysisGroupFinder.findFavoritesGroup();
                 Set<AnalysisListing> favorites = new HashSet<AnalysisListing>(favoritesGroup.getAllActiveAnalyses());
                 Map<Long, Integer> userRatings = loadUserRatings(workspace.getUser(), daoFactory);
 
-                return new AnalysisGroupList(groups, favorites, userRatings).toString();
+                return new AnalysisSearchList(session, searchTerm, groups, favorites, userRatings).toString();
             }
 
             private Map<Long, Integer> loadUserRatings(User user, DaoFactory daoFactory) {
