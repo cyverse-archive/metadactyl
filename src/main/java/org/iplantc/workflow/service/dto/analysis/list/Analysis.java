@@ -1,12 +1,10 @@
 package org.iplantc.workflow.service.dto.analysis.list;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang.StringUtils;
-import org.iplantc.persistence.dto.listing.AnalysisGroup;
 import org.iplantc.persistence.dto.listing.AnalysisListing;
 import org.iplantc.workflow.service.dto.AbstractDto;
 import org.iplantc.workflow.service.dto.JsonField;
@@ -98,12 +96,6 @@ public class Analysis extends AbstractDto {
      */
     @JsonField(name = "deployed_components")
     private List<DeployedComponentDto> deployedComponents;
-
-    /**
-     * The list of group IDs that this analysis is listed in.
-     */
-    @JsonField(name = "groups")
-    private List<String> groupIds;
 
     /**
      * Pipeline eligibility information for this analysis.
@@ -241,7 +233,6 @@ public class Analysis extends AbstractDto {
         this.wikiUrl = StringUtils.defaultString(analysis.getWikiUrl());
         this.deleted = analysis.isDeleted();
         this.disabled = analysis.isDisabled();
-        this.groupIds = extractGroupIds(analysis.getAnalysisGroups());
         this.deployedComponents = new DeployedComponentListDto(analysis).getDeployedComponents();
         this.pipelineEligibility = new AnalysisValidationDto(analysis);
     }
@@ -254,23 +245,5 @@ public class Analysis extends AbstractDto {
      */
     private Long dateAsLong(Date date) {
         return date == null ? null : new Long(date.getTime());
-    }
-
-    /**
-     * Extracts a list of group IDs from the given list of analysisGroups.
-     *
-     * @param analysisGroups
-     * @return a list of group ID strings.
-     */
-    private List<String> extractGroupIds(List<AnalysisGroup> analysisGroups) {
-        List<String> result = new ArrayList<String>();
-
-        if (analysisGroups != null) {
-            for (AnalysisGroup group : analysisGroups) {
-                result.add(group.getId());
-            }
-        }
-
-        return result;
     }
 }
