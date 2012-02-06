@@ -15,11 +15,6 @@
         <version>dev-SNAPSHOT</version>
     </parent>
     
-    <properties>
-      <!-- Current Mule Version -->
-        <mule.version>2.2.1</mule.version>
-    </properties>
-
     <build>
         <plugins>
             <plugin>
@@ -127,22 +122,8 @@
             <version>2.1.0</version>
         </dependency>
        
-        <dependency>
-            <groupId>org.mule.modules</groupId>
-            <artifactId>mule-module-client</artifactId>
-            <version>${mule.version}</version>
-        </dependency>
     </dependencies>
     <repositories>
-        <repository>
-            <id>mule-deps</id>
-            <name>Mule Dependencies</name>
-            <url>http://dist.codehaus.org/mule/dependencies/maven2</url>
-        </repository>
-        <repository>
-            <id>muleforge</id>
-            <url>http://repository.muleforge.org</url>
-        </repository>
         <repository>
             <id>iplantCollaborative</id>
             <name>iPlant Collaborative local repository</name>
