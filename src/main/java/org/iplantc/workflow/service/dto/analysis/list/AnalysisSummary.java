@@ -1,7 +1,6 @@
 package org.iplantc.workflow.service.dto.analysis.list;
 
 import java.util.Date;
-import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.listing.AnalysisListing;
@@ -197,10 +196,10 @@ public class AnalysisSummary extends AbstractDto {
      * @param favorites the analysis group containing the user's favorites.
      * @param userRatings the user's analysis ratings.
      */
-    public AnalysisSummary(AnalysisListing analysis, Set<AnalysisListing> favorites, Map<Long, Integer> userRatings) {
+    public AnalysisSummary(AnalysisListing analysis, Set<AnalysisListing> favorites) {
         initializeCommonFields(analysis);
 
-        rating = new AnalysisRating(analysis, userRatings);
+        rating = new AnalysisRating(analysis);
         favorite = favorites.contains(analysis);
     }
 

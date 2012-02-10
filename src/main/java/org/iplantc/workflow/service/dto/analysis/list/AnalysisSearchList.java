@@ -1,10 +1,8 @@
 package org.iplantc.workflow.service.dto.analysis.list;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.hibernate.Session;
 import org.iplantc.persistence.dto.listing.AnalysisGroup;
@@ -40,7 +38,7 @@ public class AnalysisSearchList extends AbstractDto {
      * @param analysisGroups the list of groups containing the templates being marshaled.
      */
     public AnalysisSearchList(final Session session, final String searchTerm, List<AnalysisGroup> analysisGroups) {
-        this(session, searchTerm, analysisGroups, new HashSet<AnalysisListing>(), new HashMap<Long, Integer>());
+        this(session, searchTerm, analysisGroups, new HashSet<AnalysisListing>());
     }
 
     /**
@@ -50,11 +48,11 @@ public class AnalysisSearchList extends AbstractDto {
      * @param favorites the template group containing the user's favorites.
      * @param userRatings the user's template ratings.
      */
-    public AnalysisSearchList(final Session session, final String searchTerm, List<AnalysisGroup> analysisGroups, final Set<AnalysisListing> favorites,
-            final Map<Long, Integer> userRatings) {
+    public AnalysisSearchList(final Session session, final String searchTerm,
+                              List<AnalysisGroup> analysisGroups, final Set<AnalysisListing> favorites) {
         templates = new ArrayList<AnalysisSummary>();
 
-        extractTemplates(session, searchTerm, analysisGroups, favorites, userRatings);
+        extractTemplates(session, searchTerm, analysisGroups, favorites);
     }
 
     /**
@@ -68,13 +66,14 @@ public class AnalysisSearchList extends AbstractDto {
      * @param userRatings the user's analysis ratings.
      * @return the list of analysis data transfer objects.
      */
-    private void extractTemplates(final Session session, final String searchTerm, List<AnalysisGroup> analysisGroups, final Set<AnalysisListing> favorites,
-            final Map<Long, Integer> userRatings) {
+    private void extractTemplates(final Session session, final String searchTerm,
+                                  List<AnalysisGroup> analysisGroups,
+                                  final Set<AnalysisListing> favorites) {
         for (final AnalysisGroup group : analysisGroups) {
             templates.addAll(ListUtils.map(new Lambda<AnalysisListing, AnalysisSummary>() {
                 @Override
                 public AnalysisSummary call(AnalysisListing arg) {
-                    AnalysisSummary analysis = new AnalysisSummary(arg, favorites, userRatings);
+                    AnalysisSummary analysis = new AnalysisSummary(arg, favorites);
 
                     analysis.setGroupId(group.getId());
                     analysis.setGroupName(group.getName());
@@ -83,7 +82,7 @@ public class AnalysisSearchList extends AbstractDto {
                 }
             }, group.filterAnalysesByNameOrDesc(session, searchTerm)));
 
-            extractTemplates(session, searchTerm, group.getSubgroups(), favorites, userRatings);
+            extractTemplates(session, searchTerm, group.getSubgroups(), favorites);
         }
     }
 }

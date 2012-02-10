@@ -149,17 +149,8 @@ public class AnalysisListingService {
                 List<AnalysisGroup> groups = analysisGroupFinder.findDefaultGroups(workspace);
                 AnalysisGroup favoritesGroup = analysisGroupFinder.findFavoritesGroup();
                 Set<AnalysisListing> favorites = new HashSet<AnalysisListing>(favoritesGroup.getAllActiveAnalyses());
-                Map<Long, Integer> userRatings = loadUserRatings(workspace.getUser(), daoFactory);
 
-                return new AnalysisSearchList(session, searchTerm, groups, favorites, userRatings).toString();
-            }
-
-            private Map<Long, Integer> loadUserRatings(User user, DaoFactory daoFactory) {
-                Map<Long, Integer> result = new HashMap<Long, Integer>();
-                for (RatingListing rating : daoFactory.getRatingListingDao().findByUser(user)) {
-                    result.put(new Long(rating.getAnalysisId()), rating.getUserRating());
-                }
-                return result;
+                return new AnalysisSearchList(session, searchTerm, groups, favorites).toString();
             }
         });
     }
