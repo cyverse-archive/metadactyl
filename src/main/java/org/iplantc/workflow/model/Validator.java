@@ -1,6 +1,5 @@
 package org.iplantc.workflow.model;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -67,7 +66,7 @@ public class Validator extends WorkflowElement {
      * @return an unmodifiable copy of the list of rules.
      */
     public List<Rule> getRules() {
-        return Collections.unmodifiableList(rules);
+        return rules;
     }
 
     /**
@@ -128,7 +127,7 @@ public class Validator extends WorkflowElement {
     @Override
     public int hashCode() {
         int hashCode = super.hashCode();
-        hashCode += new Boolean(required).hashCode();
+        hashCode += required.hashCode();
         hashCode += ObjectUtils.hashCode(rules);
         return hashCode;
     }
