@@ -1,9 +1,10 @@
 package org.iplantc.workflow.service.dto.analysis.list;
 
 import java.util.Map;
+
 import net.sf.json.JSONObject;
+
 import org.iplantc.persistence.dto.listing.AnalysisListing;
-import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.service.dto.AbstractDto;
 import org.iplantc.workflow.service.dto.JsonField;
 
@@ -27,6 +28,12 @@ public class AnalysisRating extends AbstractDto {
     private Integer user;
 
     /**
+     * The Confluence ID of a comment on the analysis by the current user.
+     */
+    @JsonField(name = "comment_id", optional = true)
+    private Long commentId;
+
+    /**
      * @return the average rating.
      */
     public double getAverage() {
@@ -34,10 +41,18 @@ public class AnalysisRating extends AbstractDto {
     }
 
     /**
-     * @return the rating assigned to the analysis by the user or null if the user hasn't rated the analysis.
+     * @return the rating assigned to the analysis by the user or null if the user hasn't rated the
+     *         analysis.
      */
     public Integer getUser() {
         return user;
+    }
+
+    /**
+     * @return the comment created by the user or null if the user hasn't commented on the analysis.
+     */
+    public Long getCommentId() {
+        return commentId;
     }
 
     /**
@@ -72,10 +87,12 @@ public class AnalysisRating extends AbstractDto {
 
     /**
      * @param analysis the analysis that these rating values apply to.
-     * @param userRatings the user's analysis ratings.
+     * @param userRatings the user's analysis ratings and comment IDs.
      */
-    public AnalysisRating(AnalysisListing analysis, Map<Long, Integer> userRatings) {
+    public AnalysisRating(AnalysisListing analysis, Map<Long, UserRating> userRatings) {
         this.average = analysis.getAverageRating();
-        this.user = userRatings.get(analysis.getHid());
+        UserRating userRating = userRatings.get(analysis.getHid());
+        this.user = userRating.userRating;
+        this.commentId = userRating.commentId;
     }
 }

@@ -3,6 +3,7 @@ package org.iplantc.workflow.service.dto.analysis.list;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.listing.AnalysisGroup;
 import org.iplantc.persistence.dto.listing.AnalysisListing;
@@ -112,9 +113,10 @@ public class AnalysisGroupDto extends AbstractDto {
     /**
      * @param group the template group represented by this DTO.
      * @param favorites the template group containing the user's favorites.
-     * @param user the user.
+     * @param userRatings the user's analysis ratings and comment IDs.
      */
-    public AnalysisGroupDto(AnalysisGroup group, Set<AnalysisListing> favorites, Map<Long, Integer> userRatings) {
+    public AnalysisGroupDto(AnalysisGroup group, Set<AnalysisListing> favorites,
+            Map<Long, UserRating> userRatings) {
         this.name = group.getName();
         this.id = group.getId();
         this.description = StringUtils.defaultString(group.getDescription());
@@ -143,11 +145,11 @@ public class AnalysisGroupDto extends AbstractDto {
      * 
      * @param group the template group represented by this DTO.
      * @param favorites the template group containing the user's favorites.
-     * @param userRatings the user's analysis ratings.
+     * @param userRatings the user's analysis ratings and comment IDs.
      * @return the list of analysis data transfer objects.
      */
     private List<Analysis> extractAnalyses(AnalysisGroup group, final Set<AnalysisListing> favorites,
-            final Map<Long, Integer> userRatings) {
+            final Map<Long, UserRating> userRatings) {
         return ListUtils.map(new Lambda<AnalysisListing, Analysis>() {
             @Override
             public Analysis call(AnalysisListing arg) {

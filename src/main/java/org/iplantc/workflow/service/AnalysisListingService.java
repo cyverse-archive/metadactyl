@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -22,6 +23,7 @@ import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupDto;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupHierarchyList;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupList;
+import org.iplantc.workflow.service.dto.analysis.list.UserRating;
 
 /**
  * A service used to list analyses.
@@ -116,14 +118,17 @@ public class AnalysisListingService {
                 AnalysisGroup favoritesGroup = analysisGroupFinder.findFavoritesGroup();
                 Set<AnalysisListing> favorites = new HashSet<AnalysisListing>(favoritesGroup.getAllActiveAnalyses());
                 AnalysisGroup group = analysisGroupFinder.findGroup(analysisGroupId);
-                Map<Long, Integer> userRatings = loadUserRatings(workspace.getUser(), daoFactory);
+                Map<Long, UserRating> userRatings = loadUserRatings(workspace.getUser(),
+                        daoFactory);
                 return new AnalysisGroupDto(group, favorites, userRatings).toString();
             }
 
-            private Map<Long, Integer> loadUserRatings(User user, DaoFactory daoFactory) {
-                Map<Long, Integer> result = new HashMap<Long, Integer>();
+            private Map<Long, UserRating> loadUserRatings(User user, DaoFactory daoFactory) {
+                Map<Long, UserRating> result = new HashMap<Long, UserRating>();
                 for (RatingListing rating : daoFactory.getRatingListingDao().findByUser(user)) {
-                    result.put(new Long(rating.getAnalysisId()), rating.getUserRating());
+                    UserRating ratingPojo = new UserRating(rating.getUserRating(),
+                            rating.getCommentId());
+                    result.put(new Long(rating.getAnalysisId()), ratingPojo);
                 }
                 return result;
             }
@@ -152,15 +157,16 @@ public class AnalysisListingService {
 
                 AnalysisGroup favoritesGroup = analysisGroupFinder.findFavoritesGroup();
                 Set<AnalysisListing> favorites = new HashSet<AnalysisListing>(favoritesGroup.getAllActiveAnalyses());
-                Map<Long, Integer> userRatings = loadUserRatings(workspace.getUser(), daoFactory);
+                Map<Long, UserRating> userRatings = loadUserRatings(workspace.getUser(), daoFactory);
 
                 return new AnalysisGroupList(groups, favorites, userRatings).toString();
             }
 
-            private Map<Long, Integer> loadUserRatings(User user, DaoFactory daoFactory) {
-                Map<Long, Integer> result = new HashMap<Long, Integer>();
+            private Map<Long, UserRating> loadUserRatings(User user, DaoFactory daoFactory) {
+                Map<Long, UserRating> result = new HashMap<Long, UserRating>();
                 for (RatingListing rating : daoFactory.getRatingListingDao().findByUser(user)) {
-                    result.put(new Long(rating.getAnalysisId()), rating.getUserRating());
+                    UserRating userRating = new UserRating(rating.getUserRating(), rating.getCommentId());
+                    result.put(new Long(rating.getAnalysisId()), userRating);
                 }
                 return result;
             }

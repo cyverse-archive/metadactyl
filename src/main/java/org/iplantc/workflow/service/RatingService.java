@@ -100,7 +100,9 @@ public class RatingService {
         return result;
     }
     
-    private JSONObject rateAnalysis(Session session, String userId, String analysisId, Integer numericRating) throws JSONException {
+    // commentId = comment id in confluence
+    private JSONObject rateAnalysis(Session session, String userId, String analysisId,
+            Integer numericRating, Long commentId) throws JSONException {
         DaoFactory daoFactory = new HibernateDaoFactory(session);
         
         UserDao userDao = daoFactory.getUserDao();
@@ -116,6 +118,8 @@ public class RatingService {
             throw new RuntimeException("No user found for user id " + userId); //$NON-NLS-1$
         } else if (transformationActivity == null) {
             throw new RuntimeException("No analysis found for analysis id " + analysisId); //$NON-NLS-1$
+        } else if (commentId == null) {
+            throw new RuntimeException("No comment ID found for analysis id " + analysisId); //$NON-NLS-1$
         } else {
             Rating rating = ratingDao.findByUserAndTransformationActivity(user, transformationActivity);
                 
@@ -124,6 +128,7 @@ public class RatingService {
 
                 rating.setUser(user);
                 rating.setTransformationActivity(transformationActivity);
+                rating.setCommentId(commentId);
             }
                         
             rating.setRaiting(numericRating);
@@ -149,7 +154,8 @@ public class RatingService {
             result = rateAnalysis(session, 
                                   userId,
                                   input.getString("analysis_id"),  //$NON-NLS-1$
-                                  input.getInt("rating")); //$NON-NLS-1$
+                    input.getInt("rating"), //$NON-NLS-1$
+                    input.getLong("comment_id")); //$NON-NLS-1$
             
             tx.commit();
         } catch (Exception e) {

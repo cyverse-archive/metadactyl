@@ -1,6 +1,7 @@
 package org.iplantc.workflow.core;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,6 +12,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
 import org.iplantc.persistence.dto.user.User;
 
 /**
@@ -29,6 +31,7 @@ public class Rating implements Serializable {
 	private User user;
 	private TransformationActivity transformationActivity;
 	private Integer raiting;
+    private Long commentId;
 	
 	public Rating() {
 		
@@ -64,7 +67,16 @@ public class Rating implements Serializable {
 		this.raiting = raiting;
 	}
 
-	@ManyToOne
+    public void setCommentId(Long commentId) {
+        this.commentId = commentId;
+    }
+
+    @Column(name = "comment_id", nullable = false)
+    public Long getCommentId() {
+        return commentId;
+    }
+
+    @ManyToOne
 	@JoinColumn(name = "user_id")
 	public User getUser() {
 		return user;
