@@ -1,7 +1,6 @@
 package org.iplantc.workflow.data;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -102,7 +101,7 @@ public class ToolInputOutput extends WorkflowElement {
      * @return an unmodifiable copy of the current list of supported data objects.
      */
     public List<DataObject> getSupportedDataObjects() {
-        return Collections.unmodifiableList(supportedDataObjects);
+        return supportedDataObjects;
     }
 
     /**

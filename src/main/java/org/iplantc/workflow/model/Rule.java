@@ -1,13 +1,11 @@
 package org.iplantc.workflow.model;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
-import org.iplantc.workflow.marshaller.TemplateMarshaller;
 
 /**
  * Represents a validation rule.
@@ -68,7 +66,7 @@ public class Rule extends WorkflowElement {
      * @return an unmodifiable copy of the list of arguments.
      */
     public List<String> getArguments() {
-        return Collections.unmodifiableList(arguments);
+        return arguments;
     }
 
     /**
