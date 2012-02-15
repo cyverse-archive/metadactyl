@@ -31,7 +31,7 @@
       <many-to-many class="org.iplantc.workflow.data.DataObject" column="output_id" />
     </list>
 
-    <list name="propertyGroups" table="template_property_group">
+    <list name="propertyGroups" table="template_property_group" access="field">
       <key column="template_id" />
       <list-index column="hid" />
       <many-to-many class="PropertyGroup" column="property_group_id" lazy="false" />
@@ -52,7 +52,7 @@
     <property name="groupType" column="group_type" />
     <property name="visible" column="is_visible" />
 
-    <list name="properties" table="property_group_property">
+    <list name="properties" table="property_group_property" access="field">
       <key column="property_group_id" />
       <list-index column="hid" />
 
@@ -120,7 +120,7 @@
     <property name="description" column="description" />
     <property name="label" column="label" />
 
-    <list name="rules" table="validator_rule">
+    <list name="rules" table="validator_rule" access="field">
       <key column="validator_id" />
       <list-index column="id" />
       <many-to-many class="Rule" column="rule_id" lazy="false" />
@@ -140,7 +140,7 @@
     <property name="label" column="label" />
     <many-to-one name="ruleType" class="RuleType" column="rule_type" cascade="none" />
 
-    <list name="arguments" table="rule_argument">
+    <list name="arguments" table="rule_argument" access="field">
       <key column="rule_id" />
       <list-index column="hid" />
       <element column="argument_value" type="string" />
@@ -162,7 +162,7 @@
 	<property name="ruleDescriptionFormat" column="rule_description_format" />
 	<many-to-one name="subtype" class="RuleSubtype" column="rule_subtype_id" cascade="none" />
 
-    <set name="valueTypes" table="rule_type_value_type">
+    <set name="valueTypes" table="rule_type_value_type" access="field">
       <key column="rule_type_id" not-null="true" />
       <many-to-many class="ValueType" column="value_type_id" lazy="false" />
     </set>

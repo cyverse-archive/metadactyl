@@ -23,6 +23,7 @@ import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupDto;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupHierarchyList;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupList;
+import org.iplantc.workflow.service.dto.analysis.list.AnalysisSearchList;
 import org.iplantc.workflow.service.dto.analysis.list.UserRating;
 
 /**
@@ -106,6 +107,7 @@ public class AnalysisListingService {
     /**
      * Lists all analyses that are visible to a user.
      * 
+     * @param analysisGroupId the group ID
      * @return a JSON string representing the list of public analyses.
      */
     public String listAnalysesInGroup(final String analysisGroupId) {
@@ -136,9 +138,10 @@ public class AnalysisListingService {
     }
 
     /**
-     * Lists all analyses, that are visible to a user, that contain the given
-     * searchTerm in the name or description.
-     *
+     * Lists all analyses, that are visible to a user, that contain the given searchTerm in the name or
+     * description.
+     * 
+     * @param searchTerm the search term
      * @return a JSON string representing the list of public analyses.
      */
     public String searchAnalyses(final String searchTerm) {
@@ -151,24 +154,10 @@ public class AnalysisListingService {
                 Workspace workspace = workspaceInitializer.getWorkspace(daoFactory);
 
                 List<AnalysisGroup> groups = analysisGroupFinder.findDefaultGroups(workspace);
-                for (AnalysisGroup group : groups) {
-                    group.filterAllAnalysesByNameOrDesc(session, searchTerm);
-                }
-
                 AnalysisGroup favoritesGroup = analysisGroupFinder.findFavoritesGroup();
                 Set<AnalysisListing> favorites = new HashSet<AnalysisListing>(favoritesGroup.getAllActiveAnalyses());
-                Map<Long, UserRating> userRatings = loadUserRatings(workspace.getUser(), daoFactory);
 
-                return new AnalysisGroupList(groups, favorites, userRatings).toString();
-            }
-
-            private Map<Long, UserRating> loadUserRatings(User user, DaoFactory daoFactory) {
-                Map<Long, UserRating> result = new HashMap<Long, UserRating>();
-                for (RatingListing rating : daoFactory.getRatingListingDao().findByUser(user)) {
-                    UserRating userRating = new UserRating(rating.getUserRating(), rating.getCommentId());
-                    result.put(new Long(rating.getAnalysisId()), userRating);
-                }
-                return result;
+                return new AnalysisSearchList(session, searchTerm, groups, favorites).toString();
             }
         });
     }

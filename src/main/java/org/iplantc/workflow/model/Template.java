@@ -1,7 +1,6 @@
 package org.iplantc.workflow.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -71,7 +70,7 @@ public class Template extends WorkflowElement {
      * @return the list of property groups.
      */
     public List<PropertyGroup> getPropertyGroups() {
-        return Collections.unmodifiableList(propertyGroups);
+        return propertyGroups;
     }
 
     /**

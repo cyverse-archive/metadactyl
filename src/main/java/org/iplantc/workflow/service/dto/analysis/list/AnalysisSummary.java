@@ -1,24 +1,18 @@
 package org.iplantc.workflow.service.dto.analysis.list;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.listing.AnalysisListing;
 import org.iplantc.workflow.service.dto.AbstractDto;
 import org.iplantc.workflow.service.dto.JsonField;
-import org.iplantc.workflow.service.dto.analysis.DeployedComponentDto;
-import org.iplantc.workflow.service.dto.analysis.DeployedComponentListDto;
-import org.iplantc.workflow.service.dto.pipelines.AnalysisValidationDto;
 
 /**
- * A data transfer object representing an analysis.
+ * A data transfer object representing an analysis summary.
  * 
- * @author Dennis Roberts
+ * @author psarando
  */
-public class Analysis extends AbstractDto {
+public class AnalysisSummary extends AbstractDto {
 
     /**
      * The analysis identifier.
@@ -37,12 +31,6 @@ public class Analysis extends AbstractDto {
      */
     @JsonField(name = "description")
     private String description;
-
-    /**
-     * The e-mail address of the analysis integrator.
-     */
-    @JsonField(name = "integrator_email")
-    private String integratorEmail;
 
     /**
      * The name of the analysis integrator.
@@ -75,12 +63,6 @@ public class Analysis extends AbstractDto {
     private boolean favorite;
 
     /**
-     * The link to the analysis documentation.
-     */
-    @JsonField(name = "wiki_url")
-    private String wikiUrl;
-
-    /**
      * True if the analysis is deleted.
      */
     @JsonField(name = "deleted")
@@ -93,16 +75,16 @@ public class Analysis extends AbstractDto {
     private boolean disabled;
 
     /**
-     * The list of deployed components used by the analysis.
+     * The group ID of this analysis.
      */
-    @JsonField(name = "deployed_components")
-    private List<DeployedComponentDto> deployedComponents;
+    @JsonField(name = "group_id")
+    private String groupId;
 
     /**
-     * Pipeline eligibility information for this analysis.
+     * The group name of this analysis.
      */
-    @JsonField(name = "pipeline_eligibility")
-    private AnalysisValidationDto pipelineEligibility;
+    @JsonField(name = "group_name")
+    private String groupName;
 
     /**
      * @return the analysis description.
@@ -130,13 +112,6 @@ public class Analysis extends AbstractDto {
      */
     public Long getIntegrationDate() {
         return integrationDate;
-    }
-
-    /**
-     * @return the e-mail address of the analysis integrator.
-     */
-    public String getIntegratorEmail() {
-        return integratorEmail;
     }
 
     /**
@@ -168,13 +143,6 @@ public class Analysis extends AbstractDto {
     }
 
     /**
-     * @return the link to the analysis documentation.
-     */
-    public String getWikiUrl() {
-        return wikiUrl;
-    }
-
-    /**
      * @return true if the analysis is deleted.
      */
     public boolean isDeleted() {
@@ -189,35 +157,50 @@ public class Analysis extends AbstractDto {
     }
 
     /**
-     * @return the list of deployed components used by the analysis.
+     * @return the analysis group name.
      */
-    public List<DeployedComponentDto> getDeployedComponents() {
-        return deployedComponents;
+    public String getGroupName() {
+        return groupName;
     }
 
     /**
-     * @return the pipeline eligibility information for the analysis.
+     * @param groupName the analysis group name.
      */
-    public AnalysisValidationDto getPipelineEligibility() {
-        return pipelineEligibility;
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
-    public Analysis(AnalysisListing analysis) {
+    /**
+     * @return the analysis group ID.
+     */
+    public String getGroupId() {
+        return groupId;
+    }
+
+    /**
+     * @param groupId the analysis group ID.
+     */
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    public AnalysisSummary(AnalysisListing analysis) {
         initializeCommonFields(analysis);
-        this.rating = new AnalysisRating(analysis);
-        this.favorite = false;
+
+        rating = new AnalysisRating(analysis);
+        favorite = false;
     }
 
     /**
      * @param analysis the analysis represented by this DTO.
      * @param favorites the analysis group containing the user's favorites.
-     * @param userRatings the user's analysis ratings and comment IDs.
+     * @param userRatings the user's analysis ratings.
      */
-    public Analysis(AnalysisListing analysis, Set<AnalysisListing> favorites,
-            Map<Long, UserRating> userRatings) {
+    public AnalysisSummary(AnalysisListing analysis, Set<AnalysisListing> favorites) {
         initializeCommonFields(analysis);
-        this.rating = new AnalysisRating(analysis, userRatings);
-        this.favorite = favorites.contains(analysis);
+
+        rating = new AnalysisRating(analysis);
+        favorite = favorites.contains(analysis);
     }
 
     /**
@@ -226,17 +209,13 @@ public class Analysis extends AbstractDto {
      * @param analysis the listing for the analysis.
      */
     private void initializeCommonFields(AnalysisListing analysis) {
-        this.id = analysis.getId();
-        this.name = analysis.getName();
-        this.description = StringUtils.defaultString(analysis.getDescription());
-        this.integratorEmail = StringUtils.defaultString(analysis.getIntegratorEmail());
-        this.integratorName = StringUtils.defaultString(analysis.getIntegratorName());
-        this.integrationDate = dateAsLong(analysis.getIntegrationDate());
-        this.wikiUrl = StringUtils.defaultString(analysis.getWikiUrl());
-        this.deleted = analysis.isDeleted();
-        this.disabled = analysis.isDisabled();
-        this.deployedComponents = new DeployedComponentListDto(analysis).getDeployedComponents();
-        this.pipelineEligibility = new AnalysisValidationDto(analysis);
+        id = analysis.getId();
+        name = analysis.getName();
+        description = StringUtils.defaultString(analysis.getDescription());
+        integratorName = StringUtils.defaultString(analysis.getIntegratorName());
+        integrationDate = dateAsLong(analysis.getIntegrationDate());
+        deleted = analysis.isDeleted();
+        disabled = analysis.isDisabled();
     }
 
     /**

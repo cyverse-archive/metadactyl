@@ -1,6 +1,5 @@
 package org.iplantc.workflow.model;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,7 +8,6 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
-import org.iplantc.workflow.marshaller.TemplateMarshaller;
 
 /**
  * Represents a group of properties in a workflow. Each property group typically gets its own pane in the user
@@ -64,6 +62,7 @@ public class PropertyGroup extends WorkflowElement implements Iterable<Property>
      * 
      * @return the iterator.
      */
+    @Override
     public Iterator<Property> iterator() {
         return properties.iterator();
     }
@@ -101,7 +100,7 @@ public class PropertyGroup extends WorkflowElement implements Iterable<Property>
      * @return an unmodifiable copy of the list of properties.
      */
     public List<Property> getProperties() {
-        return Collections.unmodifiableList(properties);
+        return properties;
     }
 
     /**
