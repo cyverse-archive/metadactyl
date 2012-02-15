@@ -23,11 +23,6 @@ public class IrodsUrlAssemblerTest {
     @Before
     public void initialize() {
         assembler = new IrodsUrlAssembler();
-        assembler.setHost("somehost");
-        assembler.setPort("9999");
-        assembler.setUser("user");
-        assembler.setPassword("pass");
-        assembler.setZone("iplant");
     }
 
     /**
@@ -36,17 +31,7 @@ public class IrodsUrlAssemblerTest {
     @Test
     public void shouldAssembleUrl() {
         String actual = assembler.assembleUrl("/foo/bar/baz");
-        String expected = "irods://user:pass@somehost:9999/foo/bar/baz";
-        assertEquals(expected, actual);
-    }
-
-    /**
-     * Verifies that a path containing spaces is decoded appropriately.
-     */
-    @Test
-    public void shouldEncodePathsWithSpaces() {
-        String actual = assembler.assembleUrl("/foo/bar baz");
-        String expected = "irods://user:pass@somehost:9999/foo/bar+baz";
+        String expected = "/foo/bar/baz";
         assertEquals(expected, actual);
     }
 }
