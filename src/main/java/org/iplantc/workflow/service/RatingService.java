@@ -135,6 +135,8 @@ public class RatingService {
 
             transformationActivity.getRatings().add(rating);
             transformationActivityDao.save(transformationActivity);
+
+            result.put("avg", transformationActivity.getAverageRating()); //$NON-NLS-1$
         }
         
         return result;
