@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -23,6 +24,7 @@ import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupDto;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupHierarchyList;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupList;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisSearchList;
+import org.iplantc.workflow.service.dto.analysis.list.UserRating;
 
 /**
  * A service used to list analyses.
@@ -105,6 +107,7 @@ public class AnalysisListingService {
     /**
      * Lists all analyses that are visible to a user.
      * 
+     * @param analysisGroupId the group ID
      * @return a JSON string representing the list of public analyses.
      */
     public String listAnalysesInGroup(final String analysisGroupId) {
@@ -117,14 +120,17 @@ public class AnalysisListingService {
                 AnalysisGroup favoritesGroup = analysisGroupFinder.findFavoritesGroup();
                 Set<AnalysisListing> favorites = new HashSet<AnalysisListing>(favoritesGroup.getAllActiveAnalyses());
                 AnalysisGroup group = analysisGroupFinder.findGroup(analysisGroupId);
-                Map<Long, Integer> userRatings = loadUserRatings(workspace.getUser(), daoFactory);
+                Map<Long, UserRating> userRatings = loadUserRatings(workspace.getUser(),
+                        daoFactory);
                 return new AnalysisGroupDto(group, favorites, userRatings).toString();
             }
 
-            private Map<Long, Integer> loadUserRatings(User user, DaoFactory daoFactory) {
-                Map<Long, Integer> result = new HashMap<Long, Integer>();
+            private Map<Long, UserRating> loadUserRatings(User user, DaoFactory daoFactory) {
+                Map<Long, UserRating> result = new HashMap<Long, UserRating>();
                 for (RatingListing rating : daoFactory.getRatingListingDao().findByUser(user)) {
-                    result.put(new Long(rating.getAnalysisId()), rating.getUserRating());
+                    UserRating ratingPojo = new UserRating(rating.getUserRating(),
+                            rating.getCommentId());
+                    result.put(new Long(rating.getAnalysisId()), ratingPojo);
                 }
                 return result;
             }
@@ -132,9 +138,10 @@ public class AnalysisListingService {
     }
 
     /**
-     * Lists all analyses, that are visible to a user, that contain the given
-     * searchTerm in the name or description.
-     *
+     * Lists all analyses, that are visible to a user, that contain the given searchTerm in the name or
+     * description.
+     * 
+     * @param searchTerm the search term
      * @return a JSON string representing the list of public analyses.
      */
     public String searchAnalyses(final String searchTerm) {

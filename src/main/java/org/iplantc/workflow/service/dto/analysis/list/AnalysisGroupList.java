@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.iplantc.persistence.dto.listing.AnalysisGroup;
 import org.iplantc.persistence.dto.listing.AnalysisListing;
 import org.iplantc.workflow.service.dto.AbstractDto;
@@ -36,16 +37,16 @@ public class AnalysisGroupList extends AbstractDto {
      * @param templateGroups the list of template groups being marshaled.
      */
     public AnalysisGroupList(List<AnalysisGroup> analysisGroups) {
-        this(analysisGroups, new HashSet<AnalysisListing>(), new HashMap<Long, Integer>());
+        this(analysisGroups, new HashSet<AnalysisListing>(), new HashMap<Long, UserRating>());
     }
 
     /**
      * @param analysisGroups the list of template groups being marshaled.
      * @param favorites the template group containing the user's favorites.
-     * @param user the user.
+     * @param userRatings the user's rating and comment ID in the wiki.
      */
     public AnalysisGroupList(List<AnalysisGroup> analysisGroups, final Set<AnalysisListing> favorites,
-            final Map<Long, Integer> userRatings) {
+            final Map<Long, UserRating> userRatings) {
         groups = ListUtils.map(new Lambda<AnalysisGroup, AnalysisGroupDto>() {
             @Override
             public AnalysisGroupDto call(AnalysisGroup arg) {
