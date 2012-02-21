@@ -232,6 +232,7 @@ public class Analysis extends AbstractDto {
         this.integratorEmail = StringUtils.defaultString(analysis.getIntegratorEmail());
         this.integratorName = StringUtils.defaultString(analysis.getIntegratorName());
         this.integrationDate = dateAsLong(analysis.getIntegrationDate());
+        this.isPublic = analysis.isPublic();
         this.wikiUrl = StringUtils.defaultString(analysis.getWikiUrl());
         this.deleted = analysis.isDeleted();
         this.disabled = analysis.isDisabled();
