@@ -31,6 +31,7 @@ public class DataObject implements NamedAndUnique {
     private String description;
     private boolean required;
     private boolean retain;
+    private boolean implicit;
 
     public boolean getRetain() {
         return retain;
@@ -142,6 +143,20 @@ public class DataObject implements NamedAndUnique {
         this.required = required;
     }
 
+    /**
+     * @return whether this data object is implicit and not included as a cmd line parameter.
+     */
+    public boolean isImplicit() {
+        return implicit;
+    }
+
+    /**
+     * @param implicit whether this data object is implicit and not included as a cmd line parameter.
+     */
+    public void setImplicit(boolean implicit) {
+        this.implicit = implicit;
+    }
+
     @Override
     public String toString() {
         return toJson().toString();
@@ -161,6 +176,7 @@ public class DataObject implements NamedAndUnique {
             json.put("description", description);
             json.put("required", required);
             json.put("retain", retain);
+            json.put("is_implicit", implicit);
         }
         catch (JSONException e) {
             throw new WorkflowException("unable to format JSON", e);

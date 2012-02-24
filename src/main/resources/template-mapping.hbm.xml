@@ -194,6 +194,7 @@
     <property name="description" column="description" />
     <property name="required" column="required" />
     <property name="retain" column="retain" />
+    <property name="implicit" column="is_implicit" />
   </class>
 
   <class name="org.iplantc.workflow.data.Multiplicity" table="multiplicity">

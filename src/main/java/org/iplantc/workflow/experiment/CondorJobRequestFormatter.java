@@ -592,26 +592,39 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             long workspaceId, String stepName) {
         List<JSONObject> jprops = new ArrayList<JSONObject>();
         String propertyTypeName = property.getPropertyTypeName();
-        if (propertyTypeName.equals("Selection") || propertyTypeName.equals("ValueSelection")) {
+        if (StringUtils.equals(propertyTypeName, "Selection") ||
+            StringUtils.equals(propertyTypeName, "ValueSelection")) {
             CollectionUtils.addIgnoreNull(jprops, formatSelectionProperty(property, value));
         }
-        else if (propertyTypeName.equals("Flag")) {
+        else if (StringUtils.equals(propertyTypeName, "Flag")) {
             CollectionUtils.addIgnoreNull(jprops, formatFlagProperty(property, value));
         }
-        else if (propertyTypeName.equals("QuotedText")) {
+        else if (StringUtils.equals(propertyTypeName, "QuotedText")) {
             CollectionUtils.addIgnoreNull(jprops, formatQuotedTextProperty(property, value));
         }
-        else if (propertyTypeName.equals("BarcodeSelector") || propertyTypeName.equals("ClipperSelector")) {
+        else if (StringUtils.equals(propertyTypeName, "BarcodeSelector") ||
+                 StringUtils.equals(propertyTypeName, "ClipperSelector")) {
             CollectionUtils.addIgnoreNull(jprops, formatBarcodeSelectorProperty(property, value, inputs, workspaceId));
         }
-        else if (propertyTypeName.equals("Input")) {
+        else if (StringUtils.equals(propertyTypeName, "Input")) {
             jprops.addAll(formatInputProperties(property, value, stepName));
+        }
+        else if (StringUtils.equals(propertyTypeName, "Output")) {
+            CollectionUtils.addIgnoreNull(jprops, formatOutputProperty(property, value));
         }
         else {
             CollectionUtils.addIgnoreNull(jprops, formatDefaultProperty(property, value));
         }
 
         return jprops;
+    }
+
+    protected JSONObject formatOutputProperty(Property property, String value) {
+        if (property.getDataObject().isImplicit()) {
+            return null;
+        }
+
+        return formatDefaultProperty(property, value);
     }
 
     protected JSONObject formatDefaultProperty(Property property, String value) {

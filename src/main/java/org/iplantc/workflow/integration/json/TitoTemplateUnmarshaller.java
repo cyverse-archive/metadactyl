@@ -431,6 +431,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
         DataObject dataObject = dataObjectFromJson(json, listIndex, propertyId);
         dataObject.setName(JsonUtils.nonEmptyOptString(json, "", "output_filename", "name", "label"));
         dataObject.setRetain(json.optBoolean("retain", true));
+        dataObject.setImplicit(json.optBoolean("is_implicit", false));
         return dataObject;
     }
 

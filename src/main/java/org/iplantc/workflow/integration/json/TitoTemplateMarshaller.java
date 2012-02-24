@@ -340,6 +340,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
             json.put("description", dataObject.getDescription());
             json.put("required", dataObject.isRequired());
             json.put("retain", dataObject.getRetain());
+            json.put("is_implicit", dataObject.isImplicit());
         }
         return json;
     }

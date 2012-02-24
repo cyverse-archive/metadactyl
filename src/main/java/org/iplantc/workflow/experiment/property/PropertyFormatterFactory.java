@@ -7,8 +7,6 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.step.TransformationStep;
-import org.iplantc.workflow.core.TransformationActivity;
-import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.model.Property;
 
 /**
@@ -49,6 +47,9 @@ public class PropertyFormatterFactory {
         }
         else if (StringUtils.equals(propertyTypeName, "Input")) {
             formatter = new SkipPropertyFormatter(config, step, property, propertyValues);
+        }
+        else if (StringUtils.equals(propertyTypeName, "Output")) {
+            formatter = new OutputPropertyFormatter(config, step, property, propertyValues);
         }
         else {
             formatter = new DefaultPropertyFormatter(config, step, property, propertyValues);
