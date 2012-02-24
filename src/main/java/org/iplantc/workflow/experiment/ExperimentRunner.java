@@ -38,7 +38,7 @@ public class ExperimentRunner extends HibernateAccessor {
     private String executionUrl;
     private UrlAssembler urlAssembler;
 
-    private OsmClient osmClient;
+    private OsmClient jobRequestOsmClient;
 
     public ExperimentRunner() {
 
@@ -75,11 +75,22 @@ public class ExperimentRunner extends HibernateAccessor {
             UserDetails userDetails = userService.getCurrentUserDetails();
 
             JSONObject job = formatJobRequest(experiment, session, userDetails);
+            storeJobSubmission(experiment, job.getString("uuid"));
             submitJob(job);
         }
         catch (Exception ex) {
             JsonLogger.error("Caught exception when processing");
             throw new Exception("ExperimentRunner ", ex);
+        }
+    }
+
+    private void storeJobSubmission(JSONObject experiment, String jobUuid) {
+        JSONObject state = new JSONObject();
+        state.put("jobUuid", jobUuid);
+        state.put("experiment", experiment);
+        String uuid = jobRequestOsmClient.save(state);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("job request stored for job " + jobUuid + " with object persistence uuid " + uuid);
         }
     }
 
@@ -135,11 +146,11 @@ public class ExperimentRunner extends HibernateAccessor {
         return urlAssembler;
     }
 
-    public void setOsmClient(OsmClient osmClient) {
-        this.osmClient = osmClient;
+    public void setJobRequestOsmClient(OsmClient jobRequestOsmClient) {
+        this.jobRequestOsmClient = jobRequestOsmClient;
     }
 
-    public OsmClient getOsmClient() {
-        return osmClient;
+    public OsmClient getJobRequestOsmClient() {
+        return jobRequestOsmClient;
     }
 }
