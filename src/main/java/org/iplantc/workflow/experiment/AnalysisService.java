@@ -562,25 +562,9 @@ class UriFieldInfo extends FieldInfo {
     @Override
     public String extract(JSONObject state) {
         String uri = super.extract(state);
-        return StringUtils.isBlank(uri) ? "" : extractPathFromUri(uri);
+        return StringUtils.isBlank(uri) ? "" : uri;
     }
 
-    /**
-     * Extracts the path from the given URI.
-     * 
-     * @param uri the string representation of the URI.
-     * @return the path.
-     */
-    private String extractPathFromUri(String uri) {
-        String path = null;
-        try {
-            path = new URI(uri).getPath();
-        }
-        catch (URISyntaxException e) {
-            throw new WorkflowException("Malformed url received for \"" + osmName + "\": " + uri, e);
-        }
-        return path;
-    }
 }
 
 /**
