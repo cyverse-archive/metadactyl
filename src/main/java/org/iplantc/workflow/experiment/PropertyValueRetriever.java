@@ -136,7 +136,7 @@ public class PropertyValueRetriever {
     private JSONObject formatPropertyValue(Property prop, String stepName, JSONObject config) {
         JSONObject result = new JSONObject();
         result.put("param_id", prop.getId());
-        result.put("param_name", prop.getName());
+        result.put("param_name", prop.getLabel());
         result.put("param_value", getPropertyValue(config, stepName, prop.getId()));
         result.put("param_type", prop.getPropertyTypeName());
         result.put("info_type", getInfoTypeName(prop.getDataObject()));
