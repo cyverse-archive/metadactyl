@@ -119,6 +119,7 @@
     <property name="name" column="name" not-null="true" />
     <property name="description" column="description" />
     <property name="label" column="label" />
+    <property name="required" column="required" />
 
     <list name="rules" table="validator_rule" access="field">
       <key column="validator_id" />
