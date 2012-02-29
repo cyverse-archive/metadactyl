@@ -71,7 +71,7 @@ public class Rating implements Serializable {
         this.commentId = commentId;
     }
 
-    @Column(name = "comment_id", nullable = false)
+    @Column(name = "comment_id")
     public Long getCommentId() {
         return commentId;
     }
