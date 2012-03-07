@@ -96,7 +96,9 @@ public class PropertyValueRetriever {
         Template template = getTemplate(step.getTemplateId());
         for (PropertyGroup group : template.getPropertyGroups()) {
             for (Property prop : group.getProperties()) {
-                properties.add(formatPropertyValue(prop, step.getName(), config));
+                if (!prop.getPropertyTypeName().equals("Output")) {
+                    properties.add(formatPropertyValue(prop, step.getName(), config));
+                }
             }
         }
         for (DataObject input : template.findUnreferencedInputs()) {
