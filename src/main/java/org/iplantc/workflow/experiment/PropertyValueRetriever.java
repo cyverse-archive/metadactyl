@@ -1,6 +1,7 @@
 package org.iplantc.workflow.experiment;
 
 import java.util.Arrays;
+import java.util.List;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
@@ -99,7 +100,7 @@ public class PropertyValueRetriever {
         Template template = getTemplate(step.getTemplateId());
         for (PropertyGroup group : template.getPropertyGroups()) {
             for (Property prop : group.getProperties()) {
-                if (!prop.getPropertyTypeName().equals("Output")) {
+                if (!propertyShouldBeOmitted(prop)) {
                     properties.add(formatPropertyValue(prop, step.getName(), config));
                 }
             }
@@ -251,5 +252,20 @@ public class PropertyValueRetriever {
             throw new WorkflowException(msg);
         }
         return template;
+    }
+
+    /**
+     * The list of property types to omit from the output of this service.
+     */
+    private static final List<String> PROPERTY_TYPES_TO_OMIT = Arrays.asList("Info", "Output");
+
+    /**
+     * Determines whether or not a property should be omitted from the output of this service.
+     * 
+     * @param prop the property.
+     * @return true if the property should be omitted from the output.
+     */
+    private boolean propertyShouldBeOmitted(Property prop) {
+        return PROPERTY_TYPES_TO_OMIT.contains(prop.getPropertyTypeName());
     }
 }
