@@ -18,6 +18,7 @@ import org.iplantc.hibernate.util.HibernateAccessor;
 import org.iplantc.workflow.client.OsmClient;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
+import org.iplantc.workflow.experiment.util.JobConfigUtils;
 import org.iplantc.workflow.service.UserService;
 import org.iplantc.workflow.user.UserDetails;
 
@@ -87,14 +88,14 @@ public class ExperimentRunner extends HibernateAccessor {
     private void storeJobSubmission(JSONObject experiment, String jobUuid) {
         JSONObject state = new JSONObject();
         state.put("jobUuid", jobUuid);
-        state.put("experiment", experiment);
+        state.put("experiment", JobConfigUtils.escapeJobConfig(experiment));
         String uuid = jobRequestOsmClient.save(state);
         if (LOG.isDebugEnabled()) {
             LOG.debug("job request stored for job " + jobUuid + " with object persistence uuid " + uuid);
         }
     }
 
-    protected JSONObject formatJobRequest(JSONObject experiment, Session session, UserDetails userDetails) {
+	protected JSONObject formatJobRequest(JSONObject experiment, Session session, UserDetails userDetails) {
         DaoFactory daoFactory = new HibernateDaoFactory(session);
         JobNameUniquenessEnsurer jobNameUniquenessEnsurer = new TimestampJobNameUniquenessEnsurer();
         JobRequestFormatterFactory factory = new JobRequestFormatterFactory(daoFactory, fileInfo, urlAssembler,
