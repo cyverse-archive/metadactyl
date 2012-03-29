@@ -620,7 +620,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     }
 
     protected JSONObject formatOutputProperty(Property property, String value) {
-        if (property.getDataObject().isImplicit()) {
+        if (property.getDataObject().isImplicit() || property.getOrder() < 0) {
             return null;
         }
 
