@@ -27,6 +27,8 @@ import org.iplantc.workflow.model.Property;
 import org.iplantc.workflow.model.PropertyGroup;
 import org.iplantc.workflow.model.Template;
 import org.iplantc.workflow.user.UserDetails;
+import org.iplantc.workflow.util.ListUtils;
+import org.iplantc.workflow.util.Predicate;
 
 /**
  * Formats a submission request for a job that will be executed on Condor. The code in this class was mostly extracted
@@ -616,10 +618,25 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             CollectionUtils.addIgnoreNull(jprops, formatDefaultProperty(property, value));
         }
 
-        return jprops;
+        return removePropertiesWithNegativeOrdering(jprops);
     }
 
-    protected JSONObject formatOutputProperty(Property property, String value) {
+	/**
+	 * Removes any properties that still have a negative ordering from a list of properties.
+	 * 
+	 * @param props the list of properties.
+	 * @return the filtered list of properties.
+	 */
+	private List<JSONObject> removePropertiesWithNegativeOrdering(List<JSONObject> props) {
+		return ListUtils.filter(new Predicate<JSONObject>() {
+			@Override
+			public Boolean call(JSONObject arg) {
+				return arg.optInt("order", -1) >= 0;
+			}
+		}, props);
+	}
+
+	protected JSONObject formatOutputProperty(Property property, String value) {
         if (property.getDataObject().isImplicit()) {
             return null;
         }

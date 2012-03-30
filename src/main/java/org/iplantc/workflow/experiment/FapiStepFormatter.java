@@ -265,7 +265,7 @@ public class FapiStepFormatter {
     private void addParamsForProperties(JSONArray params, List<Property> properties) {
         for (Property property : properties) {
             JSONObject param = formatParamForProperty(property);
-            if (param != null) {
+            if (param != null && param.optInt("order", -1) >= 0) {
                 params.add(param);
             }
         }

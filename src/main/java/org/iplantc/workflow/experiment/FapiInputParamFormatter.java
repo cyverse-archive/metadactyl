@@ -76,7 +76,7 @@ public class FapiInputParamFormatter {
      */
     public void addParamsForInput(JSONArray params, DataObject input) {
         List<String> specifiedFiles = getSpecifiedFiles(input);
-        if (specifiedFiles != null) {
+        if (specifiedFiles != null && input.getOrderd() >= 0) {
             addParamsForSpecifiedFiles(params, input, specifiedFiles);
         }
     }
@@ -95,7 +95,6 @@ public class FapiInputParamFormatter {
         }
         else if (filesSpecifiedByTransformation(input)) {
             Transformation transformation = step.getTransformation();
-            
             files =  specifiedFilesToList(input, transformation.getValueForProperty(input.getId()));
         }
         else if (analysis.isTargetInMapping(step.getName(), input.getId())) {
@@ -209,7 +208,7 @@ public class FapiInputParamFormatter {
      */
     @SuppressWarnings("unchecked")
     private List<String> specifiedFilesToList(DataObject input, String specifiedFiles) {
-        List<String> files = null;
+        List<String> files;
         if (input.getMultiplicityName().equals("many")) {
             JSONArray jsonFiles = (JSONArray)JSONSerializer.toJSON(specifiedFiles);
             files = new ArrayList<String>();
