@@ -1,5 +1,6 @@
 package org.iplantc.workflow.integration.json;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -78,29 +79,31 @@ public class TitoAnalysisUnmarshaller implements TitoUnmarshaller<Transformation
         analysis.setMappings(mappingListFromJson(analysis, json.optJSONArray("mappings")));
 
         analysis.setIntegrationDatum(integrationDatumUnmarshaller.fromJson(json));
+
+        Date editedDate = getDate(json.optString("edited_date"));
+        if (editedDate != null) {
+            analysis.setEditedDate(editedDate);
+        }
+
+        Date integrationDate = getDate(json.optString("published_date"));
+        if (integrationDate != null) {
+            analysis.setIntegrationDate(integrationDate);
+        }
+
         analysis.setReferences(getReferences(json));
         analysis.setRatings(unmarshalRatings(json));
 
         return analysis;
     }
     
-    private Set<TemplateGroup> getSuggestedGroups(JSONObject input) throws JSONException {
-        Set<TemplateGroup> results = new HashSet<TemplateGroup>();
-        
-        if(input.has("suggested_groups")) {
-            JSONArray groups = input.getJSONArray("suggested_groups");
-            for (int i = 0; i < groups.length(); i++) {
-                TemplateGroup group = daoFactory.getTemplateGroupDao().findById(groups.getString(i));
-                
-                if(group != null) {
-                    results.add(group);
-                }
-            }
+    private Date getDate(String timestamp) {
+        try {
+            return new Date(Long.parseLong(timestamp));
+        } catch (Exception ignore) {
+            return null;
         }
-        
-        return results;
     }
-    
+
     private Set<TransformationActivityReference> getReferences(JSONObject input) throws JSONException {
         Set<TransformationActivityReference> results = new HashSet<TransformationActivityReference>();
         

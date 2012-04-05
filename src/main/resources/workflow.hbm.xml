@@ -17,6 +17,7 @@
 		<property name="deleted" column="deleted" />
         <property name="wikiurl" column="wikiurl" />
         <property name="integrationDate" column="integration_date" not-null="false" />
+        <property name="editedDate" column="edited_date" not-null="false" />
         
 		<list name="mappings" table="transformation_activity_mappings"
 			cascade="all-delete-orphan">

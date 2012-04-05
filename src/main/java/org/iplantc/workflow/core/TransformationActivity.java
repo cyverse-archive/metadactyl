@@ -59,6 +59,8 @@ public class TransformationActivity implements NamedAndUnique {
     
     private Date integrationDate;
 
+    private Date editedDate;
+
     public TransformationActivity() {
     }
 
@@ -305,7 +307,15 @@ public class TransformationActivity implements NamedAndUnique {
     public void setIntegrationDate(Date integrationDate) {
         this.integrationDate = integrationDate;
     }
-    
+
+    public Date getEditedDate() {
+        return editedDate;
+    }
+
+    public void setEditedDate(Date editedDate) {
+        this.editedDate = editedDate;
+    }
+
     /**
      * Gets the Average rating for this TransformationActivity.
      * 
