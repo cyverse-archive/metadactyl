@@ -26,6 +26,8 @@ public class AnalysisGenerator {
         analysis.setName(template.getName());
         analysis.setDescription(getAnalysisDescription(template.getDescription()));
         analysis.addStep(stepForTemplate(template));
+        analysis.setEditedDate(template.getEditedDate());
+        analysis.setIntegrationDate(template.getIntegrationDate());
         return analysis;
     }
 

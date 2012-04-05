@@ -1,5 +1,6 @@
 package org.iplantc.workflow.integration;
 
+import java.util.Date;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.iplantc.persistence.dto.data.IntegrationDatum;
@@ -85,6 +86,17 @@ public class AnalysisGeneratingTemplateImporter extends TemplateImporter {
             analysis.setName(template.getName());
             analysis.setDescription(template.getDescription());
             analysis.setDeleted(false);
+
+            Date date = template.getEditedDate();
+            if (date != null) {
+                analysis.setEditedDate(date);
+            }
+
+            date = template.getIntegrationDate();
+            if (date != null) {
+                analysis.setIntegrationDate(date);
+            }
+
             analysisDao.save(analysis);
         }
     }
