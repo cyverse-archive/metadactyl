@@ -403,6 +403,28 @@ public class UnitTestUtils {
     }
 
     /**
+     * Creates a deployed component with the given identifier, name and location.
+     * 
+     * @param id the deployed component identifier.
+     * @param name the deployed component name.
+     * @param location the deployed component location.
+     * @return the deployed component.
+     */
+    public static DeployedComponent createDeployedComponent(String id, String name, String location) {
+        DeployedComponent component = new DeployedComponent();
+        component.setId(id);
+        component.setName(name);
+        component.setLocation(location);
+        component.setType("executable");
+        component.setAttribution(name + "attribution");
+        component.setVersion(name + "version");
+        component.setDescription(name + "description");
+        component.setDeployedComponentDataFiles(createDeployedComponentDataFiles());
+        component.setIntegrationDatum(createIntegrationDatum());
+        return component;
+    }
+
+    /**
      * Creates an analysis with one or more transformation steps.
      * 
      * @param name the analysis name.

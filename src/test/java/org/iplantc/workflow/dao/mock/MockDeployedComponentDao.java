@@ -6,6 +6,8 @@ import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.components.DeployedComponent;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.dao.DeployedComponentDao;
+import org.iplantc.workflow.util.ListUtils;
+import org.iplantc.workflow.util.Predicate;
 
 public class MockDeployedComponentDao extends MockObjectDao<DeployedComponent> implements DeployedComponentDao {
 
@@ -34,5 +36,18 @@ public class MockDeployedComponentDao extends MockObjectDao<DeployedComponent> i
             throw new WorkflowException("multiple deployed components found with name: " + name);
         }
         return components.isEmpty() ? null : components.get(0);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+     public List<DeployedComponent> findByLocation(final String location) {
+        return ListUtils.filter(new Predicate<DeployedComponent> () {
+            @Override
+            public Boolean call(DeployedComponent arg) {
+                return StringUtils.equals(location, arg.getLocation());
+            }
+        }, savedObjects);
     }
 }

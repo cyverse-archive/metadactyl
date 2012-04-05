@@ -1,5 +1,6 @@
 package org.iplantc.workflow.dao;
 
+import java.util.List;
 import org.iplantc.persistence.dto.components.DeployedComponent;
 
 /**
@@ -25,4 +26,12 @@ public interface DeployedComponentDao extends GenericObjectDao<DeployedComponent
      * @return the deployed component or null if a match wasn't found.
      */
     public DeployedComponent findUniqueInstanceByName(String name);
+
+    /**
+     * Finds all deployed components with the given location.
+     * 
+     * @param location the location to search for.
+     * @return the list of matching deployed components.
+     */
+    public List<DeployedComponent> findByLocation(String location);
 }
