@@ -7,6 +7,7 @@ import org.iplantc.hibernate.util.SessionTaskWrapper;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
 import org.iplantc.workflow.integration.AnalysisExporter;
+import org.iplantc.workflow.integration.DeployedComponentExporter;
 import org.iplantc.workflow.integration.TemplateExporter;
 
 /**
@@ -101,6 +102,21 @@ public class WorkflowExportService {
             @Override
             public String perform(Session session) {
                 return new AnalysisExporter(new HibernateDaoFactory(session)).getAllAnalysisIds().toString();
+            }
+        });
+    }
+
+    /**
+     * Exports deployed components based upon search criteria that can be specified inside a JSON object.
+     *
+     * @param criteria the JSON string representing the search criteria.
+     * @return A JSON string representing the exported deployed components.
+     */
+    public String getDeployedComponents(final String criteria) {
+        return new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<String>() {
+            @Override
+            public String perform(Session session) {
+                return new DeployedComponentExporter(new HibernateDaoFactory(session)).export(criteria).toString();
             }
         });
     }

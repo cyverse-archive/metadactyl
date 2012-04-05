@@ -46,4 +46,15 @@ public class HibernateDeployedComponentDao extends HibernateGenericObjectDao<Dep
         }
         return components.isEmpty() ? null : components.get(0);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<DeployedComponent> findByLocation(String location) {
+        String queryString = "from DeployedComponent where location = ?";
+        Query query = getSession().createQuery(queryString);
+        query.setString(0, location);
+        return (List<DeployedComponent>) query.list();
+    }
 }
