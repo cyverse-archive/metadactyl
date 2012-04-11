@@ -11,6 +11,8 @@ import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.step.TransformationStep;
 import org.iplantc.workflow.data.DataObject;
 
+import static org.iplantc.workflow.experiment.ParamUtils.setParamNameAndValue;
+
 /**
  * Formats output parameters for jobs that are submitted to the Foundational API.
  * 
@@ -59,8 +61,7 @@ public class FapiOutputParamFormatter {
         String value = getOutputValue(output);
         registerPropertyValue(output.getId(), value);
         JSONObject param = new JSONObject();
-        param.put("name", output.getSwitchString());
-        param.put("value", value);
+        setParamNameAndValue(param, output.getSwitchString(), value);
         param.put("order", getOutputOrder(output));
         param.put("id", output.getId());
         param.put("multiplicity", output.getMultiplicityName());

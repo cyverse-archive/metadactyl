@@ -63,6 +63,15 @@ public class FapiJobRequestFormatterTest {
     }
 
     /**
+     * Gets the short username (that is, the username without the domain name of the identity provider).
+     * 
+     * @return the username.
+     */
+    private String getShortUsername() {
+        return userDetails.getShortUsername();
+    }
+
+    /**
      * Initializes the mock DAO factory.
      */
     private void initializeMockDaoFactory() {
@@ -585,16 +594,16 @@ public class FapiJobRequestFormatterTest {
         assertNotNull(params);
         assertEquals(10, params.size());
 
-        validateParam(0, "run", "", "command", params.getJSONObject(0));
-        validateParam(1, "--proxy_user=", userDetails.getShortUsername(), "proxyUser", params.getJSONObject(1));
-        validateParam(1, "--jobName=", "empty", "jobName", params.getJSONObject(2));
-        validateParam(1, "--archive", "", "archiveResults", params.getJSONObject(3));
-        validateParam(1, "--archivePath=", "/someuser/analyses/empty", "archivePath", params.getJSONObject(4));
-        validateParam(1, "--first=", "first=", "--first= id", params.getJSONObject(5));
-        validateParam(2, "--second=", "second=", "--second= id", params.getJSONObject(6));
-        validateParam(3, "--third=", "third=", "--third= id", params.getJSONObject(7));
-        validateParam(4, "--fourth=", "fourth=", "--fourth= id", params.getJSONObject(8));
-        validateParam(5, "--fifth=", "fifth=", "--fifth= id", params.getJSONObject(9));
+        validateParam(0, "", "run", "command", params.getJSONObject(0));
+        validateParam(1, "", "--proxy_user=" + getShortUsername(), "proxyUser", params.getJSONObject(1));
+        validateParam(1, "", "--jobName=empty", "jobName", params.getJSONObject(2));
+        validateParam(1, "", "--archive", "archiveResults", params.getJSONObject(3));
+        validateParam(1, "", "--archivePath=/someuser/analyses/empty", "archivePath", params.getJSONObject(4));
+        validateParam(1, "", "--first=first=", "--first= id", params.getJSONObject(5));
+        validateParam(2, "", "--second=second=", "--second= id", params.getJSONObject(6));
+        validateParam(3, "", "--third=third=", "--third= id", params.getJSONObject(7));
+        validateParam(4, "", "--fourth=fourth=", "--fourth= id", params.getJSONObject(8));
+        validateParam(5, "", "--fifth=fifth=", "--fifth= id", params.getJSONObject(9));
     }
 
     /**
@@ -630,17 +639,17 @@ public class FapiJobRequestFormatterTest {
         assertNotNull(params);
         assertEquals(11, params.size());
 
-        validateParam(0, "run", "", "command", params.getJSONObject(0));
-        validateParam(1, "--proxy_user=", userDetails.getShortUsername(), "proxyUser", params.getJSONObject(1));
-        validateParam(1, "--jobName=", "config", "jobName", params.getJSONObject(2));
-        validateParam(1, "--archive", "", "archiveResults", params.getJSONObject(3));
-        validateParam(1, "--archivePath=", "/someuser/analyses/config", "archivePath", params.getJSONObject(4));
-        validateParam(1, "--first=", "one", "--first= id", params.getJSONObject(5));
-        validateParam(2, "--second=", "two", "--second= id", params.getJSONObject(6));
-        validateParam(3, "--third=", "three", "--third= id", params.getJSONObject(7));
-        validateParam(4, "--fourth=", "four", "--fourth= id", params.getJSONObject(8));
-        validateParam(5, "--fifth=", "fifth=", "--fifth= id", params.getJSONObject(9));
-        validateParam(6, "--sixth=", "", "--sixth= id", params.getJSONObject(10));
+        validateParam(0, "", "run", "command", params.getJSONObject(0));
+        validateParam(1, "", "--proxy_user=" + getShortUsername(), "proxyUser", params.getJSONObject(1));
+        validateParam(1, "", "--jobName=config", "jobName", params.getJSONObject(2));
+        validateParam(1, "", "--archive", "archiveResults", params.getJSONObject(3));
+        validateParam(1, "", "--archivePath=/someuser/analyses/config", "archivePath", params.getJSONObject(4));
+        validateParam(1, "", "--first=one", "--first= id", params.getJSONObject(5));
+        validateParam(2, "", "--second=two", "--second= id", params.getJSONObject(6));
+        validateParam(3, "", "--third=three", "--third= id", params.getJSONObject(7));
+        validateParam(4, "", "--fourth=four", "--fourth= id", params.getJSONObject(8));
+        validateParam(5, "", "--fifth=fifth=", "--fifth= id", params.getJSONObject(9));
+        validateParam(6, "", "--sixth=", "--sixth= id", params.getJSONObject(10));
     }
 
     /**
@@ -661,16 +670,16 @@ public class FapiJobRequestFormatterTest {
         assertNotNull(params);
         assertEquals(10, params.size());
 
-        validateParam(0, "run", "", "command", params.getJSONObject(0));
-        validateParam(1, "--proxy_user=", userDetails.getShortUsername(), "proxyUser", params.getJSONObject(1));
-        validateParam(1, "--jobName=", "config", "jobName", params.getJSONObject(2));
-        validateParam(1, "--archive", "", "archiveResults", params.getJSONObject(3));
-        validateParam(1, "--archivePath=", "/someuser/analyses/config", "archivePath", params.getJSONObject(4));
-        validateParam(1, "--in=", "/someuser/somefile.txt", "inputFile", "one", params.getJSONObject(5));
-        validateParam(2, "--folder=", "/someuser/somefolder", "inputFolder", "folder", params.getJSONObject(6));
+        validateParam(0, "", "run", "command", params.getJSONObject(0));
+        validateParam(1, "", "--proxy_user=" + getShortUsername(), "proxyUser", params.getJSONObject(1));
+        validateParam(1, "", "--jobName=config", "jobName", params.getJSONObject(2));
+        validateParam(1, "", "--archive", "archiveResults", params.getJSONObject(3));
+        validateParam(1, "", "--archivePath=/someuser/analyses/config", "archivePath", params.getJSONObject(4));
+        validateParam(1, "", "--in=/someuser/somefile.txt", "inputFile", "one", params.getJSONObject(5));
+        validateParam(2, "", "--folder=/someuser/somefolder", "inputFolder", "folder", params.getJSONObject(6));
         validateParam(3, "", "/someuser/foo", "inputFiles", "many", params.getJSONObject(7));
         validateParam(3, "", "/someuser/bar", "inputFiles", "many", params.getJSONObject(8));
-        validateParam(4, "--tin=", "/someuser/baz", "templateInputFile", "one", params.getJSONObject(9));
+        validateParam(4, "", "--tin=/someuser/baz", "templateInputFile", "one", params.getJSONObject(9));
     }
 
     /**
@@ -691,15 +700,15 @@ public class FapiJobRequestFormatterTest {
         assertNotNull(step1Params);
         assertEquals(8, step1Params.size());
 
-        validateParam(0, "run", "", "command", step1Params.getJSONObject(0));
-        validateParam(1, "--proxy_user=", userDetails.getShortUsername(), "proxyUser", step1Params.getJSONObject(1));
-        validateParam(1, "--jobName=", "config", "jobName", step1Params.getJSONObject(2));
-        validateParam(1, "--archive", "", "archiveResults", step1Params.getJSONObject(3));
-        validateParam(1, "--archivePath=", "/someuser/analyses/config", "archivePath", step1Params.getJSONObject(4));
-        validateParam(1, "--sharedIn=", "/someuser/shared_input.txt", "sharedInput", "one",
+        validateParam(0, "", "run", "command", step1Params.getJSONObject(0));
+        validateParam(1, "", "--proxy_user=" + getShortUsername(), "proxyUser", step1Params.getJSONObject(1));
+        validateParam(1, "", "--jobName=config", "jobName", step1Params.getJSONObject(2));
+        validateParam(1, "", "--archive", "archiveResults", step1Params.getJSONObject(3));
+        validateParam(1, "", "--archivePath=/someuser/analyses/config", "archivePath", step1Params.getJSONObject(4));
+        validateParam(1, "", "--sharedIn=/someuser/shared_input.txt", "sharedInput", "one",
                 step1Params.getJSONObject(5));
-        validateParam(2, "--chainedOut=", "chained_output.txt", "chainedOutput", "one", step1Params.getJSONObject(6));
-        validateParam(3, "--templateOut=", "template_template_output.txt", "templateOutput", "one",
+        validateParam(2, "", "--chainedOut=chained_output.txt", "chainedOutput", "one", step1Params.getJSONObject(6));
+        validateParam(3, "", "--templateOut=template_template_output.txt", "templateOutput", "one",
                 step1Params.getJSONObject(7));
 
         JSONObject step2 = steps.getJSONObject(1);
@@ -710,15 +719,15 @@ public class FapiJobRequestFormatterTest {
         assertNotNull(step2Params);
         assertEquals(8, step2Params.size());
 
-        validateParam(0, "run", "", "command", step2Params.getJSONObject(0));
-        validateParam(1, "--proxy_user=", userDetails.getShortUsername(), "proxyUser", step2Params.getJSONObject(1));
-        validateParam(1, "--jobName=", "config", "jobName", step2Params.getJSONObject(2));
-        validateParam(1, "--archive", "", "archiveResults", step2Params.getJSONObject(3));
-        validateParam(1, "--archivePath=", "/someuser/analyses/config", "archivePath", step2Params.getJSONObject(4));
-        validateParam(1, "--sharedIn=", "/someuser/shared_input.txt", "sharedInput", "one",
+        validateParam(0, "", "run", "command", step2Params.getJSONObject(0));
+        validateParam(1, "", "--proxy_user=" + getShortUsername(), "proxyUser", step2Params.getJSONObject(1));
+        validateParam(1, "", "--jobName=config", "jobName", step2Params.getJSONObject(2));
+        validateParam(1, "", "--archive", "archiveResults", step2Params.getJSONObject(3));
+        validateParam(1, "", "--archivePath=/someuser/analyses/config", "archivePath", step2Params.getJSONObject(4));
+        validateParam(1, "", "--sharedIn=/someuser/shared_input.txt", "sharedInput", "one",
                 step2Params.getJSONObject(5));
-        validateParam(2, "--chainedIn=", "chained_output.txt", "chainedInput", "one", step2Params.getJSONObject(6));
-        validateParam(3, "--templateIn=", "template_template_output.txt", "templateInput", "one",
+        validateParam(2, "", "--chainedIn=chained_output.txt", "chainedInput", "one", step2Params.getJSONObject(6));
+        validateParam(3, "", "--templateIn=template_template_output.txt", "templateInput", "one",
                 step2Params.getJSONObject(7));
     }
 

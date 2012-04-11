@@ -10,6 +10,8 @@ import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.step.TransformationStep;
 import org.iplantc.workflow.model.Property;
 
+import static org.iplantc.workflow.experiment.ParamUtils.setParamNameAndValue;
+
 /**
  * The property formatter to use for Selection arguments.
  * 
@@ -85,8 +87,7 @@ public class SelectionPropertyFormatter extends PropertyFormatter {
         if (!StringUtils.isBlank(name) || !StringUtils.isBlank(value)) {
             json = new JSONObject();
             json.put("order", property.getOrder());
-            json.put("name", name);
-            json.put("value", value);
+            setParamNameAndValue(json, name, value);
             json.put("id", property.getId());
             registerPropertyValue("");
         }

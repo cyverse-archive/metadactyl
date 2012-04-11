@@ -210,8 +210,8 @@ public class FapiStepFormatter {
     private JSONObject generateParam(int order, String name, String value, String id) {
         JSONObject json = new JSONObject();
         json.put("order", order);
-        json.put("name", name);
-        json.put("value", value);
+        json.put("name", "");
+        json.put("value", name + value);
         json.put("id", id);
         return json;
     }

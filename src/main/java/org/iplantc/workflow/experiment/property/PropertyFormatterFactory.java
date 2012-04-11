@@ -39,9 +39,6 @@ public class PropertyFormatterFactory {
         else if (StringUtils.equals(propertyTypeName, "Flag")) {
             formatter = new FlagPropertyFormatter(config, step, property, propertyValues);
         }
-        else if (StringUtils.equals(propertyTypeName, "QuotedText")) {
-            formatter = new QuotedTextPropertyFormatter(config, step, property, propertyValues);
-        }
         else if (isSelectionProperty(propertyTypeName)) {
             formatter = new SelectionPropertyFormatter(config, step, property, propertyValues);
         }
