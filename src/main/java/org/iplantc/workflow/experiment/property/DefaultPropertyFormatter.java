@@ -9,6 +9,8 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.step.TransformationStep;
 
+import static org.iplantc.workflow.experiment.ParamUtils.setParamNameAndValue;
+
 /**
  * The default property formatter to use when there is no special case for the property type.
  * 
@@ -36,7 +38,7 @@ public class DefaultPropertyFormatter extends PropertyFormatter {
         String value = getValue();
         if (!StringUtils.isBlank(value) || !property.getOmitIfBlank()) {
             json = super.formatProperty();
-            json.put("value", value);
+            setParamNameAndValue(json, property.getName(), value);
             registerPropertyValue(value);
         }
         return json;

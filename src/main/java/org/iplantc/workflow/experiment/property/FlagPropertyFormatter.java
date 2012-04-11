@@ -8,6 +8,8 @@ import org.iplantc.persistence.dto.step.TransformationStep;
 
 import org.iplantc.workflow.model.Property;
 
+import static org.iplantc.workflow.experiment.ParamUtils.setParamNameAndValue;
+
 /**
  * The property formatter to use for Flag arguments.
  * 
@@ -38,9 +40,8 @@ public class FlagPropertyFormatter extends PropertyFormatter {
             registerPropertyValue("");
             json = new JSONObject();
             json.put("order", property.getOrder());
-            json.put("name", name);
             json.put("id", property.getId());
-            json.put("value", "");
+            setParamNameAndValue(json, name, "");
         }
         return json;
     }

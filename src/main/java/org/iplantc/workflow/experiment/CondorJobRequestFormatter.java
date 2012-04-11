@@ -30,6 +30,8 @@ import org.iplantc.workflow.user.UserDetails;
 import org.iplantc.workflow.util.ListUtils;
 import org.iplantc.workflow.util.Predicate;
 
+import static org.iplantc.workflow.experiment.ParamUtils.setParamNameAndValue;
+
 /**
  * Formats a submission request for a job that will be executed on Condor. The code in this class was mostly extracted
  * from ExperimentRunner and only minor refactoring work was done.
@@ -166,14 +168,11 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
             JSONObject param = new JSONObject();
 
-            param.put("name", outputObject.getSwitchString());
-
-            if (transformation.containsProperty(outputObject.getId())) {
-                param.put("value", transformation.getValueForProperty(outputObject.getId()));
-            }
-            else {
-                param.put("value", outputObject.getName());
-            }
+            String value
+                    = transformation.containsProperty(outputObject.getId())
+                    ? transformation.getValueForProperty(CONDOR_TYPE)
+                    : outputObject.getName();
+            setParamNameAndValue(param, outputObject.getSwitchString(), value);
 
             param.put("order", order);
             param.put("id", outputObject.getId());
@@ -262,8 +261,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             }
             else if (transformation.containsProperty(currentInput.getId())) {
                 JSONObject prop = new JSONObject();
-                prop.put("name", currentInput.getSwitchString());
-                prop.put("value", transformation.getValueForProperty(currentInput.getName()));
+                String value = transformation.getValueForProperty(currentInput.getName());
+                setParamNameAndValue(prop, currentInput.getSwitchString(), value);
                 prop.put("order", getDataObjectOrder(currentInput));
                 prop.put("id", currentInput.getId());
                 params.add(prop);
@@ -284,12 +283,12 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             Map<String, String> relation = map.getInput_output_relation();
             for (String sourceObject : relation.keySet()) {
                 LOG.debug("Source object: " + sourceObject);
-                JSONObject prop = new JSONObject();
-                prop.put("name", currentInput.getSwitchString());
-                prop.put("order", getDataObjectOrder(currentInput));
-                prop.put("id", currentInput.getId());
                 if (relation.get(sourceObject).equals(currentInput.getId())) {
-                    prop.put("value", retrieveValueForProperty(sourceObject, source, jsonSource));
+                    JSONObject prop = new JSONObject();
+                    String value = retrieveValueForProperty(sourceObject, source, jsonSource);
+                    setParamNameAndValue(prop, currentInput.getSwitchString(), value);
+                    prop.put("order", getDataObjectOrder(currentInput));
+                    prop.put("id", currentInput.getId());
                     params.add(prop);
                 }
             }
@@ -326,8 +325,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
      */
     private JSONObject formatPropertyFromTransformation(Property property, Transformation transformation) {
         JSONObject jprop = new JSONObject();
-        jprop.put("name", property.getName());
-        jprop.put("value", transformation.getValueForProperty(property.getId()));
+        setParamNameAndValue(jprop, property.getName(), transformation.getValueForProperty(property.getId()));
         jprop.put("order", getPropertyOrder(property));
         jprop.put("id", property.getId());
         return jprop;
@@ -502,9 +500,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
      */
     private JSONObject getParameterDefinitionForDataObject(DataObject dataObject, String path) {
         JSONObject parameter = new JSONObject();
-        parameter.put("name", dataObject.getSwitchString());
+        setParamNameAndValue(parameter, dataObject.getSwitchString(), path);
         parameter.put("order", getDataObjectOrder(dataObject));
-        parameter.put("value", path);
         parameter.put("id", dataObject.getId());
         return parameter;
     }
@@ -601,9 +598,6 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         else if (StringUtils.equals(propertyTypeName, "Flag")) {
             CollectionUtils.addIgnoreNull(jprops, formatFlagProperty(property, value));
         }
-        else if (StringUtils.equals(propertyTypeName, "QuotedText")) {
-            CollectionUtils.addIgnoreNull(jprops, formatQuotedTextProperty(property, value));
-        }
         else if (StringUtils.equals(propertyTypeName, "BarcodeSelector") ||
                  StringUtils.equals(propertyTypeName, "ClipperSelector")) {
             CollectionUtils.addIgnoreNull(jprops, formatBarcodeSelectorProperty(property, value, inputs, workspaceId));
@@ -648,8 +642,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         JSONObject jprop = null;
         if (!property.getOmitIfBlank() || !StringUtils.isBlank(value)) {
             jprop = initialPropertyJson(property);
-            jprop.put("name", property.getName());
-            jprop.put("value", value);
+            setParamNameAndValue(jprop, property.getName(), value);
             jprop.put("id", property.getId());
         }
         return jprop;
@@ -681,31 +674,18 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             url = resolvedFileInfo.getString("url");
         }
 
-        jprop.put("name", property.getName());
-        jprop.put("value", filename);
+        setParamNameAndValue(jprop, property.getName(), filename);
         jprop.put("type", "File");
         jprop.put("id", property.getId());
 
         JSONObject jinput = new JSONObject();
 
         jinput.put("id", property.getId());
-        jinput.put("name", "1");
-        jinput.put("value", url + " ");
+        setParamNameAndValue(jprop, "1", url);
         jinput.put("order", getPropertyOrder(property));
         jinput.put("multiplicity", "single");
 
         inputs.add(jinput);
-        return jprop;
-    }
-
-    protected JSONObject formatQuotedTextProperty(Property property, String value) {
-        JSONObject jprop = null;
-        if (!property.getOmitIfBlank() || !StringUtils.isBlank(value)) {
-            jprop = initialPropertyJson(property);
-            jprop.put("name", property.getName());
-            jprop.put("value", "\"" + value + "\"");
-            jprop.put("id", property.getId());
-        }
         return jprop;
     }
 
@@ -734,8 +714,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             String[] components = selectedValue.split("\\s+|=", 2);
             jprop = new JSONObject();
             jprop.put("id", property.getId());
-            jprop.put("name", components[0]);
-            jprop.put("value", components.length > 1 ? components[1] : "");
+            setParamNameAndValue(jprop, components[0], components.length > 1 ? components[1] : "");
             jprop.put("order", property.getOrder());
         }
 
@@ -771,10 +750,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             String selectedValue = possibleValues[index];
             String[] components = selectedValue.split("\\s+|=", 2);
             result.put("id", property.getId());
-            result.put("name", components[0]);
-            if (components.length > 1) {
-                result.put("value", components[1]);
-            }
+            String value = components.length > 1 ? components[1] : null;
+            setParamNameAndValue(result, components[0], value);
         }
         return result;
     }
@@ -796,14 +773,9 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         if (!StringUtils.isEmpty(name) || !StringUtils.isEmpty(value)) {
             result = initialPropertyJson(property);
             result.put("id", property.getId());
-            putGivenValueOrSpace(result, "name", name);
-            putGivenValueOrSpace(result, "value", value);
+            setParamNameAndValue(result, StringUtils.defaultString(name), value);
         }
         return result;
-    }
-
-    private void putGivenValueOrSpace(JSONObject json, String key, String value) {
-        json.put(key, StringUtils.isBlank(value) ? " " : value);
     }
 
     /**

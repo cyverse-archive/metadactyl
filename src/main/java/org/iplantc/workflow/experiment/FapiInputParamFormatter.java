@@ -19,6 +19,8 @@ import org.iplantc.workflow.data.InputOutputMap;
 import org.iplantc.workflow.model.Template;
 import org.iplantc.persistence.dto.transformation.Transformation;
 
+import static org.iplantc.workflow.experiment.ParamUtils.setParamNameAndValue;
+
 /**
  * Formats input parameters for jobs that are submitted to the Foundational API.
  * 
@@ -284,8 +286,7 @@ public class FapiInputParamFormatter {
     private void addParamForOneSpecifiedFile(JSONArray params, DataObject input, String path) {
         JSONObject param = new JSONObject();
         param.put("order", input.getOrderd());
-        param.put("name", input.getSwitchString());
-        param.put("value", path);
+        setParamNameAndValue(param, input.getSwitchString(), path);
         param.put("id", input.getId());
         param.put("multiplicity", input.getMultiplicityName());
         params.add(param);
