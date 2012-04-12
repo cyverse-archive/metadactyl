@@ -7,12 +7,14 @@ import org.hibernate.SessionFactory;
 import org.iplantc.hibernate.util.SessionTask;
 import org.iplantc.hibernate.util.SessionTaskWrapper;
 import org.iplantc.persistence.dto.data.IntegrationDatum;
+import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.client.ZoidbergClient;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
 import org.iplantc.workflow.integration.json.TitoIntegrationDatumMashaller;
 import org.iplantc.workflow.service.dto.AnalysisId;
 import org.iplantc.workflow.user.UserDetails;
+import org.json.JSONException;
 
 /**
  * A service that allows analyses to be exported to Tito for editing.
@@ -42,6 +44,11 @@ public class AnalysisEditService {
     private WorkflowExportService workflowExportService;
 
     /**
+     * Used to save apps.
+     */
+    private WorkflowImportService workflowImportService;
+
+    /**
      * @param sessionFactory the Hibernate session factory.
      */
     public void setSessionFactory(SessionFactory sessionFactory) {
@@ -67,6 +74,13 @@ public class AnalysisEditService {
      */
     public void setWorkflowExportService(WorkflowExportService workflowExportService) {
         this.workflowExportService = workflowExportService;
+    }
+
+    /**
+     * @param workflowImportService used to save apps.
+     */
+    public void setWorkflowImportService(WorkflowImportService workflowImportService) {
+        this.workflowImportService = workflowImportService;
     }
 
     /**
@@ -113,17 +127,13 @@ public class AnalysisEditService {
      */
     private String editAnalysis(DaoFactory daoFactory, String analysisId) {
         UserDetails userDetails = userService.getCurrentUserDetails();
-        String username = userDetails.getShortUsername();
-        String email = userDetails.getEmail();
-        String fullUsername = userDetails.getUsername();
-        JSONObject analysis = getAnalysisFromZoidberg(analysisId, username);
+        JSONObject analysis = getAnalysisFromZoidberg(analysisId, userDetails.getShortUsername());
         if (analysis != null) {
             ensureAnalysisNotDeleted(analysis);
             return new AnalysisId(analysisId).toString();
         }
         else {
-            analysis = exportAnalysis(daoFactory, analysisId);
-            return new AnalysisId(saveAnalysisInZoidberg(analysis, email, username, fullUsername)).toString();
+            return copyAnalysis(daoFactory, analysisId, userDetails);
         }
     }
 
@@ -136,12 +146,7 @@ public class AnalysisEditService {
      * @return the new analysis identifier.
      */
     private String copyAnalysis(DaoFactory daoFactory, String analysisId) {
-        UserDetails userDetails = userService.getCurrentUserDetails();
-        String username = userDetails.getShortUsername();
-        String email = userDetails.getEmail();
-        String fullUsername = userDetails.getUsername();
-        JSONObject analysis = exportAnalysis(daoFactory, analysisId);
-        return new AnalysisId(saveAnalysisInZoidberg(analysis, email, username, fullUsername)).toString();
+        return copyAnalysis(daoFactory, analysisId, userService.getCurrentUserDetails());
     }
 
     /**
@@ -187,22 +192,61 @@ public class AnalysisEditService {
     }
 
     /**
-     * Saves the analysis using the Zoidberg services.
-     * 
-     * @param analysis the analysis to save.
-     * @param email the user's e-mail address.
-     * @param username the username.
-     * @param fullUsername  the fully qualified username.
+     * Saves an app using the metadata import service.
+     *
+     * @param analysis the analysis identifier.
+     */
+    private void importAnalysis(String jsonString) {
+        try {
+            workflowImportService.importTemplate(jsonString);
+        } catch (JSONException e) {
+            throw new WorkflowException(e);
+        }
+    }
+
+    /**
+     * Prepares a new copy of an analysis for editing.  This is different from editAnalysis in that a new copy
+     * of the analysis is made even if the user already has the ability to edit the original.
+     *
+     * @param daoFactory used to obtain data access objects.
+     * @param analysisId the original analysis identifier.
+     * @param userDetails information about the current user.
      * @return the new analysis identifier.
      */
-    private String saveAnalysisInZoidberg(JSONObject analysis, String email, String username, String fullUsername) {
+    private String copyAnalysis(DaoFactory daoFactory, String analysisId, UserDetails userDetails) {
+        JSONObject analysis = exportAnalysis(daoFactory, analysisId);
+        analysis = convertAnalysisToCopy(analysis, userDetails);
+
+        analysisId = zoidbergClient.saveAnalysis(analysis);
+
+        analysis.put("tito", analysisId);
+        analysis.put("id", analysisId);
+
+        importAnalysis(analysis.toString());
+
+        return new AnalysisId(analysisId).toString();
+    }
+
+    /**
+     * Converts the app to a copy for the given user info.
+     *
+     * @param analysis the app to convert.
+     * @param userDetails information about the current user.
+     * @return the app as a copy.
+     */
+    private JSONObject convertAnalysisToCopy(JSONObject analysis, UserDetails userDetails) {
         TitoIntegrationDatumMashaller marshaller = new TitoIntegrationDatumMashaller();
         String analysisName = "Copy of " + analysis.getString("name");
+        String username = userDetails.getShortUsername();
+        String email = userDetails.getEmail();
+        String fullUsername = userDetails.getUsername();
+
         analysis.put("name", analysisName);
         analysis.put("full_username", fullUsername);
         analysis.put("implementation", marshaller.toJson(createIntegrationDatum(email, username)).toString());
         analysis.put("user", username);
-        return zoidbergClient.saveAnalysis(analysis);
+
+        return analysis;
     }
 
     /**
