@@ -32,6 +32,22 @@ public class ZoidbergClient extends AbstractHttpClient {
     }
 
     /**
+     * Logically marks an analysis as deleted.
+     *
+     * @param username The username of the App owner.
+     * @param analysisId The tito ID of the App.
+     * @return the analysis ID of the deleted App (the same as analysisId).
+     */
+    public String deleteAnalysis(String username, String analysisId) {
+        JSONObject analysis = new JSONObject();
+        analysis.put("action", "delete");
+        analysis.put("user", username);
+        analysis.put("tito", analysisId);
+
+        return postWithStringResponse(createRequestUrl("in-progress", null), analysis);
+    }
+
+    /**
      * Gets an analysis.
      * 
      * @param analysisId the analysis identifier.
