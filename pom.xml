@@ -103,7 +103,7 @@
         <dependency>
             <groupId>org.iplantc.core</groupId>
             <artifactId>files</artifactId>
-            <version>dev-SNAPSHOT</version>
+            <version>1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.iplantc.core</groupId>
@@ -113,7 +113,7 @@
         <dependency>
             <groupId>org.iplantc.core</groupId>
             <artifactId>persistence</artifactId>
-            <version>dev-SNAPSHOT</version>
+            <version>1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>commons-httpclient</groupId>
