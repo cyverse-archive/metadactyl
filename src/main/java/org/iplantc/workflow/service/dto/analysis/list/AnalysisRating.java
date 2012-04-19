@@ -92,7 +92,9 @@ public class AnalysisRating extends AbstractDto {
     public AnalysisRating(AnalysisListing analysis, Map<Long, UserRating> userRatings) {
         this.average = analysis.getAverageRating();
         UserRating userRating = userRatings.get(analysis.getHid());
-        this.user = userRating.userRating;
-        this.commentId = userRating.commentId;
+        if (userRating != null) {
+            this.user = userRating.userRating;
+            this.commentId = userRating.commentId;
+        }
     }
 }
