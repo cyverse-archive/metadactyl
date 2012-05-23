@@ -20,17 +20,17 @@ public abstract class BaseWorkflowElementRetrievalService {
     /**
      * The Hibernate session factory.
      */
-    private SessionFactory sessionFactory;
+    protected SessionFactory sessionFactory;
 
     /**
      * The HQL query used to retrieve the list of components.
      */
-    private String queryString;
+    protected String queryString;
 
     /**
      * The name of the list in the resulting object.
      */
-    private String listName;
+    protected String listName;
 
     /**
      * @param sessionFactory the new Hibernate session factory.
@@ -81,7 +81,7 @@ public abstract class BaseWorkflowElementRetrievalService {
      * @param components the components.
      * @return the marshalled result.
      */
-    private JSONObject marshall(List<RepresentableAsJson> components) {
+    protected JSONObject marshall(List<RepresentableAsJson> components) {
         JSONObject result = new JSONObject();
         try {
             result.put(listName, marshallResultArray(components));

@@ -1,5 +1,6 @@
 package org.iplantc.workflow.service.util;
 
+import java.util.Arrays;
 import org.iplantc.persistence.dto.step.TransformationStep;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.core.TransformationActivity;
@@ -41,6 +42,40 @@ public class PipelineAnalysisValidatorTest {
     public void testSingleStepAnalysis() {
         TransformationActivity analysis = UnitTestUtils.createAnalysis("analysis");
         analysis.addStep(new TransformationStep());
+        PipelineAnalysisValidator.validateAnalysis(analysis);
+    }
+
+    /**
+     * Verifies that a fAPI job does not pass validation.
+     */
+    @Test(expected = WorkflowException.class)
+    public void testFapiJob() {
+        TransformationActivity analysis = UnitTestUtils.createAnalysis("analysis");
+        analysis.addStep(new TransformationStep());
+        analysis.setJobTypeNames(Arrays.asList("fAPI"));
+        PipelineAnalysisValidator.validateAnalysis(analysis);
+    }
+
+    /**
+     * Verifies that a job with mixed job types does not pass validation.  This step is not representative of what
+     * an actual mixed analysis would look like because a mixed analysis would have multiple steps by definition.
+     */
+    @Test(expected = WorkflowException.class)
+    public void testMixedJob() {
+        TransformationActivity analysis = UnitTestUtils.createAnalysis("analysis");
+        analysis.addStep(new TransformationStep());
+        analysis.setJobTypeNames(Arrays.asList("executable", "fAPI"));
+        PipelineAnalysisValidator.validateAnalysis(analysis);
+    }
+
+    /**
+     * Verifies that a job with an unknown job type does not pass validation.
+     */
+    @Test(expected = WorkflowException.class)
+    public void testUnknownJob() {
+        TransformationActivity analysis = UnitTestUtils.createAnalysis("analysis");
+        analysis.addStep(new TransformationStep());
+        analysis.setJobTypeNames(Arrays.asList("foo"));
         PipelineAnalysisValidator.validateAnalysis(analysis);
     }
 

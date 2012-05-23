@@ -1,8 +1,10 @@
 package org.iplantc.workflow.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import javax.persistence.Transient;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -36,6 +38,12 @@ public class Template extends WorkflowElement {
      * The type of this template.
      */
     private String templateType;
+
+    @Transient
+    private Date integrationDate;
+
+    @Transient
+    private Date editedDate;
 
     /**
      * Adds a property group to the list of property groups.
@@ -97,6 +105,22 @@ public class Template extends WorkflowElement {
      */
     public void setType(String ttype) {
         templateType = ttype;
+    }
+
+    public Date getIntegrationDate() {
+        return integrationDate;
+    }
+
+    public void setIntegrationDate(Date integrationDate) {
+        this.integrationDate = integrationDate;
+    }
+
+    public Date getEditedDate() {
+        return editedDate;
+    }
+
+    public void setEditedDate(Date editedDate) {
+        this.editedDate = editedDate;
     }
 
     /**

@@ -109,6 +109,8 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
         template.setDescription(json.optString("description", ""));
         template.setComponent(getComponentId(json));
         template.setTemplateType(json.optString("type", ""));
+        template.setEditedDate(getDate(json.optString("edited_date")));
+        template.setIntegrationDate(getDate(json.optString("published_date")));
         template.setPropertyGroups(extractPropertyGroups(json));
 
         addOldStyleInputs(inputs, json.optJSONArray("input"));
@@ -117,6 +119,14 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
         template.setInputs(inputs);
         template.setOutputs(outputs);
         return template;
+    }
+
+    private Date getDate(String timestamp) {
+        try {
+            return new Date(Long.parseLong(timestamp));
+        } catch (Exception ignore) {
+            return null;
+        }
     }
 
     /**

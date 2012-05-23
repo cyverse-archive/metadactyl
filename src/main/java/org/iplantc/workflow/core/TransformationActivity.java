@@ -1,13 +1,17 @@
 package org.iplantc.workflow.core;
 
+import org.iplantc.persistence.dto.listing.JobType;
 import org.iplantc.persistence.dto.data.IntegrationDatum;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import org.iplantc.persistence.NamedAndUnique;
+import org.iplantc.persistence.dto.listing.PipelineCandidate;
 import org.iplantc.persistence.dto.step.TransformationStep;
 import org.iplantc.workflow.data.DataObject;
 import org.iplantc.workflow.data.InputOutputMap;
@@ -22,7 +26,7 @@ import org.iplantc.workflow.util.Predicate;
  * 
  * @author Juan Antonio Raygoza Garay
  */
-public class TransformationActivity implements NamedAndUnique {
+public class TransformationActivity implements NamedAndUnique, PipelineCandidate {
 
     private List<TransformationStep> steps = new LinkedList<TransformationStep>();
 
@@ -58,6 +62,10 @@ public class TransformationActivity implements NamedAndUnique {
     private String wikiurl;
     
     private Date integrationDate;
+
+    private Date editedDate;
+
+    private Set<String> jobTypeNames;
 
     public TransformationActivity() {
     }
@@ -108,6 +116,23 @@ public class TransformationActivity implements NamedAndUnique {
 
     public void setWorkspaceId(long workspaceId) {
         this.workspaceId = workspaceId;
+    }
+
+    public Set<String> getJobTypeNames() {
+        return jobTypeNames;
+    }
+
+    public void setJobTypeNames(Set<String> jobTypeNames) {
+        this.jobTypeNames = jobTypeNames;
+    }
+
+    public void setJobTypeNames(List<String> jobTypeNames) {
+        this.jobTypeNames = new HashSet<String>(jobTypeNames);
+    }
+
+    @Override
+    public long getStepCount() {
+        return steps.size();
     }
 
     public TransformationStep getStepByName(String name) {
@@ -305,7 +330,15 @@ public class TransformationActivity implements NamedAndUnique {
     public void setIntegrationDate(Date integrationDate) {
         this.integrationDate = integrationDate;
     }
-    
+
+    public Date getEditedDate() {
+        return editedDate;
+    }
+
+    public void setEditedDate(Date editedDate) {
+        this.editedDate = editedDate;
+    }
+
     /**
      * Gets the Average rating for this TransformationActivity.
      * 
@@ -341,7 +374,30 @@ public class TransformationActivity implements NamedAndUnique {
             }
         }, steps);
     }
-    
+
+    public Set<JobType> getJobTypes() {
+        Set<JobType> result = EnumSet.noneOf(JobType.class);
+        for (String jobTypeName : jobTypeNames) {
+            result.add(JobType.fromString(jobTypeName));
+        }
+        return result;
+    }
+
+    @Override
+    public JobType getOverallJobType() {
+        JobType jobType = null;
+        for (JobType currType : getJobTypes()) {
+            if (jobType == null) {
+                jobType = currType;
+            }
+            else if (currType != jobType) {
+                jobType = JobType.MIXED;
+                break;
+            }
+        }
+        return jobType;
+    }
+
     @Override
     public String toString() {
         return "TransformationActivity{" + "id=" + id + '}';

@@ -1,5 +1,7 @@
 package org.iplantc.workflow.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import org.iplantc.persistence.dto.components.DeployedComponent;
@@ -144,6 +146,7 @@ public class UnitTestUtils {
         TransformationActivity analysis = new TransformationActivity();
         analysis.setName(name);
         analysis.setId(name + "id");
+        analysis.setJobTypeNames(Arrays.asList("executable"));
 
         analysis.setIntegrationDatum(createIntegrationDatum());
         analysis.setReferences(createTransformationReferences());

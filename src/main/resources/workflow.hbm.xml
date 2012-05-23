@@ -17,6 +17,7 @@
 		<property name="deleted" column="deleted" />
         <property name="wikiurl" column="wikiurl" />
         <property name="integrationDate" column="integration_date" not-null="false" />
+        <property name="editedDate" column="edited_date" not-null="false" />
         
 		<list name="mappings" table="transformation_activity_mappings"
 			cascade="all-delete-orphan">
@@ -52,7 +53,12 @@
              <key column='transformation_activity_id' not-null='true' />
              <many-to-many class='org.iplantc.workflow.template.groups.TemplateGroup' unique="true" column="template_group_id" />
          </set>
-	</class>
+
+         <set name="jobTypeNames" table="analysis_job_types" cascade="none">
+             <key column="analysis_id" not-null="true" />
+             <element column="job_type" type="string" />
+         </set>
+    </class>
 
 	<class name="org.iplantc.workflow.data.InputOutputMap" table="input_output_mapping">
 		<id name="hid" column="hid">
