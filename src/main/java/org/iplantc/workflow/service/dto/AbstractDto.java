@@ -129,6 +129,9 @@ public abstract class AbstractDto {
                     throw new WorkflowException("unsupported field type: " + field.getType().getName());
                 }
             }
+            else if (hasDefault(annotation)) {
+                json.put(annotation.name(), annotation.defaultValue());
+            }
         }
         catch (IllegalAccessException e) {
             throw new WorkflowException("unable to get the value of field, " + field.getName(), e);
@@ -284,5 +287,15 @@ public abstract class AbstractDto {
         catch (NoSuchMethodException e) {
             throw new WorkflowException("no JSON object constructor found for " + typeName, e);
         }
+    }
+
+    /**
+     * Determines whether or not an annotation has a default value.
+     * 
+     * @param annotation the annotation.
+     * @return true if the annotation has a default value.
+     */
+    private boolean hasDefault(JsonField annotation) {
+        return !annotation.defaultValue().equals(JsonField.NULL);
     }
 }

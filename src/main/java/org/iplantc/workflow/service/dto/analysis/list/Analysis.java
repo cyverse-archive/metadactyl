@@ -53,7 +53,7 @@ public class Analysis extends AbstractDto {
     /**
      * The date when the analysis was integrated.
      */
-    @JsonField(name = "integration_date", optional = true)
+    @JsonField(name = "integration_date", optional = true, defaultValue = "")
     private Long integrationDate;
 
     /**
