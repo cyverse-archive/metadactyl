@@ -15,4 +15,6 @@ import java.lang.annotation.Target;
 public @interface JsonField {
     String name();
     boolean optional() default false;
+    String defaultValue() default NULL;
+    public static final String NULL = "HACK TO ALLOW A \"NULL\" DEFAULT VALUE";
 }
