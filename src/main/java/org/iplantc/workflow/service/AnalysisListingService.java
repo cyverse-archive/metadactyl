@@ -20,6 +20,7 @@ import org.iplantc.persistence.dto.workspace.Workspace;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
+import org.iplantc.workflow.service.dto.analysis.DeployedComponentListDto;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupDto;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupHierarchyList;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupList;
@@ -158,6 +159,23 @@ public class AnalysisListingService {
                 Set<AnalysisListing> favorites = new HashSet<AnalysisListing>(favoritesGroup.getAllActiveAnalyses());
 
                 return new AnalysisSearchList(session, searchTerm, groups, favorites).toString();
+            }
+        });
+    }
+
+    /**
+     * Lists all of the deployed components associated with an analysis.  There may be multiple deployed components
+     * associated with a single analysis if the analysis happens to have multiple steps.
+     * 
+     * @param analysisId the analysis identifier.
+     * @return the list of deployed components.
+     */
+    public String listDeployedComponentsInAnalysis(final String analysisId) {
+        return new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<String>() {
+            @Override
+            public String perform(Session session) {
+                DaoFactory daoFactory = new HibernateDaoFactory(session);
+                return new DeployedComponentListDto(new AnalysisListingLoader(daoFactory).load(analysisId)).toString();
             }
         });
     }

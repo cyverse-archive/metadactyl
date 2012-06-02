@@ -1,7 +1,6 @@
 package org.iplantc.workflow.service.dto.analysis.list;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -9,8 +8,6 @@ import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.listing.AnalysisListing;
 import org.iplantc.workflow.service.dto.AbstractDto;
 import org.iplantc.workflow.service.dto.JsonField;
-import org.iplantc.workflow.service.dto.analysis.DeployedComponentDto;
-import org.iplantc.workflow.service.dto.analysis.DeployedComponentListDto;
 import org.iplantc.workflow.service.dto.pipelines.AnalysisValidationDto;
 
 /**
@@ -91,12 +88,6 @@ public class Analysis extends AbstractDto {
      */
     @JsonField(name = "disabled")
     private boolean disabled;
-
-    /**
-     * The list of deployed components used by the analysis.
-     */
-    @JsonField(name = "deployed_components")
-    private List<DeployedComponentDto> deployedComponents;
 
     /**
      * Pipeline eligibility information for this analysis.
@@ -189,13 +180,6 @@ public class Analysis extends AbstractDto {
     }
 
     /**
-     * @return the list of deployed components used by the analysis.
-     */
-    public List<DeployedComponentDto> getDeployedComponents() {
-        return deployedComponents;
-    }
-
-    /**
      * @return the pipeline eligibility information for the analysis.
      */
     public AnalysisValidationDto getPipelineEligibility() {
@@ -236,7 +220,6 @@ public class Analysis extends AbstractDto {
         this.wikiUrl = StringUtils.defaultString(analysis.getWikiUrl());
         this.deleted = analysis.isDeleted();
         this.disabled = analysis.isDisabled();
-        this.deployedComponents = new DeployedComponentListDto(analysis).getDeployedComponents();
         this.pipelineEligibility = new AnalysisValidationDto(analysis);
     }
 
