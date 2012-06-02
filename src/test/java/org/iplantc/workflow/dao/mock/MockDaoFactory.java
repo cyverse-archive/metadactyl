@@ -2,6 +2,7 @@ package org.iplantc.workflow.dao.mock;
 
 import org.iplantc.persistence.dao.WorkspaceDao;
 import org.iplantc.persistence.dao.listing.AnalysisGroupDao;
+import org.iplantc.persistence.dao.listing.AnalysisListingDao;
 import org.iplantc.persistence.dao.listing.RatingListingDao;
 import org.iplantc.persistence.dao.user.UserDao;
 import org.iplantc.workflow.dao.DaoFactory;
@@ -398,6 +399,14 @@ public class MockDaoFactory implements DaoFactory {
      */
     @Override
     public AnalysisGroupDao getAnalysisGroupDao() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AnalysisListingDao getAnalysisListingDao() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
