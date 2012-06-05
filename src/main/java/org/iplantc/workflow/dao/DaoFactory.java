@@ -4,6 +4,7 @@ import org.iplantc.persistence.dao.WorkspaceDao;
 import org.iplantc.persistence.dao.listing.AnalysisGroupDao;
 import org.iplantc.persistence.dao.listing.AnalysisListingDao;
 import org.iplantc.persistence.dao.listing.RatingListingDao;
+import org.iplantc.persistence.dao.refgenomes.ReferenceGenomeDao;
 import org.iplantc.persistence.dao.user.UserDao;
 
 /**
@@ -135,4 +136,11 @@ public interface DaoFactory {
      * @return 
      */
     public RatingDao getRatingDao();
+
+    /**
+     * Creates and returns a data access object for reference genomes.
+     * 
+     * @return the new data object.
+     */
+    public ReferenceGenomeDao getReferenceGenomeDao();
 }
