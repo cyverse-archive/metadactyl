@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
-import org.iplantc.files.types.ReferenceGenomeHandler;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.data.DataObject;
 import org.iplantc.workflow.model.Property;
@@ -20,21 +19,9 @@ import org.iplantc.workflow.model.Validator;
 public class UiInputPropertyGenerator {
 
     /**
-     * Used to get the list of reference genomes for property types that require them.
-     */
-    private ReferenceGenomeHandler referenceGenomeHandler;
-
-    /**
      * The factory used to generate data access objects.
      */
     private DaoFactory daoFactory;
-
-    /**
-     * @return the object used to get the list of reference genomes for property types that require them.
-     */
-    protected ReferenceGenomeHandler getReferenceGenomeHandler() {
-        return referenceGenomeHandler;
-    }
 
     /**
      * @return the factory used to generate data access objects.
@@ -44,11 +31,9 @@ public class UiInputPropertyGenerator {
     }
 
     /**
-     * @param referenceGenomeHandler the object used to get the list of reference genomes.
      * @param daoFactory the factory used to generate data access objects.
      */
-    public UiInputPropertyGenerator(ReferenceGenomeHandler referenceGenomeHandler, DaoFactory daoFactory) {
-        this.referenceGenomeHandler = referenceGenomeHandler;
+    public UiInputPropertyGenerator(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
 

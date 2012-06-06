@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
-import org.iplantc.files.types.ReferenceGenomeHandler;
 import org.iplantc.workflow.dao.mock.MockDaoFactory;
 import org.iplantc.workflow.util.UnitTestUtils;
 import org.json.JSONArray;
@@ -27,11 +26,6 @@ public class WorkflowPreviewerTest {
     private MockDaoFactory daoFactory;
 
     /**
-     * Used to resolve reference genomes.
-     */
-    private ReferenceGenomeHandler referenceGenomeHandler;
-
-    /**
      * The workflow previewer instance being tested.
      */
     private WorkflowPreviewer previewer;
@@ -46,8 +40,7 @@ public class WorkflowPreviewerTest {
         daoFactory.setMockRuleTypeDao(UnitTestUtils.createMockRuleTypeDao());
         daoFactory.setMockInfoTypeDao(UnitTestUtils.createMockInfoTypeDao());
         daoFactory.setMockDataFormatDao(UnitTestUtils.createMockDataFormatDao());
-        referenceGenomeHandler = new ReferenceGenomeHandler();
-        previewer = new WorkflowPreviewer(daoFactory, referenceGenomeHandler);
+        previewer = new WorkflowPreviewer(daoFactory);
     }
 
     /**

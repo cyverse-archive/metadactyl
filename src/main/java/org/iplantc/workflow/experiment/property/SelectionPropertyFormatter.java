@@ -36,9 +36,12 @@ public class SelectionPropertyFormatter extends PropertyFormatter {
      */
     @Override
     public JSONObject formatProperty() {
-        JSONObject result = null;
+        JSONObject result;
         String value = getValue();
-        if (StringUtils.isNumeric(value)) {
+        if (StringUtils.isBlank(value)) {
+            result = null;
+        }
+        else if (StringUtils.isNumeric(value)) {
             result = formatOldStyleProperty(Integer.parseInt(value));
         }
         else {

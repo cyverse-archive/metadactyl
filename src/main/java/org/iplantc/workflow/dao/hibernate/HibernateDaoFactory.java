@@ -4,10 +4,14 @@ import org.hibernate.Session;
 import org.iplantc.persistence.dao.WorkspaceDao;
 import org.iplantc.persistence.dao.hibernate.HibernateWorkspaceDao;
 import org.iplantc.persistence.dao.hibernate.listing.HibernateAnalysisGroupDao;
+import org.iplantc.persistence.dao.hibernate.listing.HibernateAnalysisListingDao;
 import org.iplantc.persistence.dao.hibernate.listing.HibernateRatingListingDao;
+import org.iplantc.persistence.dao.hibernate.refgenomes.HibernateReferenceGenomeDao;
 import org.iplantc.persistence.dao.hibernate.user.HibernateUserDao;
 import org.iplantc.persistence.dao.listing.AnalysisGroupDao;
+import org.iplantc.persistence.dao.listing.AnalysisListingDao;
 import org.iplantc.persistence.dao.listing.RatingListingDao;
+import org.iplantc.persistence.dao.refgenomes.ReferenceGenomeDao;
 import org.iplantc.persistence.dao.user.UserDao;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.DataFormatDao;
@@ -137,6 +141,14 @@ public class HibernateDaoFactory implements DaoFactory {
      * {@inheritDoc}
      */
     @Override
+    public AnalysisListingDao getAnalysisListingDao() {
+        return new HibernateAnalysisListingDao(session);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public RatingListingDao getRatingListingDao() {
         return new HibernateRatingListingDao(session);
     }
@@ -180,4 +192,13 @@ public class HibernateDaoFactory implements DaoFactory {
     public RatingDao getRatingDao() {
         return new HibernateRatingDao(session);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ReferenceGenomeDao getReferenceGenomeDao() {
+        return new HibernateReferenceGenomeDao(session);
+    }
 }
+ 

@@ -1,7 +1,6 @@
 package org.iplantc.workflow;
 
 import org.hibernate.Session;
-import org.iplantc.files.types.ReferenceGenomeHandler;
 import org.iplantc.hibernate.util.HibernateAccessor;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
@@ -19,8 +18,6 @@ import org.iplantc.workflow.model.Template;
 
 public class HibernateTemplateFetcher extends HibernateAccessor implements TemplateFetcher {
 
-    private ReferenceGenomeHandler refGenomeHandler;
-
     public HibernateTemplateFetcher() {
         super();
     }
@@ -32,7 +29,7 @@ public class HibernateTemplateFetcher extends HibernateAccessor implements Templ
         Session session = getSessionFactory().openSession();
         try {
             DaoFactory daoFactory = new HibernateDaoFactory(session);
-            UiAnalysisMarshaller marshaller = new UiAnalysisMarshaller(daoFactory, refGenomeHandler);
+            UiAnalysisMarshaller marshaller = new UiAnalysisMarshaller(daoFactory);
             TransformationActivity analysis = loadAnalysis(id, session);
             Template template = marshaller.templateFromAnalysis(analysis);
             return template;
@@ -41,14 +38,6 @@ public class HibernateTemplateFetcher extends HibernateAccessor implements Templ
             session.close();
         }
 
-    }
-
-    public ReferenceGenomeHandler getRefGenomeHandler() {
-        return refGenomeHandler;
-    }
-
-    public void setRefGenomeHandler(ReferenceGenomeHandler refGenomeHandler) {
-        this.refGenomeHandler = refGenomeHandler;
     }
 
     private TransformationActivity loadAnalysis(String id, Session session) throws Exception {

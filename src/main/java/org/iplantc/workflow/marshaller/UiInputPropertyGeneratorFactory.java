@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.iplantc.files.types.ReferenceGenomeHandler;
 import org.iplantc.workflow.dao.DaoFactory;
 
 /**
@@ -30,21 +29,14 @@ public class UiInputPropertyGeneratorFactory {
     };
 
     /**
-     * Used to get the list of reference genomes for property types that require them.
-     */
-    private ReferenceGenomeHandler referenceGenomeHandler;
-
-    /**
      * The factory used to generate data access objects.
      */
     private DaoFactory daoFactory;
 
     /**
-     * @param referenceGenomeHandler used to obtain the list of reference genomes when necessary.
      * @param daoFactory the factory used to generate data access objects.
      */
-    public UiInputPropertyGeneratorFactory(ReferenceGenomeHandler referenceGenomeHandler, DaoFactory daoFactory) {
-        this.referenceGenomeHandler = referenceGenomeHandler;
+    public UiInputPropertyGeneratorFactory(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
 
@@ -71,7 +63,7 @@ public class UiInputPropertyGeneratorFactory {
      */
     private UiInputPropertyGenerator createGenerator(Constructor<? extends UiInputPropertyGenerator> constructor) {
         try {
-            return constructor.newInstance(referenceGenomeHandler, daoFactory);
+            return constructor.newInstance(daoFactory);
         }
         catch (InstantiationException e) {
             throw new RuntimeException(e);
@@ -94,7 +86,7 @@ public class UiInputPropertyGeneratorFactory {
         Class<? extends UiInputPropertyGenerator> clazz)
     {
         try {
-            return clazz.getConstructor(ReferenceGenomeHandler.class, DaoFactory.class);
+            return clazz.getConstructor(DaoFactory.class);
         }
         catch (NoSuchMethodException e) {
             throw new RuntimeException("required constructor missing for " + clazz.getName(), e);

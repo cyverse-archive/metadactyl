@@ -1,6 +1,6 @@
 package org.iplantc.workflow.util;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

@@ -14,6 +14,19 @@ import org.junit.Test;
 public class SelectionPropertyFormatterTest extends BasePropertyFormatterTester {
 
     /**
+     * Verifies that the formatter works with an empty property value.
+     */
+    @Test
+    public void testEmptyPropertyValue() {
+        JSONObject config = createConfig("");
+        Property property = createProperty("", 2, "Selection");
+        SelectionPropertyFormatter formatter = new SelectionPropertyFormatter(config, createStep(), property,
+            createPropertyValueMap());
+        JSONObject formattedProperty = formatter.formatProperty();
+        assertNull(formattedProperty);
+    }
+
+    /**
      * Verifies that we can format a property with a default value.
      */
     @Test

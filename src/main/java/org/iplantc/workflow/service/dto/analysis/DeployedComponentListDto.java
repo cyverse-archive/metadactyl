@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import org.iplantc.persistence.dto.listing.AnalysisListing;
 import org.iplantc.persistence.dto.listing.DeployedComponentListing;
-import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.service.dto.AbstractDto;
 import org.iplantc.workflow.service.dto.JsonField;
 import org.iplantc.workflow.util.Lambda;
@@ -35,7 +34,6 @@ public class DeployedComponentListDto extends AbstractDto {
      * Initializes a new deployed component DTO for an analysis.
      * 
      * @param analysis the analysis listing.
-     * @param daoFactory used to obtain data access objects.
      */
     public DeployedComponentListDto(final AnalysisListing analysis) {
         deployedComponents.addAll(ListUtils.map(new Lambda<DeployedComponentListing, DeployedComponentDto>() {

@@ -2,7 +2,9 @@ package org.iplantc.workflow.dao.mock;
 
 import org.iplantc.persistence.dao.WorkspaceDao;
 import org.iplantc.persistence.dao.listing.AnalysisGroupDao;
+import org.iplantc.persistence.dao.listing.AnalysisListingDao;
 import org.iplantc.persistence.dao.listing.RatingListingDao;
+import org.iplantc.persistence.dao.refgenomes.ReferenceGenomeDao;
 import org.iplantc.persistence.dao.user.UserDao;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.DataFormatDao;
@@ -95,6 +97,11 @@ public class MockDaoFactory implements DaoFactory {
      * The mock user DAO.
      */
     private MockUserDao userDao;
+
+    /**
+     * The mock reference genome DAO.
+     */
+    private MockReferenceGenomeDao referenceGenomeDao;
 
     /**
      * @param dataFormatDao the new mock data format DAO.
@@ -293,6 +300,20 @@ public class MockDaoFactory implements DaoFactory {
     }
 
     /**
+     * @param referenceGenomeDao the new mock reference genome DAO.
+     */
+    public void setMockReferenceGenomeDao(MockReferenceGenomeDao referenceGenomeDao) {
+        this.referenceGenomeDao = referenceGenomeDao;
+    }
+
+    /**
+     * @return the reference genome DAO.
+     */
+    public MockReferenceGenomeDao getMockReferenceGenomeDao() {
+        return referenceGenomeDao;
+    }
+
+    /**
      * 
      * Initializes the factory with all empty data access objects.
      */
@@ -311,6 +332,7 @@ public class MockDaoFactory implements DaoFactory {
         valueTypeDao = new MockValueTypeDao();
         workspaceDao = new MockWorkspaceDao();
         userDao = new MockUserDao();
+        referenceGenomeDao = new MockReferenceGenomeDao();
     }
 
     /**
@@ -405,6 +427,14 @@ public class MockDaoFactory implements DaoFactory {
      * {@inheritDoc}
      */
     @Override
+    public AnalysisListingDao getAnalysisListingDao() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public RatingListingDao getRatingListingDao() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -442,6 +472,14 @@ public class MockDaoFactory implements DaoFactory {
 
     @Override
     public RatingDao getRatingDao() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ReferenceGenomeDao getReferenceGenomeDao() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

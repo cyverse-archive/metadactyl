@@ -14,7 +14,6 @@ import net.sf.json.JSONSerializer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.iplantc.files.service.FileInfoService;
 import org.iplantc.persistence.dto.step.TransformationStep;
 import org.iplantc.persistence.dto.transformation.Transformation;
 import org.iplantc.workflow.WorkflowException;
@@ -23,6 +22,8 @@ import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.data.DataObject;
 import org.iplantc.workflow.data.InputOutputMap;
 import org.iplantc.workflow.experiment.dto.JobConstructor;
+import org.iplantc.workflow.experiment.files.FileResolver;
+import org.iplantc.workflow.experiment.files.FileResolverFactory;
 import org.iplantc.workflow.model.Property;
 import org.iplantc.workflow.model.PropertyGroup;
 import org.iplantc.workflow.model.Template;
@@ -44,14 +45,9 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
     private static final Logger LOG = Logger.getLogger(CondorJobRequestFormatter.class);
 
-    private static final List<String> REFERENCE_GENOME_INFO_TYPES = Arrays.asList("ReferenceSequence",
-            "ReferenceAnnotation", "ReferenceGenome");
-
     private static final Pattern FILE_URL_PATTERN = Pattern.compile("^(?:file://|/)");
 
     private DaoFactory daoFactory;
-
-    private FileInfoService fileInfo;
 
     private UrlAssembler urlAssembler;
 
@@ -61,14 +57,16 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
     private boolean debug;
 
-    public CondorJobRequestFormatter(DaoFactory daoFactory, FileInfoService fileInfo, UrlAssembler urlAssembler,
+    private FileResolverFactory fileResolverFactory;
+
+    public CondorJobRequestFormatter(DaoFactory daoFactory, UrlAssembler urlAssembler,
             UserDetails userDetails, JSONObject experiment) {
         this.daoFactory = daoFactory;
-        this.fileInfo = fileInfo;
         this.urlAssembler = urlAssembler;
         this.userDetails = userDetails;
         this.experiment = experiment;
         this.debug = experiment.optBoolean("debug", false);
+        this.fileResolverFactory = new FileResolverFactory(daoFactory);
     }
 
     @Override
@@ -168,8 +166,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
             JSONObject param = new JSONObject();
 
-            String value
-                    = transformation.containsProperty(outputObject.getId())
+            String value = transformation.containsProperty(outputObject.getId())
                     ? transformation.getValueForProperty(CONDOR_TYPE)
                     : outputObject.getName();
             setParamNameAndValue(param, outputObject.getSwitchString(), value);
@@ -335,9 +332,9 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         JSONArray result = new JSONArray();
 
         logDataObject("input", input);
-
-        if (fileInfo.canHandleFileType(input.getInfoTypeName())) {
-            JSONObject inputJson = createInputJsonForResolvedFile(extractInputName(path), input);
+        FileResolver fileResolver = fileResolverFactory.getFileResolver(input.getInfoTypeName());
+        if (fileResolver != null) {
+            JSONObject inputJson = createInputJsonForResolvedFile(extractInputName(path), input, fileResolver);
             if (inputJson != null) {
                 result.add(inputJson);
             }
@@ -385,9 +382,9 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         }
     }
 
-    private JSONObject createInputJsonForResolvedFile(String name, DataObject input) {
+    private JSONObject createInputJsonForResolvedFile(String name, DataObject input, FileResolver fileResolver) {
         JSONObject result = null;
-        String url = resolveFile(name, input);
+        String url = fileResolver.getFileAccessUrl(name);
         if (!StringUtils.isBlank(url) && !isFileUrl(url)) {
             result = new JSONObject();
             result.put("name", name);
@@ -398,18 +395,6 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             result.put("retain", debug || input.getRetain());
         }
         return result;
-    }
-
-    private String resolveFile(String name, DataObject input) {
-        String retval = null;
-        if (!StringUtils.isBlank(name)) {
-            JSONObject query = new JSONObject();
-            query.put("name", name);
-            query.put("type", input.getInfoTypeName().trim());
-            JSONObject result = (JSONObject) JSONSerializer.toJSON(fileInfo.getSingleFileAccessUrl(query.toString()));
-            retval = result.getJSONObject("urlInfo").getString("url");
-        }
-        return retval;
     }
 
     private boolean isFileUrl(String url) {
@@ -473,11 +458,11 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
      */
     private List<String> getPathsForSingleInput(String stepName, DataObject input, JSONArray dataInfo) {
         List<String> result = new ArrayList<String>();
-        if (isReferenceGenome(input)) {
+        FileResolver fileResolver = fileResolverFactory.getFileResolver(input.getInfoTypeName());
+        if (fileResolver != null) {
             String key = stepName + "_" + input.getId();
             String propertyValue = experiment.getJSONObject("config").getString(key);
-            String referenceGenomeName = extractInputName(propertyValue);
-            String resolvedPath = resolveFile(referenceGenomeName, input);
+            String resolvedPath = fileResolver.getFileAccessUrl(extractInputName(propertyValue));
             if (!StringUtils.isBlank(resolvedPath)) {
                 result.add(resolvedPath);
             }
@@ -486,10 +471,6 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             result.add(dataInfo.getJSONObject(0).getString("property"));
         }
         return result;
-    }
-
-    private boolean isReferenceGenome(DataObject dataObject) {
-        return REFERENCE_GENOME_INFO_TYPES.contains(dataObject.getInfoTypeName());
     }
 
     /**
@@ -591,16 +572,15 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             long workspaceId, String stepName) {
         List<JSONObject> jprops = new ArrayList<JSONObject>();
         String propertyTypeName = property.getPropertyTypeName();
-        if (StringUtils.equals(propertyTypeName, "Selection") ||
-            StringUtils.equals(propertyTypeName, "ValueSelection")) {
+        if (StringUtils.equals(propertyTypeName, "Selection") || StringUtils.equals(propertyTypeName, "ValueSelection")) {
             CollectionUtils.addIgnoreNull(jprops, formatSelectionProperty(property, value));
         }
         else if (StringUtils.equals(propertyTypeName, "Flag")) {
             CollectionUtils.addIgnoreNull(jprops, formatFlagProperty(property, value));
         }
-        else if (StringUtils.equals(propertyTypeName, "BarcodeSelector") ||
-                 StringUtils.equals(propertyTypeName, "ClipperSelector")) {
-            CollectionUtils.addIgnoreNull(jprops, formatBarcodeSelectorProperty(property, value, inputs, workspaceId));
+        else if (StringUtils.equals(propertyTypeName, "BarcodeSelector") || StringUtils.equals(propertyTypeName,
+                "ClipperSelector")) {
+            throw new UnsupportedPropertyTypeException(propertyTypeName);
         }
         else if (StringUtils.equals(propertyTypeName, "Input")) {
             jprops.addAll(formatInputProperties(property, value, stepName));
@@ -615,22 +595,23 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         return removePropertiesWithNegativeOrdering(jprops);
     }
 
-	/**
-	 * Removes any properties that still have a negative ordering from a list of properties.
-	 * 
-	 * @param props the list of properties.
-	 * @return the filtered list of properties.
-	 */
-	private List<JSONObject> removePropertiesWithNegativeOrdering(List<JSONObject> props) {
-		return ListUtils.filter(new Predicate<JSONObject>() {
-			@Override
-			public Boolean call(JSONObject arg) {
-				return arg.optInt("order", -1) >= 0;
-			}
-		}, props);
-	}
+    /**
+     * Removes any properties that still have a negative ordering from a list of properties.
+     *
+     * @param props the list of properties.
+     * @return the filtered list of properties.
+     */
+    private List<JSONObject> removePropertiesWithNegativeOrdering(List<JSONObject> props) {
+        return ListUtils.filter(new Predicate<JSONObject>() {
 
-	protected JSONObject formatOutputProperty(Property property, String value) {
+            @Override
+            public Boolean call(JSONObject arg) {
+                return arg.optInt("order", -1) >= 0;
+            }
+        }, props);
+    }
+
+    protected JSONObject formatOutputProperty(Property property, String value) {
         if (property.getDataObject().isImplicit()) {
             return null;
         }
@@ -645,47 +626,6 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             setParamNameAndValue(jprop, property.getName(), value);
             jprop.put("id", property.getId());
         }
-        return jprop;
-    }
-
-    /**
-     * Formats a bar code selector property. Note that this method ignores the property's omitIfBlank setting. This is a
-     * highly specialized type of property that is currently deprecated, so special handling of optional properties is
-     * not required for this type of property at this time.
-     *
-     * @param property the property.
-     * @param value the property value.
-     * @param inputs the array of inputs.
-     * @param workspaceId the user's workspace identifier.
-     * @return the formatted parameter.
-     */
-    protected JSONObject formatBarcodeSelectorProperty(Property property, String value, JSONArray inputs,
-            long workspaceId) {
-        JSONObject jprop = initialPropertyJson(property);
-        String filename;
-        String url;
-        if (value.contains("/")) {
-            filename = basename(value);
-            url = urlAssembler.assembleUrl(value);
-        }
-        else {
-            JSONObject resolvedFileInfo = resolveBarcodeFile(value, workspaceId);
-            filename = resolvedFileInfo.getString("file_name");
-            url = resolvedFileInfo.getString("url");
-        }
-
-        setParamNameAndValue(jprop, property.getName(), filename);
-        jprop.put("type", "File");
-        jprop.put("id", property.getId());
-
-        JSONObject jinput = new JSONObject();
-
-        jinput.put("id", property.getId());
-        setParamNameAndValue(jprop, "1", url);
-        jinput.put("order", getPropertyOrder(property));
-        jinput.put("multiplicity", "single");
-
-        inputs.add(jinput);
         return jprop;
     }
 
@@ -806,20 +746,6 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             order = 0;
         }
         return order;
-    }
-
-    protected JSONObject resolveBarcodeFile(String value, long workspaceId) {
-        JSONObject tempObject = new JSONObject();
-        JSONArray array = new JSONArray();
-        JSONObject info = new JSONObject();
-        info.put("name", Long.toString(workspaceId) + "," + value);
-        info.put("type", "BarcodeSelector");
-        array.add(info);
-        tempObject.put("input", array);
-        JSONArray output = (JSONArray) JSONSerializer.toJSON(fileInfo.getFilesAccessUrls(tempObject.toString()));
-        JSONObject root = output.getJSONObject(0);
-        JSONObject resolvedFileInfo = root.getJSONObject("urlInfo");
-        return resolvedFileInfo;
     }
 
     private List<JSONObject> formatInputProperties(Property property, String value, String stepName) {

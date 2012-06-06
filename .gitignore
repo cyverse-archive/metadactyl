@@ -4,5 +4,6 @@
 .project
 .settings
 .DS_Store
+stale
 target
 bin

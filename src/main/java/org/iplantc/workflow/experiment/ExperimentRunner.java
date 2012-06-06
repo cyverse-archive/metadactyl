@@ -13,7 +13,6 @@ import org.apache.http.params.CoreConnectionPNames;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.iplantc.files.service.FileInfoService;
 import org.iplantc.hibernate.util.HibernateAccessor;
 import org.iplantc.workflow.client.OsmClient;
 import org.iplantc.workflow.dao.DaoFactory;
@@ -24,25 +23,26 @@ import org.iplantc.workflow.user.UserDetails;
 
 /**
  * This is a stub class for executing experiments
- * 
+ *
  * @author Juan Antonio Raygoza Garay
  */
 public class ExperimentRunner extends HibernateAccessor {
-    public static final String CONDOR_TYPE = "condor";
-    private static final Logger LOG = Logger.getLogger(ExperimentRunner.class);
-    private static final Logger JsonLogger = Logger.getLogger("JsonLogger");
 
-    private FileInfoService fileInfo;
+    public static final String CONDOR_TYPE = "condor";
+
+    private static final Logger LOG = Logger.getLogger(ExperimentRunner.class);
+
+    private static final Logger JsonLogger = Logger.getLogger("JsonLogger");
 
     private UserService userService;
 
     private String executionUrl;
+
     private UrlAssembler urlAssembler;
 
     private OsmClient jobRequestOsmClient;
 
     public ExperimentRunner() {
-
     }
 
     public void runExperiment(JSONObject experiment) throws Exception {
@@ -95,16 +95,18 @@ public class ExperimentRunner extends HibernateAccessor {
         }
     }
 
-	protected JSONObject formatJobRequest(JSONObject experiment, Session session, UserDetails userDetails) {
+    protected JSONObject formatJobRequest(JSONObject experiment, Session session, UserDetails userDetails) {
         DaoFactory daoFactory = new HibernateDaoFactory(session);
         JobNameUniquenessEnsurer jobNameUniquenessEnsurer = new TimestampJobNameUniquenessEnsurer();
-        JobRequestFormatterFactory factory = new JobRequestFormatterFactory(daoFactory, fileInfo, urlAssembler,
-            userDetails, jobNameUniquenessEnsurer);
+        JobRequestFormatterFactory factory = new JobRequestFormatterFactory(daoFactory, urlAssembler,
+                userDetails, jobNameUniquenessEnsurer);
         return factory.getFormatter(experiment).formatJobRequest();
     }
 
     protected void submitJob(JSONObject job) throws UnsupportedEncodingException, IOException, ClientProtocolException {
-        /** send message **/
+        /**
+         * send message *
+         */
         HttpClient client = new DefaultHttpClient();
         client.getParams().setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 10000);
         LOG.debug("Execution url: " + executionUrl);
@@ -117,14 +119,6 @@ public class ExperimentRunner extends HibernateAccessor {
 
         HttpResponse response = client.execute(post);
         LOG.debug("Response from HttpClient post: " + response.getStatusLine().getStatusCode());
-    }
-
-    public FileInfoService getFileInfo() {
-        return fileInfo;
-    }
-
-    public void setFileInfo(FileInfoService fileInfo) {
-        this.fileInfo = fileInfo;
     }
 
     public void setUserService(UserService userService) {

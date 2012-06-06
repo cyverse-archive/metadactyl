@@ -3,7 +3,6 @@ package org.iplantc.workflow.experiment;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.iplantc.files.service.FileInfoService;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
@@ -17,7 +16,7 @@ import org.iplantc.workflow.user.UserDetails;
 
 /**
  * A factory used to create job request formatters.
- * 
+ *
  * @author Dennis Roberts
  */
 public class JobRequestFormatterFactory {
@@ -26,11 +25,6 @@ public class JobRequestFormatterFactory {
      * Used to create data access objects.
      */
     private DaoFactory daoFactory;
-
-    /**
-     * Used to resolve certain types of files.
-     */
-    private FileInfoService fileInfo;
 
     /**
      * Used to create URLs to be used by the jobs.
@@ -49,15 +43,13 @@ public class JobRequestFormatterFactory {
 
     /**
      * @param daoFactory used to create data access objects.
-     * @param fileInfo used to resolve certain types of files.
      * @param urlAssembler used to create URLs that will be used by the jobs.
      * @param username the name of the user who submitted the jobs.
      * @param jobNameUniquenessEnsurer the object used to ensure that job names are unique.
      */
-    public JobRequestFormatterFactory(DaoFactory daoFactory, FileInfoService fileInfo, UrlAssembler urlAssembler,
+    public JobRequestFormatterFactory(DaoFactory daoFactory, UrlAssembler urlAssembler,
             UserDetails userDetails, JobNameUniquenessEnsurer jobNameUniquenessEnsurer) {
         this.daoFactory = daoFactory;
-        this.fileInfo = fileInfo;
         this.urlAssembler = urlAssembler;
         this.userDetails = userDetails;
         this.jobNameUniquenessEnsurer = jobNameUniquenessEnsurer;
@@ -65,7 +57,7 @@ public class JobRequestFormatterFactory {
 
     /**
      * Gets the appropriate job request formatter factory for the given experiment.
-     * 
+     *
      * @param experiment the experiment.
      * @return the job request formatter.
      * @throws WorkflowException if the appropriate formatter can't be determined.
@@ -74,7 +66,7 @@ public class JobRequestFormatterFactory {
         String firstComponentType = determineFirstComponentType(experiment);
         JobRequestFormatter formatter = null;
         if (StringUtils.equals(firstComponentType, "executable")) {
-            formatter = new CondorJobRequestFormatter(daoFactory, fileInfo, urlAssembler, userDetails, experiment);
+            formatter = new CondorJobRequestFormatter(daoFactory, urlAssembler, userDetails, experiment);
         }
         else if (StringUtils.equals(firstComponentType, "fAPI")) {
             formatter = new FapiJobRequestFormatter(daoFactory, userDetails, experiment, jobNameUniquenessEnsurer);
@@ -87,7 +79,7 @@ public class JobRequestFormatterFactory {
 
     /**
      * Determines the type of the first deployed component in the analysis.
-     * 
+     *
      * @param experiment the experiment being submitted.
      * @return the deployed component type.
      */
@@ -101,7 +93,7 @@ public class JobRequestFormatterFactory {
     /**
      * Finds the deployed component for the given template, throwing an exception if the deployed component can't be
      * found.
-     * 
+     *
      * @param template the template.
      * @return the deployed component.
      * @throws WorkflowException if the deployed component can't be found.
@@ -116,7 +108,7 @@ public class JobRequestFormatterFactory {
 
     /**
      * Finds the deployed component for the given template, returning null if the deployed component can't be found.
-     * 
+     *
      * @param template the template.
      * @return the deployed component or null if the deployed component can't be found.
      */
@@ -131,7 +123,7 @@ public class JobRequestFormatterFactory {
 
     /**
      * Finds the template for the given analysis, throwing an exception if the template can't be found.
-     * 
+     *
      * @param analysis the analysis.
      * @return the template.
      * @throws WorkflowException if the template can't be found.
@@ -146,7 +138,7 @@ public class JobRequestFormatterFactory {
 
     /**
      * Finds the template for the given analysis, returning null if the template can't be found.
-     * 
+     *
      * @param analysis the analysis.
      * @return the template or null if the template can't be found.
      */
@@ -164,7 +156,7 @@ public class JobRequestFormatterFactory {
 
     /**
      * Finds the template for the given transformation step, returning null if the template can't be found.
-     * 
+     *
      * @param step the transformation step.
      * @return the template or null if the template can't be found.
      */
@@ -182,7 +174,7 @@ public class JobRequestFormatterFactory {
 
     /**
      * Finds the analysis with the given analysis ID.
-     * 
+     *
      * @param analysisId the analysis ID.
      * @return the analysis.
      * @throws WorkflowException if the analysis can't be found.
