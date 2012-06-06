@@ -4,7 +4,6 @@ import org.apache.commons.lang.Validate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.iplantc.files.types.ReferenceGenomeHandler;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
 import org.iplantc.workflow.integration.preview.WorkflowPreviewer;
@@ -24,20 +23,12 @@ public class WorkflowPreviewService {
     private SessionFactory sessionFactory;
 
     /**
-     * Used to resolve reference genomes.
-     */
-    private ReferenceGenomeHandler referenceGenomeHandler;
-
-    /**
      * @param sessionFactory the database session factory.
-     * @param referenceGenomeHandler used to resolve reference genomes.
      * @throws IllegalArgumentException if one of the arguments is null.
      */
-    public WorkflowPreviewService(SessionFactory sessionFactory, ReferenceGenomeHandler referenceGenomeHandler) {
+    public WorkflowPreviewService(SessionFactory sessionFactory) {
         Validate.notNull(sessionFactory, "missing required argument: sessionFactory");
-        Validate.notNull(referenceGenomeHandler, "missing required argument: referenceGenomeHandler");
         this.sessionFactory = sessionFactory;
-        this.referenceGenomeHandler = referenceGenomeHandler;
     }
 
     /**
@@ -120,7 +111,7 @@ public class WorkflowPreviewService {
      */
     private WorkflowPreviewer createPreviewer(Session session) {
         DaoFactory daoFactory = new HibernateDaoFactory(session);
-        WorkflowPreviewer previewer = new WorkflowPreviewer(daoFactory, referenceGenomeHandler);
+        WorkflowPreviewer previewer = new WorkflowPreviewer(daoFactory);
         return previewer;
     }
 }

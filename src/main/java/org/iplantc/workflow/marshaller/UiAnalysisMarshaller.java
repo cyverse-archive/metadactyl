@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.iplantc.files.types.ReferenceGenomeHandler;
 import org.iplantc.persistence.dto.step.TransformationStep;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
@@ -32,8 +31,6 @@ public class UiAnalysisMarshaller {
 
     private DaoFactory daoFactory;
 
-    private ReferenceGenomeHandler referenceGenomeHandler;
-
     private HeterogeneousRegistry registry = new NullHeterogeneousRegistry();
 
     private boolean marshallNotificationSet = false;
@@ -50,9 +47,8 @@ public class UiAnalysisMarshaller {
         marshallNotificationSet = false;
     }
 
-    public UiAnalysisMarshaller(DaoFactory daoFactory, ReferenceGenomeHandler referenceGenomeHandler) {
+    public UiAnalysisMarshaller(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
-        this.referenceGenomeHandler = referenceGenomeHandler;
     }
 
     public JSONObject marshall(TransformationActivity analysis) throws Exception {
@@ -262,8 +258,7 @@ public class UiAnalysisMarshaller {
     }
 
     private Property getFinalProperty(DataObject dataobject) {
-        UiInputPropertyGeneratorFactory factory = new UiInputPropertyGeneratorFactory(referenceGenomeHandler,
-            daoFactory);
+        UiInputPropertyGeneratorFactory factory = new UiInputPropertyGeneratorFactory(daoFactory);
         UiInputPropertyGenerator generator = factory.getUiInputPropertyGenerator(dataobject.getInfoTypeName());
         return generator.generateProperty(dataobject);
     }

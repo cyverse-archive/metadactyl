@@ -1,6 +1,5 @@
 package org.iplantc.workflow.integration.preview;
 
-import org.iplantc.files.types.ReferenceGenomeHandler;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
@@ -60,23 +59,16 @@ public class WorkflowPreviewer {
     private NotificationSetLoader notificationSetLoader;
 
     /**
-     * Used to reconcile reference genomes.
-     */
-    private ReferenceGenomeHandler referenceGenomeHandler;
-
-    /**
      * Used to generate the outgoing JSON.
      */
     private UiAnalysisMarshaller marshaller;
 
     /**
      * @param daoFactory the factory used to create data access objects.
-     * @param referenceGenomeHandler used to reconcile reference genomes.
      */
-    public WorkflowPreviewer(DaoFactory daoFactory, ReferenceGenomeHandler referenceGenomeHandler) {
+    public WorkflowPreviewer(DaoFactory daoFactory) {
         initializeRegistries();
         this.daoFactory = daoFactory;
-        this.referenceGenomeHandler = referenceGenomeHandler;
         initializeLoaders();
         initializeMarshaller();
     }
@@ -85,7 +77,7 @@ public class WorkflowPreviewer {
      * Initializes the object used to generate the outgoing JSON.
      */
     private void initializeMarshaller() {
-        marshaller = new UiAnalysisMarshaller(daoFactory, referenceGenomeHandler);
+        marshaller = new UiAnalysisMarshaller(daoFactory);
         marshaller.setRegistry(idRegistry);
         marshaller.includeNotificationSet();
     }
