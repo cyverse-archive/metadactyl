@@ -23,7 +23,6 @@ import org.iplantc.persistence.dto.workspace.Workspace;
 import org.iplantc.workflow.core.TransformationActivityReference;
 import org.iplantc.workflow.integration.util.JsonUtils;
 import org.iplantc.workflow.service.WorkspaceInitializer;
-import org.iplantc.workflow.template.groups.TemplateGroup;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -148,7 +147,7 @@ public class TitoAnalysisUnmarshaller implements TitoUnmarshaller<Transformation
     private List<InputOutputMap> mappingListFromJson(TransformationActivity analysis, JSONArray array)
         throws JSONException
     {
-        List<InputOutputMap> mappings = null;
+        List<InputOutputMap> mappings;
         if (array != null) {
             TitoInputOutputMapUnmarshaller unmarshaller = new TitoInputOutputMapUnmarshaller(analysis);
             mappings = unmarshaller.unmarshall(array);
@@ -183,9 +182,9 @@ public class TitoAnalysisUnmarshaller implements TitoUnmarshaller<Transformation
      */
     private TransformationStep stepFromJson(JSONObject json) throws JSONException {
         TransformationStep step = new TransformationStep();
-        step.setGuid(getId(json, "id"));
-        step.setName(json.getString("name"));
-        step.setDescription(json.optString("description", ""));
+        step.setGuid(getId(json, "id").trim());
+        step.setName(json.getString("name").trim());
+        step.setDescription(json.optString("description", "").trim());
         step.setTransformation(transformationFromTransformationStepJson(json));
         return step;
     }
