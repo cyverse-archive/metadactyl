@@ -3,6 +3,8 @@ package org.iplantc.workflow.integration.json;
 import java.util.Set;
 import org.iplantc.persistence.dto.components.DeployedComponent;
 import org.iplantc.persistence.dto.data.DeployedComponentDataFile;
+import org.iplantc.persistence.dto.data.IntegrationDatum;
+import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.integration.util.ImportUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,10 +18,13 @@ import org.json.JSONObject;
 public class TitoDeployedComponentUnmarshaller extends AbstractTitoDataFileUnmarshaller<DeployedComponentDataFile>
         implements TitoUnmarshaller<DeployedComponent> {
 
+	private DaoFactory daoFactory;
+
     private TitoIntegrationDatumMashaller integrationDatumUnmarshaller;
 
-    public TitoDeployedComponentUnmarshaller() {
-        this.integrationDatumUnmarshaller = new TitoIntegrationDatumMashaller();
+    public TitoDeployedComponentUnmarshaller(DaoFactory daoFactory) {
+		this.daoFactory = daoFactory;
+		this.integrationDatumUnmarshaller = new TitoIntegrationDatumMashaller();
     }
 
     /**
@@ -40,11 +45,29 @@ public class TitoDeployedComponentUnmarshaller extends AbstractTitoDataFileUnmar
         deployedComponent.setVersion(json.optString("version", null));
         deployedComponent.setAttribution(json.optString("attribution", null));
 
-        deployedComponent.setIntegrationDatum(integrationDatumUnmarshaller.fromJson(json));
+        deployedComponent.setIntegrationDatum(getIntegrationDatum(json));
         deployedComponent.setDeployedComponentDataFiles(unmarshallDataFiles(json));
 
         return deployedComponent;
     }
+
+	/**
+	 * Gets the integration datum for the deployed component.  If a matching integration datum already exists then that
+	 * one will be used.  Otherwise, a new integration datum will be created.
+	 * 
+	 * @param json the JSON object representing the deployed component.
+	 * @return the integration datum.
+	 * @throws JSONException if a JSON error occurs.
+	 */
+	private IntegrationDatum getIntegrationDatum(JSONObject json) throws JSONException {
+		IntegrationDatum integrationDatum = integrationDatumUnmarshaller.fromJson(json);
+		IntegrationDatum existing = null;
+		if (daoFactory != null) {
+			existing = daoFactory.getIntegrationDatumDao()
+					.findByNameAndEmail(integrationDatum.getIntegratorName(), integrationDatum.getIntegratorEmail());
+		}
+		return existing == null ? integrationDatum : existing;
+	}
 
     @Override
     protected void unmarshallDataFileList(JSONArray jsonFiles, boolean input, Set<DeployedComponentDataFile> files)

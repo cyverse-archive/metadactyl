@@ -2,7 +2,9 @@ package org.iplantc.workflow.dao.hibernate;
 
 import org.hibernate.Session;
 import org.iplantc.persistence.dao.WorkspaceDao;
+import org.iplantc.persistence.dao.data.IntegrationDatumDao;
 import org.iplantc.persistence.dao.hibernate.HibernateWorkspaceDao;
+import org.iplantc.persistence.dao.hibernate.data.HibernateIntegrationDatumDao;
 import org.iplantc.persistence.dao.hibernate.listing.HibernateAnalysisGroupDao;
 import org.iplantc.persistence.dao.hibernate.listing.HibernateAnalysisListingDao;
 import org.iplantc.persistence.dao.hibernate.listing.HibernateRatingListingDao;
@@ -200,5 +202,13 @@ public class HibernateDaoFactory implements DaoFactory {
     public ReferenceGenomeDao getReferenceGenomeDao() {
         return new HibernateReferenceGenomeDao(session);
     }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public IntegrationDatumDao getIntegrationDatumDao() {
+		return new HibernateIntegrationDatumDao(session);
+	}
 }
  

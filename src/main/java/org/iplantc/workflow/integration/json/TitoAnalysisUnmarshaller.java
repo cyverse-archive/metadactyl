@@ -9,6 +9,7 @@ import java.util.Map;
 
 import java.util.Set;
 import org.apache.commons.lang.StringUtils;
+import org.iplantc.persistence.dto.data.IntegrationDatum;
 import org.iplantc.persistence.dto.step.TransformationStep;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.core.Rating;
@@ -77,7 +78,7 @@ public class TitoAnalysisUnmarshaller implements TitoUnmarshaller<Transformation
         analysis.setSteps(stepListFromJson(json.getJSONArray("steps")));
         analysis.setMappings(mappingListFromJson(analysis, json.optJSONArray("mappings")));
 
-        analysis.setIntegrationDatum(integrationDatumUnmarshaller.fromJson(json));
+        analysis.setIntegrationDatum(getIntegrationDatum(json));
 
         Date editedDate = getDate(json.optString("edited_date"));
         if (editedDate != null) {
@@ -94,7 +95,22 @@ public class TitoAnalysisUnmarshaller implements TitoUnmarshaller<Transformation
 
         return analysis;
     }
-    
+
+	/**
+	 * Gets the integration datum to use for this analysis.  If a matching integration datum already exists then that
+	 * one will be used.  Otherwise, a new one will be created.
+	 * 
+	 * @param json the JSON object representing the analysis.
+	 * @return the matching integration datum.
+	 * @throws JSONException if a JSON error occurs.
+	 */
+	private IntegrationDatum getIntegrationDatum(JSONObject json) throws JSONException {
+		IntegrationDatum integrationDatum = integrationDatumUnmarshaller.fromJson(json);
+		IntegrationDatum existing = daoFactory.getIntegrationDatumDao()
+				.findByNameAndEmail(integrationDatum.getIntegratorName(), integrationDatum.getIntegratorEmail());
+		return existing == null ? integrationDatum : existing;
+	}
+
     private Date getDate(String timestamp) {
         try {
             return new Date(Long.parseLong(timestamp));

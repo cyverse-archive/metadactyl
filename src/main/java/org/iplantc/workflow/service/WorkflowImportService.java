@@ -13,10 +13,8 @@ import org.iplantc.hibernate.util.SessionTaskWrapper;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
-import org.iplantc.workflow.dao.DeployedComponentDao;
 import org.iplantc.workflow.dao.NotificationSetDao;
 import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
-import org.iplantc.workflow.dao.hibernate.HibernateDeployedComponentDao;
 import org.iplantc.workflow.dao.hibernate.HibernateNotificationSetDao;
 import org.iplantc.workflow.data.DataElementPreservation;
 import org.iplantc.workflow.data.ImportedWorkflow;
@@ -201,8 +199,8 @@ public class WorkflowImportService {
      * @return the deployed component importer.
      */
     private DeployedComponentImporter createDeployedComponentImporter(Session session, HeterogeneousRegistry registry) {
-        DeployedComponentDao componentDao = new HibernateDeployedComponentDao(session);
-        DeployedComponentImporter deployedComponentImporter = new DeployedComponentImporter(componentDao);
+        DaoFactory daoFactory = new HibernateDaoFactory(session);
+        DeployedComponentImporter deployedComponentImporter = new DeployedComponentImporter(daoFactory);
         deployedComponentImporter.setRegistry(registry);
         return deployedComponentImporter;
     }

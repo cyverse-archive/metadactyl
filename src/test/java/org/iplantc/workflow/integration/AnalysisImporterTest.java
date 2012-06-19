@@ -3,6 +3,7 @@ package org.iplantc.workflow.integration;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import org.iplantc.persistence.dto.data.IntegrationDatum;
 import org.iplantc.persistence.dto.step.TransformationStep;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -793,7 +794,29 @@ public class AnalysisImporterTest {
         }
     }
 
-    /**
+	/**
+	 * Verifies that an existing integration datum record will be used if one exists.
+	 * 
+	 * @throws JSONException if a JSON error occurs.
+	 * @throws IOException if an I/O error occurs.
+	 */
+	@Test
+	public void testExistingIntegrationDatum() throws JSONException, IOException {
+		IntegrationDatum integrationDatum = new IntegrationDatum();
+		integrationDatum.setId(new Long(247));
+		integrationDatum.setIntegratorName("bob");
+		integrationDatum.setIntegratorEmail("bob@bob-like.net");
+		daoFactory.getIntegrationDatumDao().save(integrationDatum);
+
+		JSONObject json = getTestJSONObject("minimally_specified_analysis");
+        importer.importObject(json);
+        assertEquals(1, getAnalysisDao().getSavedObjects().size());
+
+        TransformationActivity analysis = getAnalysisDao().getSavedObjects().get(0);
+		assertEquals(integrationDatum.getId(), analysis.getIntegrationDatum().getId());
+	}
+
+	/**
      * Creates a registry to use for testing and adds the templates in the registry to the mock Template DAO.
      * 
      * @return the registry.

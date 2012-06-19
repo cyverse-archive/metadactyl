@@ -109,7 +109,10 @@ public class AnalysisGeneratingTemplateImporter extends TemplateImporter {
      */
     private IntegrationDatum unmarshalIntegrationDatum(JSONObject json) {
         try {
-            return new TitoIntegrationDatumUnmarshaller().fromJson(json);
+			IntegrationDatum integrationDatum = new TitoIntegrationDatumUnmarshaller().fromJson(json);
+			IntegrationDatum existing = getDaoFactory().getIntegrationDatumDao()
+					.findByNameAndEmail(integrationDatum.getIntegratorName(), integrationDatum.getIntegratorEmail());
+            return existing == null ? integrationDatum : existing;
         }
         catch (JSONException e) {
             throw new WorkflowException(e);

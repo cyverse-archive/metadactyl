@@ -1,6 +1,7 @@
 package org.iplantc.workflow.dao;
 
 import org.iplantc.persistence.dao.WorkspaceDao;
+import org.iplantc.persistence.dao.data.IntegrationDatumDao;
 import org.iplantc.persistence.dao.listing.AnalysisGroupDao;
 import org.iplantc.persistence.dao.listing.AnalysisListingDao;
 import org.iplantc.persistence.dao.listing.RatingListingDao;
@@ -140,7 +141,14 @@ public interface DaoFactory {
     /**
      * Creates and returns a data access object for reference genomes.
      * 
-     * @return the new data object.
+     * @return the new data access object.
      */
     public ReferenceGenomeDao getReferenceGenomeDao();
+
+	/**
+	 * Creates and returns a data access object for integration data.
+	 * 
+	 * @return the new data access object.
+	 */
+	public IntegrationDatumDao getIntegrationDatumDao();
 }

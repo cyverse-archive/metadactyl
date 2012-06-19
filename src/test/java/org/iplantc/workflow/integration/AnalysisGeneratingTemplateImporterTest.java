@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.iplantc.persistence.dto.data.DataFormat;
+import org.iplantc.persistence.dto.data.IntegrationDatum;
 import org.iplantc.persistence.dto.workspace.Workspace;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.mock.MockDaoFactory;
@@ -351,7 +352,32 @@ public class AnalysisGeneratingTemplateImporterTest {
         }
     }
 
-    /**
+	/**
+	 * Verifies that an existing integration datum record will be used if one exists.
+	 * 
+	 * @throws JSONException if a JSON error occurs.
+	 * @throws IOException if an I/O error occurs.
+	 */
+	@Test
+	public void testExistingIntegrationDatum() throws JSONException, IOException {
+		IntegrationDatum integrationDatum = new IntegrationDatum();
+		integrationDatum.setId(new Long(247));
+		integrationDatum.setIntegratorName("bob");
+		integrationDatum.setIntegratorEmail("bob@bob-like.net");
+		daoFactory.getIntegrationDatumDao().save(integrationDatum);
+
+        JSONObject json = getTestJSONObject("fully_specified_template_alt_keys1");
+        importer.importObject(json);
+		
+        assertEquals(1, getSavedTemplates().size());
+        assertEquals(1, getSavedAnalyses().size());
+        assertEquals(3, getSavedTemplateGroups().size());
+
+		TransformationActivity analysis = getSavedAnalyses().get(0);
+		assertEquals(integrationDatum.getId(), analysis.getIntegrationDatum().getId());
+	}
+
+	/**
      * @param name the name of the property type.
      * @return the property type with the given name or null if no matching property type is found.
      */
