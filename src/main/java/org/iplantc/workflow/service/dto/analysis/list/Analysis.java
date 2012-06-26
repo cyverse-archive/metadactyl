@@ -54,6 +54,12 @@ public class Analysis extends AbstractDto {
     private Long integrationDate;
 
     /**
+     * The date when the analysis was last edited.
+     */
+    @JsonField(name = "edited_date", optional = true, defaultValue = "")
+    private Long editedDate;
+
+    /**
      * The analysis rating information.
      */
     @JsonField(name = "rating")
@@ -121,6 +127,13 @@ public class Analysis extends AbstractDto {
      */
     public Long getIntegrationDate() {
         return integrationDate;
+    }
+
+    /**
+     * @return the date when the analysis was last edited.
+     */
+    public Long getEditedDate() {
+        return editedDate;
     }
 
     /**
@@ -216,6 +229,7 @@ public class Analysis extends AbstractDto {
         this.integratorEmail = StringUtils.defaultString(analysis.getIntegratorEmail());
         this.integratorName = StringUtils.defaultString(analysis.getIntegratorName());
         this.integrationDate = dateAsLong(analysis.getIntegrationDate());
+        this.editedDate = dateAsLong(analysis.getEditedDate());
         this.isPublic = analysis.isPublic();
         this.wikiUrl = StringUtils.defaultString(analysis.getWikiUrl());
         this.deleted = analysis.isDeleted();

@@ -20,6 +20,7 @@ import org.iplantc.workflow.data.DataElementPreservation;
 import org.iplantc.workflow.data.ImportedWorkflow;
 import org.iplantc.workflow.integration.AnalysisGeneratingTemplateImporter;
 import org.iplantc.workflow.integration.AnalysisImporter;
+import org.iplantc.workflow.integration.AnalysisUpdater;
 import org.iplantc.workflow.integration.DeployedComponentImporter;
 import org.iplantc.workflow.integration.NotificationSetImporter;
 import org.iplantc.workflow.integration.TemplateGroupImporter;
@@ -386,6 +387,22 @@ public class WorkflowImportService {
         catch (HibernateException e) {
             logHibernateExceptionCause(e);
         }
+    }
+
+    /**
+     * Provides a way to update only the fields in an analysis (transformation activity) without updating any of the
+     * components of the analysis.
+     * 
+     * @param jsonString a JSON object containing information from the fields to update.
+     */
+    public void updateAnalysisOnly(final String jsonString) {
+        new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<Void>() {
+        @Override
+            public Void perform(Session session) {
+                new AnalysisUpdater(new HibernateDaoFactory(session)).updateAnalysis(jsonString);
+                return null;
+            }
+        });
     }
 
     /**
