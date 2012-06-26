@@ -2,6 +2,7 @@ package org.iplantc.workflow.integration;
 
 import org.apache.log4j.Logger;
 import org.iplantc.persistence.dto.components.DeployedComponent;
+import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.DeployedComponentDao;
 import org.iplantc.workflow.integration.json.TitoDeployedComponentUnmarshaller;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistry;
@@ -26,9 +27,9 @@ public class DeployedComponentImporter implements ObjectImporter {
     private static Logger LOG = Logger.getLogger(DeployedComponentImporter.class);
 
     /**
-     * Used to save and retrieve deployed components.
+     * Used to obtain data access objects.
      */
-    private DeployedComponentDao componentDao;
+    private DaoFactory daoFactory;
 
     /**
      * A registry of named objects.
@@ -68,8 +69,8 @@ public class DeployedComponentImporter implements ObjectImporter {
      *
      * @param componentDao the deployed component DAO.
      */
-    public DeployedComponentImporter(DeployedComponentDao componentDao) {
-        this.componentDao = componentDao;
+    public DeployedComponentImporter(DaoFactory daoFactory) {
+		this.daoFactory = daoFactory;
     }
 
     /**
@@ -80,7 +81,7 @@ public class DeployedComponentImporter implements ObjectImporter {
      */
     @Override
     public void importObject(JSONObject json) throws JSONException {
-        TitoDeployedComponentUnmarshaller unmarshaller = new TitoDeployedComponentUnmarshaller();
+        TitoDeployedComponentUnmarshaller unmarshaller = new TitoDeployedComponentUnmarshaller(daoFactory);
         DeployedComponent newComponent = unmarshaller.fromJson(json);
         saveOrUpdate(newComponent, json.optString("id", null));
     }
@@ -94,7 +95,7 @@ public class DeployedComponentImporter implements ObjectImporter {
     private void saveOrUpdate(DeployedComponent component, String specifiedId) {
         DeployedComponent existingComponent = findExistingComponent(component, specifiedId);
         if (existingComponent == null) {
-            componentDao.save(component);
+            daoFactory.getDeployedComponentDao().save(component);
             registerDeployedComponent(component);
         }
         else if (replaceExisting) {
@@ -121,7 +122,7 @@ public class DeployedComponentImporter implements ObjectImporter {
         existingComponent.setDescription(component.getDescription());
         existingComponent.setType(component.getType());
         existingComponent.setVersion(component.getVersion());
-        componentDao.save(existingComponent);
+        daoFactory.getDeployedComponentDao().save(existingComponent);
     }
 
     /**
@@ -132,6 +133,7 @@ public class DeployedComponentImporter implements ObjectImporter {
      * @return the deployed component or null if a matching deployed component isn't found.
      */
     private DeployedComponent findExistingComponent(DeployedComponent newComponent, String specifiedId) {
+		DeployedComponentDao componentDao = daoFactory.getDeployedComponentDao();
         return specifiedId == null
                 ? componentDao.findByNameAndLocation(newComponent.getName(), newComponent.getLocation())
                 : componentDao.findById(specifiedId);

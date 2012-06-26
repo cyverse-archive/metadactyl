@@ -13,15 +13,14 @@ import org.iplantc.hibernate.util.SessionTaskWrapper;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
-import org.iplantc.workflow.dao.DeployedComponentDao;
 import org.iplantc.workflow.dao.NotificationSetDao;
 import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
-import org.iplantc.workflow.dao.hibernate.HibernateDeployedComponentDao;
 import org.iplantc.workflow.dao.hibernate.HibernateNotificationSetDao;
 import org.iplantc.workflow.data.DataElementPreservation;
 import org.iplantc.workflow.data.ImportedWorkflow;
 import org.iplantc.workflow.integration.AnalysisGeneratingTemplateImporter;
 import org.iplantc.workflow.integration.AnalysisImporter;
+import org.iplantc.workflow.integration.AnalysisUpdater;
 import org.iplantc.workflow.integration.DeployedComponentImporter;
 import org.iplantc.workflow.integration.NotificationSetImporter;
 import org.iplantc.workflow.integration.TemplateGroupImporter;
@@ -201,8 +200,8 @@ public class WorkflowImportService {
      * @return the deployed component importer.
      */
     private DeployedComponentImporter createDeployedComponentImporter(Session session, HeterogeneousRegistry registry) {
-        DeployedComponentDao componentDao = new HibernateDeployedComponentDao(session);
-        DeployedComponentImporter deployedComponentImporter = new DeployedComponentImporter(componentDao);
+        DaoFactory daoFactory = new HibernateDaoFactory(session);
+        DeployedComponentImporter deployedComponentImporter = new DeployedComponentImporter(daoFactory);
         deployedComponentImporter.setRegistry(registry);
         return deployedComponentImporter;
     }
@@ -387,8 +386,23 @@ public class WorkflowImportService {
         }
         catch (HibernateException e) {
             logHibernateExceptionCause(e);
-            throw e;
         }
+    }
+
+    /**
+     * Provides a way to update only the fields in an analysis (transformation activity) without updating any of the
+     * components of the analysis.
+     * 
+     * @param jsonString a JSON object containing information from the fields to update.
+     */
+    public void updateAnalysisOnly(final String jsonString) {
+        new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<Void>() {
+        @Override
+            public Void perform(Session session) {
+                new AnalysisUpdater(new HibernateDaoFactory(session)).updateAnalysis(jsonString);
+                return null;
+            }
+        });
     }
 
     /**
@@ -396,16 +410,26 @@ public class WorkflowImportService {
      * 
      * @param e the exception.
      */
-    private void logHibernateExceptionCause(HibernateException e) {
+    private void logHibernateExceptionCause(HibernateException e) throws WorkflowException {
         Throwable currentException = e.getCause();
+        Throwable nextException = null;
         while (currentException != null) {
             if (currentException instanceof SQLException) {
                 SQLException sqlException = (SQLException) currentException;
                 if (sqlException.getNextException() != null) {
                     LOG.error("Next Exception: ", sqlException.getNextException());
+                    if (nextException == null) {
+                        nextException = sqlException.getNextException();
+                    }
                 }
             }
             currentException = currentException.getCause();
+        }
+        if (nextException != null) {
+            throw new WorkflowException(nextException.getMessage());
+        }
+        else {
+            throw e;
         }
     }
 }

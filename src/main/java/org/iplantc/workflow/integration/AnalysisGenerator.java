@@ -51,8 +51,8 @@ public class AnalysisGenerator {
     private TransformationStep stepForTemplate(Template template) {
         TransformationStep step = new TransformationStep();
         step.setGuid(ImportUtils.generateId("s"));
-        step.setName(template.getName());
-        step.setDescription(template.getDescription());
+        step.setName(StringUtils.trimToEmpty(template.getName()));
+        step.setDescription(StringUtils.trimToEmpty(template.getDescription()));
         step.setTransformation(transformationForTemplate(template));
         return step;
     }

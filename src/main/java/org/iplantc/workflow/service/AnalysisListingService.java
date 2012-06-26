@@ -24,6 +24,7 @@ import org.iplantc.workflow.service.dto.analysis.DeployedComponentListDto;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupDto;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupHierarchyList;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupList;
+import org.iplantc.workflow.service.dto.analysis.list.AnalysisList;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisSearchList;
 import org.iplantc.workflow.service.dto.analysis.list.UserRating;
 
@@ -159,6 +160,23 @@ public class AnalysisListingService {
                 Set<AnalysisListing> favorites = new HashSet<AnalysisListing>(favoritesGroup.getAllActiveAnalyses());
 
                 return new AnalysisSearchList(session, searchTerm, groups, favorites).toString();
+            }
+        });
+    }
+
+    /**
+     * Lists an analysis corresponding to a given identifier.  The result is a JSON string representing an object
+     * containing a list of analyses.  If an analysis with the given identifier exists then the list will contain
+     * that analysis.  Otherwise, the list will be empty.
+     * 
+     * @param analysisId the analysis identifier.
+     * @return a JSON string representing an object containing a list of analyses.
+     */
+    public String listAnalysis(final String analysisId) {
+        return new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<String>() {
+            @Override
+            public String perform(Session session) {
+                return new AnalysisList(new HibernateDaoFactory(session), analysisId).toString();
             }
         });
     }

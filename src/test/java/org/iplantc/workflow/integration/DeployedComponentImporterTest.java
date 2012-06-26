@@ -8,7 +8,7 @@ import static org.junit.Assert.assertTrue;
 import static org.iplantc.workflow.util.JsonTestDataImporter.getTestJSONObject;
 
 import org.iplantc.persistence.dto.components.DeployedComponent;
-import org.iplantc.workflow.dao.mock.MockDeployedComponentDao;
+import org.iplantc.workflow.dao.mock.MockDaoFactory;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistryImpl;
 import org.iplantc.workflow.util.UnitTestUtils;
 import org.json.JSONArray;
@@ -25,9 +25,9 @@ import org.junit.Test;
 public class DeployedComponentImporterTest {
 
     /**
-     * Used to verify that the component we expect is the component we get.
+     * Used to obtain data access objects.
      */
-    private MockDeployedComponentDao mockComponentDao;
+    private MockDaoFactory daoFactory = new MockDaoFactory();
 
     /**
      * The deployed component importer instance being tested.
@@ -39,8 +39,8 @@ public class DeployedComponentImporterTest {
      */
     @Before
     public void initialize() {
-        mockComponentDao = new MockDeployedComponentDao();
-        deployedComponentImporter = new DeployedComponentImporter(mockComponentDao);
+		daoFactory = new MockDaoFactory();
+        deployedComponentImporter = new DeployedComponentImporter(daoFactory);
     }
 
     /**
@@ -52,8 +52,8 @@ public class DeployedComponentImporterTest {
     public void testFullySpecifiedComponent() throws JSONException {
         JSONObject json = generateJson("someid", "foo", "bar", "baz", "blarg", "glarb", "quux");
         deployedComponentImporter.importObject(json);
-        assertEquals(1, mockComponentDao.getSavedObjects().size());
-        DeployedComponent component = mockComponentDao.getSavedObjects().get(0);
+        assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
+        DeployedComponent component = daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0);
         assertEquals("someid", component.getId());
         assertEquals("foo", component.getName());
         assertEquals("bar", component.getLocation());
@@ -72,8 +72,8 @@ public class DeployedComponentImporterTest {
     public void testMinimallySpecifiedComponent() throws JSONException {
         JSONObject json = generateJson(null, "name", "location", "type", null, null, null);
         deployedComponentImporter.importObject(json);
-        assertEquals(1, mockComponentDao.getSavedObjects().size());
-        DeployedComponent component = mockComponentDao.getSavedObjects().get(0);
+        assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
+        DeployedComponent component = daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0);
         assertTrue(component.getId().matches("c[0-9a-f]{32}"));
         assertEquals("name", component.getName());
         assertEquals("location", component.getLocation());
@@ -95,8 +95,8 @@ public class DeployedComponentImporterTest {
         deployedComponentImporter.importObject(original);
         JSONObject updated = generateJson(null, "name", "location", "epyt", null, null, null);
         deployedComponentImporter.importObject(updated);
-        assertEquals(1, mockComponentDao.getSavedObjects().size());
-        DeployedComponent component = mockComponentDao.getSavedObjects().get(0);
+        assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
+        DeployedComponent component = daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0);
         assertEquals("name", component.getName());
         assertEquals("location", component.getLocation());
         assertEquals("epyt", component.getType());
@@ -114,7 +114,7 @@ public class DeployedComponentImporterTest {
         deployedComponentImporter.importObject(original);
         JSONObject updated = generateJson(null, "name", "noitacol", "epyt", null, null, null);
         deployedComponentImporter.importObject(updated);
-        assertEquals(2, mockComponentDao.getSavedObjects().size());
+        assertEquals(2, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
     }
 
     /**
@@ -129,7 +129,7 @@ public class DeployedComponentImporterTest {
         deployedComponentImporter.importObject(original);
         JSONObject updated = generateJson(null, "eman", "location", "epyt", null, null, null);
         deployedComponentImporter.importObject(updated);
-        assertEquals(2, mockComponentDao.getSavedObjects().size());
+        assertEquals(2, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
     }
 
     /**
@@ -145,7 +145,7 @@ public class DeployedComponentImporterTest {
         deployedComponentImporter.importObject(generateJson("i", "o", "l", "t", "d", "v", "a"));
         deployedComponentImporter.importObject(generateJson("i", "n", "m", "t", "d", "v", "a"));
         deployedComponentImporter.importObject(generateJson("i", "o", "m", "t", "d", "v", "a"));
-        assertEquals(1, mockComponentDao.getSavedObjects().size());
+        assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
     }
 
     /**
@@ -192,9 +192,9 @@ public class DeployedComponentImporterTest {
         array.put(generateJson("someid", "foo", "bar", "baz", "blarg", "glarb", "quux"));
         array.put(generateJson(null, "name", "location", "type", null, null, null));
         deployedComponentImporter.importObjectList(array);
-        assertEquals(2, mockComponentDao.getSavedObjects().size());
-        DeployedComponent component1 = mockComponentDao.getSavedObjects().get(0);
-        DeployedComponent component2 = mockComponentDao.getSavedObjects().get(1);
+        assertEquals(2, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
+        DeployedComponent component1 = daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0);
+        DeployedComponent component2 = daoFactory.getMockDeployedComponentDao().getSavedObjects().get(1);
         assertEquals("someid", component1.getId());
         assertEquals("foo", component1.getName());
         assertEquals("bar", component1.getLocation());
@@ -255,8 +255,8 @@ public class DeployedComponentImporterTest {
         array.put(generateJson(null, "zaz", "/usr/bin", "rexecutable", null, null, null));
         array.put(generateJson(null, "zaz", "/usr/bin", "executable", null, null, null));
         deployedComponentImporter.importObjectList(array);
-        assertEquals(1, mockComponentDao.getSavedObjects().size());
-        assertEquals("rexecutable", mockComponentDao.getSavedObjects().get(0).getType());
+        assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
+        assertEquals("rexecutable", daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0).getType());
     }
 
     /**
@@ -272,8 +272,8 @@ public class DeployedComponentImporterTest {
         HeterogeneousRegistryImpl registry = UnitTestUtils.createRegistry();
         deployedComponentImporter.setRegistry(registry);
         deployedComponentImporter.importObject(generateJson(null, "zaz", "/usr/bin", "executable", null, null, null));
-        assertEquals(1, mockComponentDao.getSavedObjects().size());
-        assertEquals("rexecutable", mockComponentDao.getSavedObjects().get(0).getType());
+        assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
+        assertEquals("rexecutable", daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0).getType());
         assertNotNull(registry.get(DeployedComponent.class, "zaz"));
     }
 
@@ -289,8 +289,8 @@ public class DeployedComponentImporterTest {
         array.put(generateJson(null, "bar", "/usr/bin", "executable", null, null, null));
         deployedComponentImporter.enableReplacement();
         deployedComponentImporter.importObjectList(array);
-        assertEquals(1, mockComponentDao.getSavedObjects().size());
-        assertEquals("executable", mockComponentDao.getSavedObjects().get(0).getType());
+        assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
+        assertEquals("executable", daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0).getType());
     }
 
     /**

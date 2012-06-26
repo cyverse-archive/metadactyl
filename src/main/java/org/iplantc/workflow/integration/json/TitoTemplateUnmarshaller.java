@@ -1,5 +1,6 @@
 package org.iplantc.workflow.integration.json;
 
+import static org.iplantc.workflow.integration.util.AnalysisImportUtils.getDate;
 import static org.iplantc.workflow.integration.util.JsonUtils.optBoolean;
 import static org.iplantc.workflow.integration.util.JsonUtils.optString;
 
@@ -119,14 +120,6 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
         template.setInputs(inputs);
         template.setOutputs(outputs);
         return template;
-    }
-
-    private Date getDate(String timestamp) {
-        try {
-            return new Date(Long.parseLong(timestamp));
-        } catch (Exception ignore) {
-            return null;
-        }
     }
 
     /**

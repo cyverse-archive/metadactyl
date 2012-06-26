@@ -9,6 +9,7 @@ import java.util.Map;
 
 import java.util.Set;
 import org.apache.commons.lang.StringUtils;
+import org.iplantc.persistence.dto.data.IntegrationDatum;
 import org.iplantc.persistence.dto.step.TransformationStep;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.core.Rating;
@@ -23,7 +24,6 @@ import org.iplantc.persistence.dto.workspace.Workspace;
 import org.iplantc.workflow.core.TransformationActivityReference;
 import org.iplantc.workflow.integration.util.JsonUtils;
 import org.iplantc.workflow.service.WorkspaceInitializer;
-import org.iplantc.workflow.template.groups.TemplateGroup;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,7 +78,7 @@ public class TitoAnalysisUnmarshaller implements TitoUnmarshaller<Transformation
         analysis.setSteps(stepListFromJson(json.getJSONArray("steps")));
         analysis.setMappings(mappingListFromJson(analysis, json.optJSONArray("mappings")));
 
-        analysis.setIntegrationDatum(integrationDatumUnmarshaller.fromJson(json));
+        analysis.setIntegrationDatum(getIntegrationDatum(json));
 
         Date editedDate = getDate(json.optString("edited_date"));
         if (editedDate != null) {
@@ -95,7 +95,22 @@ public class TitoAnalysisUnmarshaller implements TitoUnmarshaller<Transformation
 
         return analysis;
     }
-    
+
+	/**
+	 * Gets the integration datum to use for this analysis.  If a matching integration datum already exists then that
+	 * one will be used.  Otherwise, a new one will be created.
+	 * 
+	 * @param json the JSON object representing the analysis.
+	 * @return the matching integration datum.
+	 * @throws JSONException if a JSON error occurs.
+	 */
+	private IntegrationDatum getIntegrationDatum(JSONObject json) throws JSONException {
+		IntegrationDatum integrationDatum = integrationDatumUnmarshaller.fromJson(json);
+		IntegrationDatum existing = daoFactory.getIntegrationDatumDao()
+				.findByNameAndEmail(integrationDatum.getIntegratorName(), integrationDatum.getIntegratorEmail());
+		return existing == null ? integrationDatum : existing;
+	}
+
     private Date getDate(String timestamp) {
         try {
             return new Date(Long.parseLong(timestamp));
@@ -148,7 +163,7 @@ public class TitoAnalysisUnmarshaller implements TitoUnmarshaller<Transformation
     private List<InputOutputMap> mappingListFromJson(TransformationActivity analysis, JSONArray array)
         throws JSONException
     {
-        List<InputOutputMap> mappings = null;
+        List<InputOutputMap> mappings;
         if (array != null) {
             TitoInputOutputMapUnmarshaller unmarshaller = new TitoInputOutputMapUnmarshaller(analysis);
             mappings = unmarshaller.unmarshall(array);
@@ -183,9 +198,9 @@ public class TitoAnalysisUnmarshaller implements TitoUnmarshaller<Transformation
      */
     private TransformationStep stepFromJson(JSONObject json) throws JSONException {
         TransformationStep step = new TransformationStep();
-        step.setGuid(getId(json, "id"));
-        step.setName(json.getString("name"));
-        step.setDescription(json.optString("description", ""));
+        step.setGuid(getId(json, "id").trim());
+        step.setName(json.getString("name").trim());
+        step.setDescription(json.optString("description", "").trim());
         step.setTransformation(transformationFromTransformationStepJson(json));
         return step;
     }

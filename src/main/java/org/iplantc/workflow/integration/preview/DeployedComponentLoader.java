@@ -18,7 +18,7 @@ public class DeployedComponentLoader extends ObjectLoader {
      */
     @Override
     public void loadObject(JSONObject json) throws JSONException {
-        TitoDeployedComponentUnmarshaller unmarshaller = new TitoDeployedComponentUnmarshaller();
+        TitoDeployedComponentUnmarshaller unmarshaller = new TitoDeployedComponentUnmarshaller(null);
         if (json != null) {
             loadDeployedComponent(unmarshaller, json);
         }
@@ -29,7 +29,7 @@ public class DeployedComponentLoader extends ObjectLoader {
      */
     @Override
     public void loadObjectList(JSONArray array) throws JSONException {
-        TitoDeployedComponentUnmarshaller unmarshaller = new TitoDeployedComponentUnmarshaller();
+        TitoDeployedComponentUnmarshaller unmarshaller = new TitoDeployedComponentUnmarshaller(null);
         if (array != null) {
             for (int i = 0; i < array.length(); i++) {
                 JSONObject json = array.getJSONObject(i);
