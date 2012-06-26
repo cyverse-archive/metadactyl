@@ -385,7 +385,6 @@ public class WorkflowImportService {
         }
         catch (HibernateException e) {
             logHibernateExceptionCause(e);
-            throw e;
         }
     }
 
@@ -394,16 +393,26 @@ public class WorkflowImportService {
      * 
      * @param e the exception.
      */
-    private void logHibernateExceptionCause(HibernateException e) {
+    private void logHibernateExceptionCause(HibernateException e) throws WorkflowException {
         Throwable currentException = e.getCause();
+        Throwable nextException = null;
         while (currentException != null) {
             if (currentException instanceof SQLException) {
                 SQLException sqlException = (SQLException) currentException;
                 if (sqlException.getNextException() != null) {
                     LOG.error("Next Exception: ", sqlException.getNextException());
+                    if (nextException == null) {
+                        nextException = sqlException.getNextException();
+                    }
                 }
             }
             currentException = currentException.getCause();
+        }
+        if (nextException != null) {
+            throw new WorkflowException(nextException.getMessage());
+        }
+        else {
+            throw e;
         }
     }
 }
