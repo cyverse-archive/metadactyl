@@ -1,10 +1,13 @@
 package org.iplantc.workflow.model;
 
+import java.util.ArrayList;
+import static org.iplantc.workflow.util.UnitTestUtils.longString;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
 import org.iplantc.workflow.mock.MockWorkflowMarshaller;
+import org.iplantc.workflow.util.FieldLengthValidationException;
 import org.junit.Test;
 
 /**
@@ -204,5 +207,53 @@ public class RuleTest extends WorkflowElementTest<Rule> {
         assertTrue(rule1.hashCode() == rule2.hashCode());
         rule2.addArgument("some as yet undiscovered argument");
         assertFalse(rule1.hashCode() == rule2.hashCode());
+    }
+
+    /**
+     * Verifies that the first argument in a list of arguments is validated.
+     */
+    @Test(expected = FieldLengthValidationException.class)
+    public void shouldValidateFirstRuleValue() {
+        createInstance().setArguments(Arrays.asList(longString(256), "foo", "bar", "baz", "quux"));
+    }
+    
+    /**
+     * Verifies that the middle argument in a list of arguments is validated.
+     */
+    @Test(expected = FieldLengthValidationException.class)
+    public void shouldValidateMiddleRuleValue() {
+        createInstance().setArguments(Arrays.asList("foo", "bar", longString(256), "baz", "quux"));
+    }
+
+    /**
+     * Verifies that the last argument in a list of arguments is validated.
+     */
+    @Test(expected = FieldLengthValidationException.class)
+    public void shouldValidateLastRuleValue() {
+        createInstance().setArguments(Arrays.asList("foo", "bar", "baz", "quux", longString(256)));
+    }
+
+    /**
+     * Verifies that the only argument in a list of arguments is validated.
+     */
+    @Test(expected = FieldLengthValidationException.class)
+    public void shouldValidateOnlyRuleValue() {
+        createInstance().setArguments(Arrays.asList(longString(256)));
+    }
+    
+    /**
+     * Verifies that an empty list can be validated without causing an error.
+     */
+    @Test
+    public void emptyListShouldPassValidation() {
+        createInstance().setArguments(new ArrayList<String>());
+    }
+
+    /**
+     * Verifies that addArgument validates rule arguments.
+     */
+    @Test(expected = FieldLengthValidationException.class)
+    public void addArgumentShouldValidateArgumentLength() {
+        createInstance().addArgument(longString(256));
     }
 }

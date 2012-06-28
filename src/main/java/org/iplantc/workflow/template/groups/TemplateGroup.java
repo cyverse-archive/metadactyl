@@ -1,5 +1,7 @@
 package org.iplantc.workflow.template.groups;
 
+import static org.iplantc.workflow.util.ValidationUtils.validateFieldLength;
+
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +45,7 @@ public class TemplateGroup implements NamedAndUnique {
     }
 
     public void setId(String id) {
+        validateFieldLength(this.getClass(), "id", id, 255);
         this.id = id;
     }
 
@@ -52,6 +55,7 @@ public class TemplateGroup implements NamedAndUnique {
     }
 
     public void setName(String name) {
+        validateFieldLength(this.getClass(), "name", name, 255);
         this.name = name;
     }
 
@@ -76,6 +80,7 @@ public class TemplateGroup implements NamedAndUnique {
     }
 
     public void setDescription(String description) {
+        validateFieldLength(this.getClass(), "description", description, 255);
         this.description = description;
     }
 

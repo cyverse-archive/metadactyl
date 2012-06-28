@@ -1,11 +1,13 @@
 package org.iplantc.workflow.model;
 
+import static org.iplantc.workflow.util.UnitTestUtils.longString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import org.iplantc.workflow.mock.MockWorkflowMarshaller;
+import org.iplantc.workflow.util.FieldLengthValidationException;
 import org.junit.Test;
 
 /**
@@ -252,5 +254,10 @@ public class PropertyTest extends WorkflowElementTest<Property> {
         assertTrue(property1.hashCode() == property2.hashCode());
         property2.setOmitIfBlank(false);
         assertFalse(property2.hashCode() == property1.hashCode());
+    }
+
+    @Test(expected = FieldLengthValidationException.class)
+    public void shouldValidateDefaultValueLength() {
+        createInstance().setDefaultValue(longString(256));
     }
 }

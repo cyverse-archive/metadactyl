@@ -1,5 +1,7 @@
 package org.iplantc.workflow.model;
 
+import static org.iplantc.workflow.util.ValidationUtils.validateFieldLength;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.workflow.WorkflowException;
@@ -116,6 +118,7 @@ public class Property extends WorkflowElement {
      * @param value the new property value.
      */
     public void setDefaultValue(String value) {
+        validateFieldLength(this.getClass(), "defaultValue", value, 255);
         this.defaultValue = value;
     }
 

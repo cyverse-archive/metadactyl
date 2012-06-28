@@ -1,5 +1,7 @@
 package org.iplantc.workflow.model;
 
+import static org.iplantc.workflow.util.ValidationUtils.validateFieldLength;
+
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
 
@@ -25,6 +27,8 @@ public class RuleSubtype extends WorkflowElement {
      */
     public RuleSubtype(String id, String name, String label, String description) {
         super(id, name, label, description);
+        validateFieldLength(this.getClass(), "id", id, 40);
+        validateFieldLength(this.getClass(), "name", name, 40);
     }
 
     /**

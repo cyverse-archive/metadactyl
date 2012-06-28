@@ -1,5 +1,7 @@
 package org.iplantc.workflow.model;
 
+import static org.iplantc.workflow.util.ValidationUtils.validateFieldLength;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -88,6 +90,7 @@ public class RuleType extends WorkflowElement {
      * @param ruleDescriptionFormat a format specification for describing individual rules of this type.
      */
     public void setRuleDescriptionFormat(String ruleDescriptionFormat) {
+        validateFieldLength(this.getClass(), "ruleDescriptionFormat", ruleDescriptionFormat, 255);
         this.ruleDescriptionFormat = ruleDescriptionFormat;
     }
 

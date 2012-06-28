@@ -1,5 +1,7 @@
 package org.iplantc.workflow.model;
 
+import static org.iplantc.workflow.util.ValidationUtils.validateFieldLength;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -88,6 +90,7 @@ public class Template extends WorkflowElement {
      * @param template_type the new type of this template
      */
     public void setTemplateType(String template_type) {
+        validateFieldLength(this.getClass(), "type", template_type, 255);
         templateType = template_type;
     }
 
@@ -104,6 +107,7 @@ public class Template extends WorkflowElement {
      * @param ttype the type of the template
      */
     public void setType(String ttype) {
+        validateFieldLength(this.getClass(), "type", ttype, 255);
         templateType = ttype;
     }
 
@@ -224,6 +228,7 @@ public class Template extends WorkflowElement {
     }
 
     public void setComponent(String component) {
+        validateFieldLength(this.getClass(), "component_id", component, 255);
         this.component = component;
     }
 

@@ -1,5 +1,7 @@
 package org.iplantc.workflow.model;
 
+import static org.iplantc.workflow.util.ValidationUtils.validateFieldLength;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -91,6 +93,7 @@ public class PropertyGroup extends WorkflowElement implements Iterable<Property>
      * @param pgtype the name of the property group type.
      */
     public void setGroupType(String pgtype) {
+        validateFieldLength(this.getClass(), "type", pgtype, 255);
         groupType = pgtype;
     }
 

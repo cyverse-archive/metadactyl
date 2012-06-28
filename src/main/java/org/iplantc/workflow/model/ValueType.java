@@ -1,5 +1,7 @@
 package org.iplantc.workflow.model;
 
+import static org.iplantc.workflow.util.ValidationUtils.validateFieldLength;
+
 import org.iplantc.persistence.NamedAndUnique;
 import org.iplantc.persistence.RepresentableAsJson;
 import org.iplantc.workflow.WorkflowException;
@@ -60,6 +62,7 @@ public class ValueType implements RepresentableAsJson, NamedAndUnique {
      * @param id the value used to identify the value type outside of the database.
      */
     public void setId(String id) {
+        validateFieldLength(this.getClass(), "id", id, 40);
         this.id = id;
     }
 
@@ -75,6 +78,7 @@ public class ValueType implements RepresentableAsJson, NamedAndUnique {
      * @param name the name of the value type.
      */
     public void setName(String name) {
+        validateFieldLength(this.getClass(), "name", name, 40);
         this.name = name;
     }
 
@@ -89,6 +93,7 @@ public class ValueType implements RepresentableAsJson, NamedAndUnique {
      * @param description a brief description of the value type.
      */
     public void setDescription(String description) {
+        validateFieldLength(this.getClass(), "description", description, 40);
         this.description = description;
     }
 

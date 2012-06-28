@@ -1,5 +1,6 @@
 package org.iplantc.workflow.model;
 
+import static org.iplantc.workflow.util.UnitTestUtils.longString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -7,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 
 import org.iplantc.workflow.mock.MockWorkflowMarshaller;
+import org.iplantc.workflow.util.FieldLengthValidationException;
 import org.junit.Test;
 
 public class TemplateTest extends WorkflowElementTest<Template> {
@@ -163,5 +165,29 @@ public class TemplateTest extends WorkflowElementTest<Template> {
         assertTrue(template1.hashCode() == template2.hashCode());
         template2.setTemplateType("some template type");
         assertFalse(template1.hashCode() == template2.hashCode());
+    }
+
+    /**
+     * Verifies that setTemplateType validates the field length.
+     */
+    @Test(expected = FieldLengthValidationException.class)
+    public void shouldValidateTemplateTypeLength() {
+        createInstance().setTemplateType(longString(256));
+    }
+
+    /**
+     * Verifies that setType validates the field length.
+     */
+    @Test(expected = FieldLengthValidationException.class)
+    public void shouldValidateTypeLength() {
+        createInstance().setType(longString(256));
+    }
+
+    /**
+     * Verifies that setComponent validates the field length.
+     */
+    @Test(expected = FieldLengthValidationException.class)
+    public void shouldValidateComponentLength() {
+        createInstance().setComponent(longString(256));
     }
 }

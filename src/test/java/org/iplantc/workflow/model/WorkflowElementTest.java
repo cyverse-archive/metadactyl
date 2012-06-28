@@ -1,10 +1,12 @@
 package org.iplantc.workflow.model;
 
+import static org.iplantc.workflow.util.UnitTestUtils.longString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.iplantc.workflow.mock.MockWorkflowElement;
+import org.iplantc.workflow.util.FieldLengthValidationException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -132,7 +134,7 @@ public abstract class WorkflowElementTest<T extends WorkflowElement> {
      * Verifies that equals() detects unequal names.
      */
     @Test
-    public void equalsShouldDetectUneuqlNames() {
+    public void equalsShouldDetectUnequalNames() {
         assertFalse(createInstance("1", "a", "b", "c").equals(createInstance("1", "b", "b", "c")));
         assertFalse(createInstance("1", "a", "b", "c").equals(createInstance("1", null, "b", "c")));
         assertFalse(createInstance("1", null, "b", "c").equals(createInstance("1", "a", "b", "c")));
@@ -209,5 +211,69 @@ public abstract class WorkflowElementTest<T extends WorkflowElement> {
     public void hashCodeShouldIncludeClass() {
         assertTrue(createInstance("1", "a", "b", "c").hashCode() == createInstance("1", "a", "b", "c").hashCode());
         assertFalse(createInstance("1", "a", "b", "c").hashCode() == new MockWorkflowElement("1", "a", "b", "c").hashCode());
+    }
+
+    /**
+     * Verifies that the identifier length is validated in the constructor.
+     */
+    @Test(expected = FieldLengthValidationException.class)
+    public void shouldValidateIdLengthInConstructor() {
+        createInstance(longString(256), "b", "c", "d");
+    }
+
+    /**
+     * Verifies that the identifier length is validated in the setter.
+     */
+    @Test(expected = FieldLengthValidationException.class)
+    public void shouldValidateIdLengthInSetter() {
+        createInstance("a", "b", "c", "d").setId(longString(256));
+    }
+
+    /**
+     * Verifies that the name length is validated in the constructor.
+     */
+    @Test(expected = FieldLengthValidationException.class)
+    public void shouldValidateNameLength() {
+        createInstance("a", longString(256), "c", "d");
+    }
+
+    /**
+     * Verifies that the name length is validated in the setter.
+     */
+    @Test(expected = FieldLengthValidationException.class)
+    public void shouldValidateNameLengthInSetter() {
+        createInstance("a", "b", "c", "d").setName(longString(256));
+    }
+
+    /**
+     * Verifies that the label length is validated in the constructor.
+     */
+    @Test(expected = FieldLengthValidationException.class)
+    public void shouldValidateLabelLengthInConstructor() {
+        createInstance("a", "b", longString(256), "d");
+    }
+
+    /**
+     * Verifies that the label length is validated in the setter.
+     */
+    @Test(expected = FieldLengthValidationException.class)
+    public void shouldValidateLabelLengthInSetter() {
+        createInstance("a", "b", "c", "d").setLabel(longString(256));
+    }
+
+    /**
+     * Verifies that the description length is validated in the constructor.
+     */
+    @Test(expected = FieldLengthValidationException.class)
+    public void shouldValidateDescriptionLengthInConstructor() {
+        createInstance("a", "b", "c", longString(256));
+    }
+
+    /**
+     * Verifies that the description length is validated in the setter.
+     */
+    @Test(expected = FieldLengthValidationException.class)
+    public void shouldValidateDescriptionLengthInSetter() {
+        createInstance("a", "b", "c", "d").setDescription(longString(256));
     }
 }
