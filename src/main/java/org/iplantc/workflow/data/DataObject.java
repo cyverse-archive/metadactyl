@@ -1,5 +1,7 @@
 package org.iplantc.workflow.data;
 
+import static org.iplantc.workflow.util.ValidationUtils.validateFieldLength;
+
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.NamedAndUnique;
 import org.iplantc.persistence.dto.data.DataFormat;
@@ -55,6 +57,7 @@ public class DataObject implements NamedAndUnique {
     }
 
     public void setId(String id) {
+        validateFieldLength(this.getClass(), "id", id, 255);
         this.id = id;
     }
 
@@ -64,6 +67,7 @@ public class DataObject implements NamedAndUnique {
     }
 
     public void setName(String name) {
+        validateFieldLength(this.getClass(), "name", name, 255);
         this.name = name;
     }
 
@@ -72,6 +76,7 @@ public class DataObject implements NamedAndUnique {
     }
 
     public void setLabel(String label) {
+        validateFieldLength(this.getClass(), "label", label, 255);
         this.label = label;
     }
 
@@ -124,6 +129,7 @@ public class DataObject implements NamedAndUnique {
     }
 
     public void setSwitchString(String switchString) {
+        validateFieldLength(this.getClass(), "switchString", switchString, 255);
         this.switchString = switchString;
     }
 
@@ -132,6 +138,7 @@ public class DataObject implements NamedAndUnique {
     }
 
     public void setDescription(String description) {
+        validateFieldLength(this.getClass(), "description", description, 255);
         this.description = description;
     }
 

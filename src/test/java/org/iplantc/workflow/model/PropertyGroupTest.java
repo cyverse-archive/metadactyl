@@ -1,11 +1,13 @@
 package org.iplantc.workflow.model;
 
+import static org.iplantc.workflow.util.UnitTestUtils.longString;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.Iterator;
 
 import org.iplantc.workflow.mock.MockWorkflowMarshaller;
+import org.iplantc.workflow.util.FieldLengthValidationException;
 import org.junit.Test;
 
 /**
@@ -175,5 +177,13 @@ public class PropertyGroupTest extends WorkflowElementTest<PropertyGroup> {
         assertTrue(propertyGroup1.hashCode() == propertyGroup2.hashCode());
         propertyGroup2.setGroupType("Blarg!");
         assertFalse(propertyGroup1.hashCode() == propertyGroup2.hashCode());
+    }
+
+    /**
+     * Verifies that the property group type is validated in the setter.
+     */
+    @Test(expected = FieldLengthValidationException.class)
+    public void shouldValidateGroupTypeLength() {
+        createInstance().setGroupType(longString(256));
     }
 }

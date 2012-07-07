@@ -1,5 +1,7 @@
 package org.iplantc.workflow.core;
 
+import static org.iplantc.workflow.util.ValidationUtils.validateFieldLength;
+
 import org.iplantc.persistence.dto.listing.JobType;
 import org.iplantc.persistence.dto.data.IntegrationDatum;
 import java.util.ArrayList;
@@ -205,6 +207,7 @@ public class TransformationActivity implements NamedAndUnique, PipelineCandidate
     }
 
     public void setType(String type) {
+        validateFieldLength(this.getClass(), "type", type, 255);
         this.type = type;
     }
 
@@ -254,6 +257,7 @@ public class TransformationActivity implements NamedAndUnique, PipelineCandidate
     }
 
     public void setDescription(String description) {
+        validateFieldLength(this.getClass(), "description", description, 255);
         this.description = description;
     }
 
@@ -263,6 +267,7 @@ public class TransformationActivity implements NamedAndUnique, PipelineCandidate
     }
 
     public void setId(String id) {
+        validateFieldLength(this.getClass(), "id", id, 255);
         this.id = id;
     }
 
@@ -272,6 +277,7 @@ public class TransformationActivity implements NamedAndUnique, PipelineCandidate
     }
 
     public void setName(String name) {
+        validateFieldLength(this.getClass(), "name", name, 255);
         this.name = name;
     }
 
@@ -312,6 +318,7 @@ public class TransformationActivity implements NamedAndUnique, PipelineCandidate
     }
 
     public void setWikiurl(String wikiurl) {
+        validateFieldLength(this.getClass(), "wikiurl", wikiurl, 1024);
         this.wikiurl = wikiurl;
     }
 

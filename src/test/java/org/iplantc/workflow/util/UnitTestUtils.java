@@ -1,9 +1,9 @@
 package org.iplantc.workflow.util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.components.DeployedComponent;
 import org.iplantc.persistence.dto.data.DataFormat;
 import org.iplantc.persistence.dto.data.DeployedComponentDataFile;
@@ -506,5 +506,15 @@ public class UnitTestUtils {
         templateGroup.setId(ImportUtils.generateId());
         templateGroup.setName(name);
         return templateGroup;
+    }
+
+    /**
+     * Generates a long string.
+     * 
+     * @param len the required string length.
+     * @return the string.
+     */
+    public static String longString(int len) {
+        return StringUtils.repeat("a", len);
     }
 }
