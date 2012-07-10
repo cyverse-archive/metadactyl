@@ -11,14 +11,17 @@ import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.client.ZoidbergClient;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
+import org.iplantc.workflow.integration.TemplateExporter;
+import org.iplantc.workflow.integration.json.NoIdRetentionStrategy;
 import org.iplantc.workflow.integration.json.TitoIntegrationDatumMashaller;
+import org.iplantc.workflow.integration.util.JsonUtils;
 import org.iplantc.workflow.service.dto.AnalysisId;
 import org.iplantc.workflow.user.UserDetails;
 import org.json.JSONException;
 
 /**
  * A service that allows analyses to be exported to Tito for editing.
- * 
+ *
  * @author Dennis Roberts
  */
 public class AnalysisEditService {
@@ -37,11 +40,6 @@ public class AnalysisEditService {
      * Used to get the user's details.
      */
     private UserService userService;
-
-    /**
-     * Used to retrieve analyses.
-     */
-    private WorkflowExportService workflowExportService;
 
     /**
      * Used to save apps.
@@ -70,13 +68,6 @@ public class AnalysisEditService {
     }
 
     /**
-     * @param workflowExportService used to retrieve analyses.
-     */
-    public void setWorkflowExportService(WorkflowExportService workflowExportService) {
-        this.workflowExportService = workflowExportService;
-    }
-
-    /**
      * @param workflowImportService used to save apps.
      */
     public void setWorkflowImportService(WorkflowImportService workflowImportService) {
@@ -84,15 +75,16 @@ public class AnalysisEditService {
     }
 
     /**
-     * Prepares an analysis for editing.  If the analysis already belongs to the user in TITO then this service
-     * merely ensures that the analysis is not marked as deleted.  If the analysis does not belong to the user
-     * in TITO, this service makes a copy of the analysis for the user in TITO and returns the new analysis ID.
-     * 
+     * Prepares an analysis for editing. If the analysis already belongs to the user in TITO then this service merely
+     * ensures that the analysis is not marked as deleted. If the analysis does not belong to the user in TITO, this
+     * service makes a copy of the analysis for the user in TITO and returns the new analysis ID.
+     *
      * @param analysisId the analysis identifier.
      * @return the (possibly new) analysis identifier.
      */
     public String prepareAnalysisForEditing(final String analysisId) {
         return new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<String>() {
+
             @Override
             public String perform(Session session) {
                 return editAnalysis(new HibernateDaoFactory(session), analysisId);
@@ -101,14 +93,15 @@ public class AnalysisEditService {
     }
 
     /**
-     * Copies an analysis.  This is different from preparing an analysis for editing in that a new copy of the
-     * analysis is created even if the user has the ability to edit the original.
-     * 
+     * Copies an analysis. This is different from preparing an analysis for editing in that a new copy of the analysis
+     * is created even if the user has the ability to edit the original.
+     *
      * @param analysisId the original analysis identifier.
      * @return the new analysis identifier.
      */
     public String copyAnalysis(final String analysisId) {
         return new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<String>() {
+
             @Override
             public String perform(Session session) {
                 return copyAnalysis(new HibernateDaoFactory(session), analysisId);
@@ -117,10 +110,10 @@ public class AnalysisEditService {
     }
 
     /**
-     * Prepares an analysis for editing.  If the analysis already belongs to the user in TITO then this service
-     * merely ensures that the analysis is not marked as deleted.  If the analysis does not belong to the user
-     * in TITO, this service makes a copy of the analysis for the user in TITO and returns the new analysis ID.
-     * 
+     * Prepares an analysis for editing. If the analysis already belongs to the user in TITO then this service merely
+     * ensures that the analysis is not marked as deleted. If the analysis does not belong to the user in TITO, this
+     * service makes a copy of the analysis for the user in TITO and returns the new analysis ID.
+     *
      * @param daoFactory used to obtain data access objects.
      * @param analysisId the analysis identifier.
      * @return the (possibly new) analysis identifier.
@@ -138,9 +131,9 @@ public class AnalysisEditService {
     }
 
     /**
-     * Prepares a new copy of an analysis for editing.  This is different from editAnalysis in that a new copy
-     * of the analysis is made even if the user already has the ability to edit the original.
-     * 
+     * Prepares a new copy of an analysis for editing. This is different from editAnalysis in that a new copy of the
+     * analysis is made even if the user already has the ability to edit the original.
+     *
      * @param daoFactory used to obtain data access objects.
      * @param analysisId the original analysis identifier.
      * @return the new analysis identifier.
@@ -151,7 +144,7 @@ public class AnalysisEditService {
 
     /**
      * Retrieves the analysis from Zoidberg.
-     * 
+     *
      * @param analysisId the analysis identifier.
      * @param username the username.
      * @return the analysis.
@@ -170,7 +163,7 @@ public class AnalysisEditService {
 
     /**
      * Ensures that the analysis isn't marked as deleted.
-     * 
+     *
      * @param analysis the analysis.
      */
     private void ensureAnalysisNotDeleted(JSONObject analysis) {
@@ -182,13 +175,14 @@ public class AnalysisEditService {
 
     /**
      * Retrieves the analysis using the metadata retriever.
-     * 
+     *
      * @param daoFactory used to obtain data access objects.
      * @param analysisId the analysis identifier.
      * @return the analysis.
      */
     private JSONObject exportAnalysis(DaoFactory daoFactory, String analysisId) {
-        return JSONObject.fromObject(workflowExportService.getTemplateFromAnalysis(daoFactory, analysisId));
+        return JsonUtils.toNetSfJsonObject(new TemplateExporter(daoFactory, new NoIdRetentionStrategy()).exportTemplate(
+                analysisId));
     }
 
     /**
@@ -199,14 +193,15 @@ public class AnalysisEditService {
     private void importAnalysis(String jsonString) {
         try {
             workflowImportService.importTemplate(jsonString);
-        } catch (JSONException e) {
+        }
+        catch (JSONException e) {
             throw new WorkflowException(e);
         }
     }
 
     /**
-     * Prepares a new copy of an analysis for editing.  This is different from editAnalysis in that a new copy
-     * of the analysis is made even if the user already has the ability to edit the original.
+     * Prepares a new copy of an analysis for editing. This is different from editAnalysis in that a new copy of the
+     * analysis is made even if the user already has the ability to edit the original.
      *
      * @param daoFactory used to obtain data access objects.
      * @param analysisId the original analysis identifier.
@@ -251,7 +246,7 @@ public class AnalysisEditService {
 
     /**
      * Creates an integration datum for the current user.
-     * 
+     *
      * @param email the user's e-mail address.
      * @param username the username.
      * @return the integration datum.

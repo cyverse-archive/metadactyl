@@ -27,7 +27,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for org.iplantc.workflow.integration.json.
- * 
+ *
  * @author Dennis Roberts
  */
 public class TitoTemplateMarshallerTest {
@@ -68,7 +68,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Verifies that the marshaler correctly marshals the fields in the template.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      */
     @Test
@@ -84,7 +84,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Verifies that the marshaler correctly marshals the property group container object required by TITO.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      */
     @Test
@@ -101,7 +101,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Verifies that the marshaler correctly marshals the property group fields.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      */
     @Test
@@ -123,7 +123,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Verifies that the marshaler correctly marshals the property fields.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      */
     @Test
@@ -206,7 +206,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Verifies that the marshaler correctly marshals the validator fields if the validator is present.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      */
     @Test
@@ -251,7 +251,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Verifies that the marshaller correctly marshals the list of rules if the rules are present.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      */
     @Test
@@ -296,7 +296,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Verifies that the marshaller correctly marshals the data object if it's present.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      */
     @Test
@@ -367,7 +367,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Verifies that the marshaller uses backward references when we tell it to.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      */
     @Test
@@ -390,7 +390,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Verifies that the marshaller generates properties for old-style inputs.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      */
     @Test
@@ -439,7 +439,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Verifies that the marshaller generates properties for new-style inputs.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      */
     @Test
@@ -487,8 +487,59 @@ public class TitoTemplateMarshallerTest {
     }
 
     /**
+     * Verifies that identifiers are not retained if the NoIdRetentionStrategy is used.
+     *
+     * @throws JSONException if a JSON error occurs.
+     */
+    @Test
+    public void shouldNotRetainIdentifiersWithNoIdRetentionStrategy() throws JSONException {
+        TitoTemplateMarshaller localMarshaller = new TitoTemplateMarshaller(daoFactory, true,
+                new NoIdRetentionStrategy());
+        JSONObject json = localMarshaller.toJson(createBasicTemplate());
+        assertNotNull(json.getJSONObject("groups").getJSONArray("groups").getJSONObject(0));
+
+        assertFalse("templateid".equals(json.getString("id")));
+
+        JSONObject group1 = json.getJSONObject("groups").getJSONArray("groups").getJSONObject(0);
+        assertFalse("firstpropertygroupid".equals(group1.getString("id")));
+        assertNotNull(group1.getJSONArray("properties"));
+
+        JSONArray properties = group1.getJSONArray("properties");
+
+        JSONObject property1 = properties.getJSONObject(0);
+        assertFalse("firstpropertyid".equals(property1.getString("id")));
+
+        JSONObject property2 = properties.getJSONObject(1);
+        assertFalse("secondpropertyid".equals(property2.getString("id")));
+
+        JSONObject property3 = properties.getJSONObject(2);
+        assertFalse("thirdpropertyid".equals(property3.getString("id")));
+
+        JSONObject property4 = properties.getJSONObject(3);
+        assertFalse("fourthpropertyid".equals(property4.getString("id")));
+        assertTrue(property4.has("data_object"));
+
+        JSONObject dataObject4 = property4.getJSONObject("data_object");
+        assertFalse("fourthdataobjectid".equals(dataObject4.getString("id")));
+
+        JSONObject property5 = properties.getJSONObject(4);
+        assertFalse("fifthpropertyid".equals(property5.getString("id")));
+        assertTrue(property5.has("data_object"));
+
+        JSONObject dataObject5 = property5.getJSONObject("data_object");
+        assertFalse("fifthdataobjectid".equals(dataObject5.getString("id")));
+
+        JSONObject property6 = properties.getJSONObject(5);
+        assertFalse("sixthpropertyid".equals(property6.getString("id")));
+        assertTrue(property6.has("data_object"));
+
+        JSONObject dataObject6 = property6.getJSONObject("data_object");
+        assertFalse("sixthdataobjectid".equals(dataObject6.getString("id")));
+    }
+
+    /**
      * Creates an old-style template for testing.
-     * 
+     *
      * @return the template.
      */
     private Template createOldStyleTemplate() {
@@ -501,7 +552,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates a list of old-style outputs.
-     * 
+     *
      * @return the list of outputs.
      */
     private List<DataObject> createOldStyleOutputs() {
@@ -512,7 +563,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates a list of old-style inputs.
-     * 
+     *
      * @return the list of inputs.
      */
     private List<DataObject> createOldStyleInputs() {
@@ -524,7 +575,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates a data object for testing.
-     * 
+     *
      * @param name the data object name.
      * @param multiplicity the multiplicity name.
      * @param order the order indicator.
@@ -550,7 +601,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates a basic template to use for testing.
-     * 
+     *
      * @return the template.
      */
     private Template createBasicTemplate() {
@@ -561,7 +612,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates a base template to use for testing.
-     * 
+     *
      * @return the base template.
      */
     private Template createBaseTemplate() {
@@ -576,7 +627,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates a basic list of property groups to use for testing.
-     * 
+     *
      * @return the list of property groups.
      */
     private List<PropertyGroup> createBasicPropertyGroups() {
@@ -587,7 +638,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates the first property group in the basic list of property groups to use for testing.
-     * 
+     *
      * @return the property group.
      */
     private PropertyGroup createFirstBasicPropertyGroup() {
@@ -604,7 +655,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates the first basic property in the first basic property group.
-     * 
+     *
      * @return the property list.
      */
     private List<Property> createFirstBasicPropertyList() {
@@ -620,7 +671,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates the first basic property in the first basic property group.
-     * 
+     *
      * @return the property.
      */
     private Property createFirstBasicProperty() {
@@ -639,7 +690,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates the second basic property in the first basic property group.
-     * 
+     *
      * @return the property.
      */
     private Property createSecondBasicProperty() {
@@ -659,7 +710,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates the validator for the second basic property in the first basic property group.
-     * 
+     *
      * @return the property.
      */
     private Validator createSecondBasicPropertyValidator() {
@@ -672,7 +723,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates the third basic property in the first basic property group.
-     * 
+     *
      * @return the property.
      */
     private Property createThirdBasicProperty() {
@@ -692,7 +743,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates the validator for the third basic property in the first basic property group.
-     * 
+     *
      * @return the validator.
      */
     private Validator createThirdBasicPropertyValidator() {
@@ -706,7 +757,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates the list of rules for the third property validator.
-     * 
+     *
      * @return the list of rules.
      */
     private List<Rule> createThirdValidatorRuleList() {
@@ -718,7 +769,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates the first rule for the third property validator.
-     * 
+     *
      * @return the rule.
      */
     private Rule createFirstRule() {
@@ -733,7 +784,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates the second rule for the third property validator.
-     * 
+     *
      * @return the rule.
      */
     private Rule createSecondRule() {
@@ -749,7 +800,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates the fourth basic property.
-     * 
+     *
      * @return the property.
      */
     private Property createFourthBasicProperty() {
@@ -769,7 +820,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Gets the data object for the fourth basic property without producing a duplicate.
-     * 
+     *
      * @return the data object.
      */
     private DataObject getFourthPropertyDataObject() {
@@ -783,7 +834,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates the data object for the fourth basic property.
-     * 
+     *
      * @return the data object.
      */
     private DataObject createFourthPropertyDataObject() {
@@ -803,7 +854,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates the fifth basic property.
-     * 
+     *
      * @return the property.
      */
     private Property createFifthBasicProperty() {
@@ -823,7 +874,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates the data object for the fifth basic property.
-     * 
+     *
      * @return the data object.
      */
     private DataObject createFifthPropertyDataObject() {
@@ -843,7 +894,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates the sixth basic property.
-     * 
+     *
      * @return the property.
      */
     private Property createSixthBasicProperty() {
@@ -863,7 +914,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Creates the data object for the sixth basic property.
-     * 
+     *
      * @return the data object.
      */
     private DataObject createSixthPropertyDataObject() {
@@ -883,7 +934,7 @@ public class TitoTemplateMarshallerTest {
 
     /**
      * Registers a data object so that we can refer to it later.
-     * 
+     *
      * @param dataObject the data object to register.
      * @return the data object.
      */

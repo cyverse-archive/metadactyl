@@ -56,17 +56,6 @@ public class WorkflowExportService {
     }
 
     /**
-     * Gets a template from the analysis with the given identifier.
-     * 
-     * @param daoFactory used to obtain data access objects.
-     * @param analysisId the analysis identifier.
-     * @return a JSON string representing the template.
-     */
-    public String getTemplateFromAnalysis(DaoFactory daoFactory, String analysisId) {
-        return new TemplateExporter(daoFactory).exportTemplateForAnalysis(analysisId).toString();
-    }
-
-    /**
      * Exports an analysis.
      * 
      * @param analysisId the analysis identifier.

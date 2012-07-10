@@ -25,7 +25,7 @@ import org.json.JSONObject;
 /**
  * Used to convert an existing template to a JSON document. Whenever there are multiple ways to represent a template,
  * this class attempts to match the JSON that would be produced by TITO.
- * 
+ *
  * @author Dennis Roberts
  */
 public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
@@ -41,12 +41,30 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
     private boolean useReferences;
 
     /**
+     * The identifier retention strategy to use.
+     */
+    private IdRetentionStrategy idRetentionStrategy;
+
+    /**
+     * Initializes a new instance with the default ID retention strategy (CopyIdRetentionStrategy).
+     * 
      * @param daoFactory used to obtain data access objects.
      * @param useReferences true if backward references should be used in the resulting JSON.
      */
     public TitoTemplateMarshaller(DaoFactory daoFactory, boolean useReferences) {
+        this(daoFactory, useReferences, new CopyIdRetentionStrategy());
+    }
+
+    /**
+     * @param daoFactory used to obtain data access objects.
+     * @param useReferences true if backward references should be used in the resulting JSON.
+     * @param idRetentionStrategy the ID retention strategy to use.
+     */
+    public TitoTemplateMarshaller(DaoFactory daoFactory, boolean useReferences,
+            IdRetentionStrategy idRetentionStrategy) {
         this.daoFactory = daoFactory;
         this.useReferences = useReferences;
+        this.idRetentionStrategy = idRetentionStrategy;
     }
 
     /**
@@ -64,14 +82,14 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Converts a template to a JSON object.
-     * 
+     *
      * @param template the template to convert.
      * @return the JSON object.
      * @throws JSONException if a JSON error occurs.
      */
     private JSONObject marshalTemplate(Template template) throws JSONException {
         JSONObject json = new JSONObject();
-        json.put("id", template.getId());
+        json.put("id", idRetentionStrategy.getId(template.getId()));
         json.put("name", template.getName());
         json.put("label", template.getLabel());
         if (useReferences) {
@@ -88,7 +106,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Gets the name of the deployed component with the given component identifier.
-     * 
+     *
      * @param componentId the component identifier.
      * @return the deployed component name if it's available.
      * @throws WorkflowException if the deployed component identifier can't be found.
@@ -103,7 +121,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Marshals the property group container element that is required by TITO.
-     * 
+     *
      * @param template the template being marshaled.
      * @return the JSON object.
      * @throws JSONException if a JSON error occurs.
@@ -121,7 +139,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Marshals the list of property groups.
-     * 
+     *
      * @param template the template being marshaled.
      * @return a JSON array representing the list of property groups.
      * @throws JSONException if a JSON error occurs.
@@ -139,7 +157,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Marshals an input property group for old-style inputs.
-     * 
+     *
      * @param template the template being marshaled.
      * @param referencedDataObjects the list of data objects that are referenced by properties in the template.
      * @return the property group or null if there are no old-style inputs.
@@ -164,7 +182,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Marshals an output property group for old-style outputs.
-     * 
+     *
      * @param template the template being marshaled.
      * @param referencedDataObjects the list of data objects that are referenced by properties in the template.
      * @return the property group or null if there are no old-style outputs.
@@ -189,7 +207,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Marshals the properties associated with the given inputs.
-     * 
+     *
      * @param inputs the inputs to marshal properties for.
      * @return a JSON array containing the list of input properties.
      * @throws JSONException if a JSON error occurs.
@@ -204,7 +222,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Marshals the properties associated with the given outputs.
-     * 
+     *
      * @param outputs the outputs to marshal properties for.
      * @return a JSON array containing the list of output properties.
      * @throws JSONException if a JSON error occurs.
@@ -219,7 +237,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Marshals a property for the given input.
-     * 
+     *
      * @param input the input.
      * @return the marshaled property.
      * @throws JSONException if a JSON error occurs.
@@ -241,7 +259,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Marshals a property for the given output.
-     * 
+     *
      * @param output the output.
      * @return the marshaled property.
      * @throws JSONException if a JSON error occurs.
@@ -263,14 +281,14 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Marshals a single property group.
-     * 
+     *
      * @param group the property group to marshal.
      * @return the marshalled property group.
      * @throws JSONException if a JSON error occurs.
      */
     private JSONObject marshalPropertyGroup(PropertyGroup group) throws JSONException {
         JSONObject json = new JSONObject();
-        json.put("id", group.getId());
+        json.put("id", idRetentionStrategy.getId(group.getId()));
         json.put("name", group.getName());
         json.put("label", group.getLabel());
         json.put("description", group.getDescription());
@@ -282,7 +300,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Marshals a list of properties.
-     * 
+     *
      * @param properties the property list.
      * @return the marshalled list of properties.
      * @throws JSONException if a JSON error occurs.
@@ -297,14 +315,14 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Marshals a single property.
-     * 
+     *
      * @param property the property to marshal.
      * @return the marshalled property.
      * @throws JSONException if a JSON error occurs.
      */
     private JSONObject marshalProperty(Property property) throws JSONException {
         JSONObject json = new JSONObject();
-        json.put("id", property.getId());
+        json.put("id", idRetentionStrategy.getId(property.getId()));
         json.put("name", property.getName());
         json.put("label", property.getLabel());
         json.put("description", property.getDescription());
@@ -320,7 +338,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Marshals a single data object.
-     * 
+     *
      * @param dataObject the data object to marshal.
      * @param propertyTypeName = the name of the property type.
      * @return the marshaled data object or null if the data object is null.
@@ -330,7 +348,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
         JSONObject json = null;
         if (dataObject != null) {
             json = new JSONObject();
-            json.put("id", dataObject.getId());
+            json.put("id", idRetentionStrategy.getId(dataObject.getId()));
             json.put(propertyTypeName.equalsIgnoreCase("input") ? "name" : "output_filename", dataObject.getName());
             json.put("multiplicity", titoMultiplicityName(dataObject));
             json.put("order", dataObject.getOrderd());
@@ -347,7 +365,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Marshals a single validator.
-     * 
+     *
      * @param valiator the validator to marshal.
      * @return the marshaled validator.
      * @throws JSONException if a JSON error occurs.
@@ -356,7 +374,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
         JSONObject json = null;
         if (validator != null) {
             json = new JSONObject();
-            json.put("id", validator.getId());
+            json.put("id", idRetentionStrategy.getId(validator.getId()));
             json.put("name", validator.getName());
             json.put("required", validator.isRequired());
             putIfNotNull(json, "rules", marshalRules(validator.getRules()));
@@ -366,7 +384,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Marshals the list of rules for a validator.
-     * 
+     *
      * @param rules the list of rules.
      * @return the marshaled list of rules.
      * @throws JSONException if a JSON error occurs.
@@ -384,7 +402,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Marshals a single rule.
-     * 
+     *
      * @param rule the rule to marshal.
      * @return the marshaled rule.
      * @throws JSONException if a JSON error occurs.
@@ -397,7 +415,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Marshals the argument list for a rule.
-     * 
+     *
      * @param rule the rule being marshaled.
      * @return the marshaled argument list.
      */
@@ -409,10 +427,12 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
             for (String arg : args) {
                 try {
                     array.put(new Integer(Integer.parseInt(arg.trim())));
-                } catch (NumberFormatException notInt) {
+                }
+                catch (NumberFormatException notInt) {
                     try {
                         array.put(new Double(Double.parseDouble(arg.trim())));
-                    } catch (NumberFormatException notDouble) {
+                    }
+                    catch (NumberFormatException notDouble) {
                         array.put(arg);
                     }
                 }
