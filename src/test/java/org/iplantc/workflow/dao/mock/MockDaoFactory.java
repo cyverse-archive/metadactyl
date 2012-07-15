@@ -1,6 +1,7 @@
 package org.iplantc.workflow.dao.mock;
 
 import org.iplantc.persistence.dao.WorkspaceDao;
+import org.iplantc.persistence.dao.data.DataSourceDao;
 import org.iplantc.persistence.dao.data.IntegrationDatumDao;
 import org.iplantc.persistence.dao.listing.AnalysisGroupDao;
 import org.iplantc.persistence.dao.listing.AnalysisListingDao;
@@ -24,7 +25,7 @@ import org.iplantc.workflow.dao.ValueTypeDao;
 
 /**
  * A factory for generating mock data access objects.
- * 
+ *
  * @author Dennis Roberts
  */
 public class MockDaoFactory implements DaoFactory {
@@ -104,10 +105,15 @@ public class MockDaoFactory implements DaoFactory {
      */
     private MockReferenceGenomeDao referenceGenomeDao;
 
-	/**
-	 * The mock integration datum DAO.
-	 */
-	private MockIntegrationDatumDao integrationDatumDao;
+    /**
+     * The mock integration datum DAO.
+     */
+    private MockIntegrationDatumDao integrationDatumDao;
+
+    /**
+     * The mock data source DAO.
+     */
+    private MockDataSourceDao dataSourceDao;
 
     /**
      * @param dataFormatDao the new mock data format DAO.
@@ -319,22 +325,35 @@ public class MockDaoFactory implements DaoFactory {
         return referenceGenomeDao;
     }
 
-	/**
-	 * @param integrationDatumDao the new mock integration datum DAO.
-	 */
-	public void setMockIntegrationDatumDao(MockIntegrationDatumDao integrationDatumDao) {
-		this.integrationDatumDao = integrationDatumDao;
-	}
+    /**
+     * @param integrationDatumDao the new mock integration datum DAO.
+     */
+    public void setMockIntegrationDatumDao(MockIntegrationDatumDao integrationDatumDao) {
+        this.integrationDatumDao = integrationDatumDao;
+    }
 
-	/**
-	 * @return the integration datum DAO.
-	 */
-	public MockIntegrationDatumDao getMockIntegrationDatumDao() {
-		return integrationDatumDao;
-	}
+    /**
+     * @return the integration datum DAO.
+     */
+    public MockIntegrationDatumDao getMockIntegrationDatumDao() {
+        return integrationDatumDao;
+    }
 
-	/**
-     * 
+    /**
+     * @param dataSourceDao the data source DAO.
+     */
+    public void setMockDataSourceDao(MockDataSourceDao dataSourceDao) {
+        this.dataSourceDao = dataSourceDao;
+    }
+
+    /**
+     * @return the data source DAO.
+     */
+    public MockDataSourceDao getMockDataSourceDao() {
+        return dataSourceDao;
+    }
+
+    /**
      * Initializes the factory with all empty data access objects.
      */
     public MockDaoFactory() {
@@ -353,7 +372,8 @@ public class MockDaoFactory implements DaoFactory {
         workspaceDao = new MockWorkspaceDao();
         userDao = new MockUserDao();
         referenceGenomeDao = new MockReferenceGenomeDao();
-		integrationDatumDao = new MockIntegrationDatumDao();
+        integrationDatumDao = new MockIntegrationDatumDao();
+        dataSourceDao = new MockDataSourceDao();
     }
 
     /**
@@ -478,14 +498,14 @@ public class MockDaoFactory implements DaoFactory {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * TODO: implement a mock workspace DAO
      */
     @Override
     public WorkspaceDao getWorkspaceDao() {
         return workspaceDao;
     }
-    
+
     @Override
     public UserDao getUserDao() {
         return userDao;
@@ -504,11 +524,19 @@ public class MockDaoFactory implements DaoFactory {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public IntegrationDatumDao getIntegrationDatumDao() {
-		return integrationDatumDao;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public IntegrationDatumDao getIntegrationDatumDao() {
+        return integrationDatumDao;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DataSourceDao getDataSourceDao() {
+        return dataSourceDao;
+    }
 }

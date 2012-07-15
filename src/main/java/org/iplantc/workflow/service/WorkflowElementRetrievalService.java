@@ -3,7 +3,6 @@ package org.iplantc.workflow.service;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.hibernate.SessionFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,6 +46,7 @@ public class WorkflowElementRetrievalService {
         subServiceMap.put("property-types", new PropertyTypeRetrievalService(sessionFactory));
         subServiceMap.put("rule-types", new RuleTypeRetrievalService(sessionFactory));
         subServiceMap.put("value-types", new ValueTypeRetrievalService(sessionFactory));
+        subServiceMap.put("data-sources", new DataSourceRetrievalService(sessionFactory));
     }
 
     /**
