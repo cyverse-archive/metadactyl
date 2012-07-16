@@ -1,0 +1,19 @@
+package org.iplantc.workflow.integration.validation;
+
+import org.iplantc.workflow.model.Template;
+
+/**
+ * Validates templates that are being imported into the DE.  This is implemented as an interface in order to enable
+ * multiple validators to be chained together.
+ * 
+ * @author Dennis Roberts
+ */
+public interface TemplateValidator {
+
+    /**
+     * Validates a template.
+     * 
+     * @param template the template to validate.
+     */
+    public void validate(Template template);
+}

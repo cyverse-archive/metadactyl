@@ -27,6 +27,7 @@ import org.iplantc.workflow.data.DataObject;
 import org.iplantc.workflow.data.InfoType;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistry;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistryImpl;
+import org.iplantc.workflow.integration.validation.TooManyOutputRedirectionsException;
 import org.iplantc.workflow.mock.MockWorkspaceInitializer;
 import org.iplantc.workflow.model.Property;
 import org.iplantc.workflow.model.PropertyGroup;
@@ -99,6 +100,7 @@ public class TemplateImporterTest {
         initializeDeployedComponentDao();
         initializeUserService();
         initializeWorkspaceInitializer();
+        UnitTestUtils.initializeDataSourceDao(daoFactory.getMockDataSourceDao());
         importer = new TemplateImporter(daoFactory);
 
         UnitTestUtils.addRootTemplateGroup(daoFactory.getMockTemplateGroupDao());
@@ -1081,5 +1083,29 @@ public class TemplateImporterTest {
                 DataElementPreservation.class);
         assertNotNull(registeredObjects);
         assertFalse(registeredObjects.isEmpty());
+    }
+
+    /**
+     * Verifies that the validation fails if there are multiple redirections to standard output.
+     * 
+     * @throws JSONException if a JSON error occurs.
+     * @throws IOException if an I/O error occurs.
+     */
+    @Test(expected = TooManyOutputRedirectionsException.class)
+    public void testMultipleStdoutRedirections() throws JSONException, IOException {
+        JSONObject json = getTestJSONObject("fully_specified_template_multiple_stdout_redirections");
+        importer.importObject(json);
+    }
+
+    /**
+     * Verifies that the validation fails if there are multiple redirections to standard error output.
+     * 
+     * @throws JSONException if a JSON error occurs.
+     * @throws IOException if an I/O error occurs.
+     */
+    @Test(expected = TooManyOutputRedirectionsException.class)
+    public void testMultipleStderrRedirections() throws JSONException, IOException {
+        JSONObject json = getTestJSONObject("fully_specified_template_multiple_stderr_redirections");
+        importer.importObject(json);
     }
 }

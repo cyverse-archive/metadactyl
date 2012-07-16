@@ -14,6 +14,8 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.components.DeployedComponent;
 import org.iplantc.persistence.dto.data.DataFormat;
+import org.iplantc.persistence.dto.data.DataSource;
+import org.iplantc.workflow.UnknownDataSourceException;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.data.DataElementPreservation;
@@ -435,6 +437,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
         dataObject.setName(JsonUtils.nonEmptyOptString(json, "", "output_filename", "name", "label"));
         dataObject.setRetain(json.optBoolean("retain", true));
         dataObject.setImplicit(json.optBoolean("is_implicit", false));
+        dataObject.setDataSource(findDataSource(json.optString("data_source", "file")));
         return dataObject;
     }
 
@@ -454,7 +457,23 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
         DataObject dataObject = dataObjectFromJson(json, listIndex, propertyId);
         dataObject.setName(JsonUtils.nonEmptyOptString(json, "", "name", "label"));
         dataObject.setRetain(json.optBoolean("retain", false));
+        dataObject.setDataSource(findDataSource("file"));
         return dataObject;
+    }
+
+    /**
+     * Finds the data source with the name specified in the JSON.
+     * 
+     * @param name the data source name.
+     * @return the data source.
+     * @throws UnknownDataSourceException if the data source isn't found.
+     */
+    private DataSource findDataSource(String name) {
+        DataSource dataSource = daoFactory.getDataSourceDao().findByName(name);
+        if (dataSource == null) {
+            throw new UnknownDataSourceException("name", name);
+        }
+        return dataSource;
     }
 
     /**

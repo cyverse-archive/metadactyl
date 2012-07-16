@@ -21,6 +21,7 @@ import org.iplantc.workflow.dao.mock.MockPropertyTypeDao;
 import org.iplantc.workflow.dao.mock.MockRuleTypeDao;
 import org.iplantc.workflow.data.DataObject;
 import org.iplantc.workflow.data.InfoType;
+import org.iplantc.workflow.integration.validation.TooManyOutputRedirectionsException;
 import org.iplantc.workflow.mock.MockWorkspaceInitializer;
 import org.iplantc.workflow.model.Property;
 import org.iplantc.workflow.model.PropertyGroup;
@@ -101,6 +102,7 @@ public class AnalysisGeneratingTemplateImporterTest {
         initializeInfoTypeRetriever();
         initializeMultiplicityDao();
         initializeDataFormatRetriever();
+        initializeDataSourceDao();
         initializeDeployedComponentDao();
         initializeTemplateGroupDao();
         initializeTemplateGroupImporter();
@@ -164,6 +166,13 @@ public class AnalysisGeneratingTemplateImporterTest {
         dataFormatRetriever.save(createDataFormat("input-ndy"));
         dataFormatRetriever.save(createDataFormat("outputformat"));
         dataFormatRetriever.save(createDataFormat("Unspecified"));
+    }
+
+    /**
+     * Initializes the mock data source DAO for all unit tests.
+     */
+    private void initializeDataSourceDao() {
+        UnitTestUtils.initializeDataSourceDao(daoFactory.getMockDataSourceDao());
     }
 
     /**
@@ -377,7 +386,31 @@ public class AnalysisGeneratingTemplateImporterTest {
 		assertEquals(integrationDatum.getId(), analysis.getIntegrationDatum().getId());
 	}
 
-	/**
+    /**
+     * Verifies that the validation fails if there are multiple redirections to standard output.
+     * 
+     * @throws JSONException if a JSON error occurs.
+     * @throws IOException if an I/O error occurs.
+     */
+    @Test(expected = TooManyOutputRedirectionsException.class)
+    public void testMultipleStdoutRedirections() throws JSONException, IOException {
+        JSONObject json = getTestJSONObject("fully_specified_template_multiple_stdout_redirections");
+        importer.importObject(json);
+    }
+
+    /**
+     * Verifies that the validation fails if there are multiple redirections to standard error output.
+     * 
+     * @throws JSONException if a JSON error occurs.
+     * @throws IOException if an I/O error occurs.
+     */
+    @Test(expected = TooManyOutputRedirectionsException.class)
+    public void testMultipleStderrRedirections() throws JSONException, IOException {
+        JSONObject json = getTestJSONObject("fully_specified_template_multiple_stderr_redirections");
+        importer.importObject(json);
+    }
+
+    /**
      * @param name the name of the property type.
      * @return the property type with the given name or null if no matching property type is found.
      */

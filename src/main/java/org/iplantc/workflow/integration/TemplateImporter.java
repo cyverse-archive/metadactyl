@@ -10,6 +10,8 @@ import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.integration.json.TitoTemplateUnmarshaller;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistry;
 import org.iplantc.workflow.integration.util.NullHeterogeneousRegistry;
+import org.iplantc.workflow.integration.validation.TemplateValidator;
+import org.iplantc.workflow.integration.validation.TemplateValidatorFactory;
 import org.iplantc.workflow.model.Template;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -119,6 +121,11 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
     private ObjectVetter<TransformationActivity> analysisVetter;
 
     /**
+     * Used to validate templates that are being imported.
+     */
+    private TemplateValidator templateValidator = TemplateValidatorFactory.createDefaultTemplateValidator();
+
+    /**
      * @return the DAO factory.
      */
     protected DaoFactory getDaoFactory() {
@@ -218,6 +225,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
     @Override
     public void importObject(JSONObject json) throws JSONException {
         Template template = unmarshallTemplate(json);
+        templateValidator.validate(template);
         validateTemplate(template);
         Template existingTemplate = findExistingTemplate(template);
         if (existingTemplate == null) {

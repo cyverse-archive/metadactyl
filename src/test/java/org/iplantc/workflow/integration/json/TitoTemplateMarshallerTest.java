@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.iplantc.persistence.dto.data.DataSource;
 
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.dao.mock.MockDaoFactory;
@@ -330,6 +331,7 @@ public class TitoTemplateMarshallerTest {
         assertEquals("--foo=", dataObject4.getString("cmdSwitch"));
         assertEquals("File", dataObject4.getString("file_info_type"));
         assertEquals("Unspecified", dataObject4.getString("format"));
+        assertEquals("file", dataObject4.getString("data_source"));
         assertEquals("fourthdataobjectdescription", dataObject4.getString("description"));
         assertTrue(dataObject4.getBoolean("required"));
         assertTrue(dataObject4.getBoolean("retain"));
@@ -345,6 +347,7 @@ public class TitoTemplateMarshallerTest {
         assertEquals("--bar=", dataObject5.getString("cmdSwitch"));
         assertEquals("Tree", dataObject5.getString("file_info_type"));
         assertEquals("NexML", dataObject5.getString("format"));
+        assertEquals("stdout", dataObject5.getString("data_source"));
         assertEquals("fifthdataobjectdescription", dataObject5.getString("description"));
         assertFalse(dataObject5.getBoolean("required"));
         assertFalse(dataObject5.getBoolean("retain"));
@@ -360,6 +363,7 @@ public class TitoTemplateMarshallerTest {
         assertEquals("--baz=", dataObject6.getString("cmdSwitch"));
         assertEquals("TraitFile", dataObject6.getString("file_info_type"));
         assertEquals("CSV", dataObject6.getString("format"));
+        assertEquals("file", dataObject6.getString("data_source"));
         assertEquals("sixthdataobjectdescription", dataObject6.getString("description"));
         assertFalse(dataObject6.getBoolean("required"));
         assertTrue(dataObject6.getBoolean("retain"));
@@ -846,6 +850,7 @@ public class TitoTemplateMarshallerTest {
         dataObject.setSwitchString("--foo=");
         dataObject.setInfoType(UnitTestUtils.createInfoType("File"));
         dataObject.setDataFormat(UnitTestUtils.createDataFormat("Unspecified"));
+        dataObject.setDataSource(getFileDataSource());
         dataObject.setDescription("fourthdataobjectdescription");
         dataObject.setRequired(true);
         dataObject.setRetain(true);
@@ -886,6 +891,7 @@ public class TitoTemplateMarshallerTest {
         dataObject.setSwitchString("--bar=");
         dataObject.setInfoType(UnitTestUtils.createInfoType("Tree"));
         dataObject.setDataFormat(UnitTestUtils.createDataFormat("NexML"));
+        dataObject.setDataSource(getStdoutDataSource());
         dataObject.setDescription("fifthdataobjectdescription");
         dataObject.setRequired(false);
         dataObject.setRetain(false);
@@ -926,6 +932,7 @@ public class TitoTemplateMarshallerTest {
         dataObject.setSwitchString("--baz=");
         dataObject.setInfoType(UnitTestUtils.createInfoType("TraitFile"));
         dataObject.setDataFormat(UnitTestUtils.createDataFormat("CSV"));
+        dataObject.setDataSource(getFileDataSource());
         dataObject.setDescription("sixthdataobjectdescription");
         dataObject.setRequired(false);
         dataObject.setRetain(true);
@@ -941,5 +948,39 @@ public class TitoTemplateMarshallerTest {
     private DataObject registerDataObject(DataObject dataObject) {
         registry.add(DataObject.class, dataObject.getName(), dataObject);
         return dataObject;
+    }
+
+    /**
+     * @return the data source to use for files.
+     */
+    private DataSource getFileDataSource() {
+        DataSource dataSource = registry.get(DataSource.class, "file");
+        if (dataSource == null) {
+            dataSource = new DataSource();
+            dataSource.setId(1);
+            dataSource.setUuid("8D6B8247-F1E7-49DB-9FFE-13EAD7C1AED6");
+            dataSource.setName("file");
+            dataSource.setLabel("File");
+            dataSource.setDescription("A regular file.");
+            registry.add(DataSource.class, dataSource.getName(), dataSource);
+        }
+        return dataSource;
+    }
+
+    /**
+     * @return the data source to use for standard output.
+     */
+    private DataSource getStdoutDataSource() {
+        DataSource dataSource = registry.get(DataSource.class, "stdout");
+        if (dataSource == null) {
+            dataSource = new DataSource();
+            dataSource.setId(2);
+            dataSource.setUuid("1EEECF26-367A-4038-8D19-93EA80741DF2");
+            dataSource.setName("stdout");
+            dataSource.setLabel("Standard Output");
+            dataSource.setDescription("Redirected standard output from a job.");
+            registry.add(DataSource.class, dataSource.getName(), dataSource);
+        }
+        return dataSource;
     }
 }

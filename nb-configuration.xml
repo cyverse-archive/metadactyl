@@ -9,5 +9,7 @@ Without this configuration present, some functionality in the IDE may be limited
     <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
         <word>unescaped</word>
         <word>Unescapes</word>
+        <word>validator</word>
+        <word>validators</word>
     </spellchecker-wordlist>
 </project-shared-configuration>

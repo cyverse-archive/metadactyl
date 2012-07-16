@@ -355,6 +355,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
             json.put("cmdSwitch", dataObject.getSwitchString());
             json.put("file_info_type", dataObject.getInfoTypeName());
             json.put("format", dataObject.getDataFormatName());
+            json.put("data_source", dataObject.getDataSourceName());
             json.put("description", dataObject.getDescription());
             json.put("required", dataObject.isRequired());
             json.put("retain", dataObject.getRetain());
