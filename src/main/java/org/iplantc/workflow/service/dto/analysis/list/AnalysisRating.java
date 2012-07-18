@@ -24,7 +24,7 @@ public class AnalysisRating extends AbstractDto {
     /**
      * The rating assigned to the analysis by the current user.
      */
-    @JsonField(name = "user", optional = true, defaultValue = "")
+    @JsonField(name = "user", optional = true)
     private Integer user;
 
     /**
