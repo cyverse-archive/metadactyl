@@ -24,13 +24,13 @@ public class AnalysisRating extends AbstractDto {
     /**
      * The rating assigned to the analysis by the current user.
      */
-    @JsonField(name = "user", optional = true)
+    @JsonField(name = "user", optional = true, defaultValue = "")
     private Integer user;
 
     /**
      * The Confluence ID of a comment on the analysis by the current user.
      */
-    @JsonField(name = "comment_id", optional = true)
+    @JsonField(name = "comment_id", optional = true, defaultValue = "")
     private Long commentId;
 
     /**
