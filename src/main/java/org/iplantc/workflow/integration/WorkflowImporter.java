@@ -56,26 +56,31 @@ public class WorkflowImporter {
      * Enables the replacement of existing objects.
      */
     public void enableReplacement() {
-        for (ObjectImporter importer : importerMap.values()) {
-            importer.enableReplacement();
-        }
+        setUpdateMode(UpdateMode.REPLACE);
     }
 
     /**
      * Disables the replacement of existing objects.
      */
     public void disableReplacement() {
-        for (ObjectImporter importer : importerMap.values()) {
-            importer.disableReplacement();
-        }
+        setUpdateMode(UpdateMode.THROW);
     }
 
     /**
      * Instructs all of the importers to ignore the replacement of existing objects.
      */
     public void ignoreReplacement() {
+        setUpdateMode(UpdateMode.IGNORE);
+    }
+
+    /**
+     * Explicitly sets the update mode of all importers.
+     * 
+     * @param updateMode the new update mode.
+     */
+    public void setUpdateMode(UpdateMode updateMode) {
         for (ObjectImporter importer : importerMap.values()) {
-            importer.ignoreReplacement();
+            importer.setUpdateMode(updateMode);
         }
     }
 

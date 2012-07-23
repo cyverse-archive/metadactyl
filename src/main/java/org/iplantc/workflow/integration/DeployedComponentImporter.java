@@ -53,7 +53,7 @@ public class DeployedComponentImporter implements ObjectImporter {
      */
     @Override
     public void enableReplacement() {
-        updateMode = UpdateMode.REPLACE;
+        setUpdateMode(UpdateMode.REPLACE);
     }
 
     /**
@@ -61,7 +61,7 @@ public class DeployedComponentImporter implements ObjectImporter {
      */
     @Override
     public void disableReplacement() {
-        updateMode = UpdateMode.THROW;
+        setUpdateMode(UpdateMode.THROW);
     }
 
     /**
@@ -69,7 +69,17 @@ public class DeployedComponentImporter implements ObjectImporter {
      */
     @Override
     public void ignoreReplacement() {
-        updateMode = UpdateMode.IGNORE;
+        setUpdateMode(UpdateMode.IGNORE);
+    }
+
+    /**
+     * Explicitly sets the update mode.
+     * 
+     * @param updateMode the new update mode.
+     */
+    @Override
+    public void setUpdateMode(UpdateMode updateMode) {
+        this.updateMode = updateMode;
     }
 
     /**
