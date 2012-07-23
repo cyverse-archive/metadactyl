@@ -22,6 +22,11 @@ public interface ObjectImporter {
     public void disableReplacement();
 
     /**
+     * Ignores attempts to replace existing objects.
+     */
+    public void ignoreReplacement();
+
+    /**
      * Imports a single object using information in a JSON object.
      * 
      * @param json the JSON object.

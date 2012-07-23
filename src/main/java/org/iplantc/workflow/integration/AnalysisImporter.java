@@ -89,7 +89,7 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
     /**
      * Indicates what should be done if an existing analysis matches the one that's being imported.
      */
-    private UpdateMode updateMode;
+    private UpdateMode updateMode = UpdateMode.DEFAULT;
 
     /**
      * True if we should allow vetted analyses to be updated.
@@ -115,6 +115,7 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
     /**
      * Instructs the importer to ignore attempts to replace existing analyses.
      */
+    @Override
     public void ignoreReplacement() {
         updateMode = UpdateMode.IGNORE;
     }

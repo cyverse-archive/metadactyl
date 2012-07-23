@@ -59,7 +59,7 @@ public class NotificationSetImporter implements ObjectImporter {
     /**
      * Indicates what should be done if an existing notification set matches the one that's being imported.
      */
-    private UpdateMode updateMode;
+    private UpdateMode updateMode = UpdateMode.DEFAULT;
 
     /**
      * Initializes a new instance of this class.
@@ -96,6 +96,7 @@ public class NotificationSetImporter implements ObjectImporter {
     /**
      * Instructs the importer to ignore attempts to replace existing notification sets.
      */
+    @Override
     public void ignoreReplacement() {
         updateMode = UpdateMode.IGNORE;
     }

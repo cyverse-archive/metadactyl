@@ -39,7 +39,7 @@ public class DeployedComponentImporter implements ObjectImporter {
     /**
      * Indicates what should be done when an existing deployed component matches the one that's being imported.
      */
-    private UpdateMode updateMode;
+    private UpdateMode updateMode = UpdateMode.DEFAULT;
 
     /**
      * @param registry the new registry.
@@ -67,6 +67,7 @@ public class DeployedComponentImporter implements ObjectImporter {
     /**
      * Instructs the importer to ignore attempts to replace an existing deployed components.
      */
+    @Override
     public void ignoreReplacement() {
         updateMode = UpdateMode.IGNORE;
     }

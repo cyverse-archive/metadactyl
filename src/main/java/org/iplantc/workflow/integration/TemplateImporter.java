@@ -108,7 +108,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
     /**
      * Indicates what should be done if an existing template matches the template being imported.
      */
-    private UpdateMode updateMode;
+    private UpdateMode updateMode = UpdateMode.DEFAULT;
 
     /**
      * True if we should allow vetted templates to be updated.
@@ -165,6 +165,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
     /**
      * Tells the importer to ignore attempts to replace existing templates.
      */
+    @Override
     public void ignoreReplacement() {
         updateMode = UpdateMode.IGNORE;
     }

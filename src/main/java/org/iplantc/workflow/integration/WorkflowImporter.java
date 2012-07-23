@@ -71,6 +71,15 @@ public class WorkflowImporter {
     }
 
     /**
+     * Instructs all of the importers to ignore the replacement of existing objects.
+     */
+    public void ignoreReplacement() {
+        for (ObjectImporter importer : importerMap.values()) {
+            importer.ignoreReplacement();
+        }
+    }
+
+    /**
      * Imports a workflow.
      * 
      * @param json the JSON object representing the workflow.

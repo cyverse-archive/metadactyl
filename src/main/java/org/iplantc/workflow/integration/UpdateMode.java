@@ -7,4 +7,9 @@ package org.iplantc.workflow.integration;
  */
 public enum UpdateMode {
     IGNORE, REPLACE, THROW;
+    
+    /**
+     * The default update mode.
+     */
+    public static final UpdateMode DEFAULT = THROW;
 }
