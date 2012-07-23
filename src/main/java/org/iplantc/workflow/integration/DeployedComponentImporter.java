@@ -37,9 +37,9 @@ public class DeployedComponentImporter implements ObjectImporter {
     private HeterogeneousRegistry registry = new NullHeterogeneousRegistry();
 
     /**
-     * True if existing deployed components in the database should be replaced.
+     * Indicates what should be done when an existing deployed component matches the one that's being imported.
      */
-    private boolean replaceExisting;
+    private UpdateMode updateMode;
 
     /**
      * @param registry the new registry.
@@ -53,7 +53,7 @@ public class DeployedComponentImporter implements ObjectImporter {
      */
     @Override
     public void enableReplacement() {
-        replaceExisting = true;
+        updateMode = UpdateMode.REPLACE;
     }
 
     /**
@@ -61,7 +61,14 @@ public class DeployedComponentImporter implements ObjectImporter {
      */
     @Override
     public void disableReplacement() {
-        replaceExisting = false;
+        updateMode = UpdateMode.THROW;
+    }
+
+    /**
+     * Instructs the importer to ignore attempts to replace an existing deployed components.
+     */
+    public void ignoreReplacement() {
+        updateMode = UpdateMode.IGNORE;
     }
 
     /**
@@ -98,8 +105,11 @@ public class DeployedComponentImporter implements ObjectImporter {
             daoFactory.getDeployedComponentDao().save(component);
             registerDeployedComponent(component);
         }
-        else if (replaceExisting) {
+        else if (updateMode == UpdateMode.REPLACE) {
             updateExistingComponent(component, existingComponent);
+            registerDeployedComponent(existingComponent);
+        }
+        else if (updateMode == UpdateMode.IGNORE) {
             registerDeployedComponent(existingComponent);
         }
         else {

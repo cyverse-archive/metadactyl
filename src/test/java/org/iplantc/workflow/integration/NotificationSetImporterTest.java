@@ -1,5 +1,6 @@
 package org.iplantc.workflow.integration;
 
+import org.iplantc.workflow.WorkflowException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -386,5 +387,69 @@ public class NotificationSetImporterTest {
             + "    ]\n"
             + "}\n";
         importer.importObject(new JSONObject(jsonString));
+    }
+
+    /**
+     * Verifies that notification sets are replaced if replacement is enabled.
+     * 
+     * @throws JSONException if a JSON error occurs.
+     */
+    @Test
+    public void shouldReplaceNotificationSetsIfReplacementEnabled() throws JSONException {
+        importer.enableReplacement();
+        importer.importObject(getMinimalNotificationSetJson("analysisid", "sometype"));
+        importer.importObject(getMinimalNotificationSetJson("analysisid", "someothertype"));
+        assertEquals(1, notificationSetDao.getSavedObjects().size());
+        assertEquals("someothertype", notificationSetDao.getSavedObjects().get(0).getNotifications().get(0).getType());
+    }
+
+    /**
+     * Verifies that an exception is thrown if notification set replacement is disabled and someone attempts to replace
+     * a notification set.
+     * 
+     * @throws JSONException if a JSON error occurs.
+     */
+    @Test(expected = WorkflowException.class)
+    public void shouldThrowExceptionIfReplacementDisabled() throws JSONException {
+        importer.disableReplacement();
+        importer.importObject(getMinimalNotificationSetJson("analysisid", "sometype"));
+        importer.importObject(getMinimalNotificationSetJson("analysisid", "someothertype"));
+    }
+
+    /**
+     * Verifies that notification sets are not replaced if replacement is ignored.
+     * 
+     * @throws JSONException if a JSON error occurs.
+     */
+    @Test
+    public void shouldNotReplaceNotificationSetsIfReplacementIgnored() throws JSONException {
+        importer.ignoreReplacement();
+        importer.importObject(getMinimalNotificationSetJson("analysisid", "sometype"));
+        importer.importObject(getMinimalNotificationSetJson("analysisid", "someothertype"));
+        assertEquals(1, notificationSetDao.getSavedObjects().size());
+        assertEquals("sometype", notificationSetDao.getSavedObjects().get(0).getNotifications().get(0).getType());
+    }
+
+    /**
+     * Creates a minimal notification set JSON object for testing.
+     * 
+     * @param analysisId the analysis identifier to use in the unit test.
+     * @param type the type of notification to include in the notification set.
+     * @return the JSON object.
+     * @throws JSONException if a JSON error occurs.
+     */
+    private JSONObject getMinimalNotificationSetJson(String analysisId, String type) throws JSONException {
+        String jsonString = "{   \"name\": \"name\",\n"
+            + "    \"analysis_id\": \"" + analysisId + "\",\n"
+            + "    \"wizard_notifications\": [\n"
+            + "        {   \"type\": \"" + type + "\",\n"
+            + "            \"sender\": \"some_sender\",\n"
+            + "            \"receivers\": [\n"
+            + "                \"baz_blrfl\"\n"
+            + "            ]\n"
+            + "        }\n"
+            + "    ]\n"
+            + "}\n";
+        return new JSONObject(jsonString);
     }
 }

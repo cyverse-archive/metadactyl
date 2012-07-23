@@ -87,9 +87,9 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
     private HeterogeneousRegistry registry = new NullHeterogeneousRegistry();
 
     /**
-     * True if existing analyses with the same name should be replaced.
+     * Indicates what should be done if an existing analysis matches the one that's being imported.
      */
-    private boolean replaceExisting;
+    private UpdateMode updateMode;
 
     /**
      * True if we should allow vetted analyses to be updated.
@@ -101,7 +101,7 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
      */
     @Override
     public void enableReplacement() {
-        replaceExisting = true;
+        updateMode = UpdateMode.REPLACE;
     }
 
     /**
@@ -109,7 +109,14 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
      */
     @Override
     public void disableReplacement() {
-        replaceExisting = false;
+        updateMode = UpdateMode.THROW;
+    }
+
+    /**
+     * Instructs the importer to ignore attempts to replace existing analyses.
+     */
+    public void ignoreReplacement() {
+        updateMode = UpdateMode.IGNORE;
     }
 
     /**
@@ -194,7 +201,7 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
             analysisDao.save(analysis);
             templateGroupImporter.addAnalysisToWorkspace(username, analysis);
         }
-        else if (replaceExisting) {
+        else if (updateMode == UpdateMode.REPLACE) {
             if (updateVetted || !isObjectVetted(username, existingAnalysis)) {
                 existingAnalysis.copy(analysis);
                 analysisDao.save(existingAnalysis);
@@ -204,7 +211,7 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
                 throw new VettedWorkflowObjectException("Cannot replace analysis: vetted analysis found.");
             }
         }
-        else {
+        else if (updateMode == UpdateMode.THROW) {
             throw new WorkflowException("a duplicate analysis was found and replacement is not enabled");
         }
         registry.add(TransformationActivity.class, analysis.getName(), analysis);

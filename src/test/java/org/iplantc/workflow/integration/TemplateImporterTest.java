@@ -567,6 +567,28 @@ public class TemplateImporterTest {
     }
 
     /**
+     * Verifies that templates are not updated if we've instructed the importer to ignore attempts to replace
+     * existing templates.
+     * 
+     * @throws JSONException if a JSON error occurs.
+     * @throws IOException if we try to load the JSON from a non-existent file.
+     */
+    @Test
+    public void templateShouldNotBeUpdatedIfReplacementIgnored() throws JSONException, IOException {
+        importer.ignoreReplacement();
+        
+        JSONObject json1 = getTestJSONObject("minimally_specified_template_with_id");
+        importer.importObject(json1);
+        assertEquals(1, getMockTemplateDao().getSavedObjects().size());
+        assertEquals("", getMockTemplateDao().getSavedObjects().get(0).getName());
+        
+        JSONObject json2 = getTestJSONObject("minimally_specified_template_with_id_2");
+        importer.importObject(json2);
+        assertEquals(1, getMockTemplateDao().getSavedObjects().size());
+        assertEquals("", getMockTemplateDao().getSavedObjects().get(0).getName());
+    }
+
+    /**
      * Verifies that we can import a minimally specified template with alternative key names.
      * 
      * @throws JSONException if the JSON that is given to the importer is invalid.

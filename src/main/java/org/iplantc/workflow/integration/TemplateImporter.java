@@ -106,9 +106,9 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
     private HeterogeneousRegistry registry = new NullHeterogeneousRegistry();
 
     /**
-     * True if existing templates with the same name should be replaced.
+     * Indicates what should be done if an existing template matches the template being imported.
      */
-    private boolean replaceExisting;
+    private UpdateMode updateMode;
 
     /**
      * True if we should allow vetted templates to be updated.
@@ -151,7 +151,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
      */
     @Override
     public void enableReplacement() {
-        replaceExisting = true;
+        updateMode = UpdateMode.REPLACE;
     }
 
     /**
@@ -159,7 +159,14 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
      */
     @Override
     public void disableReplacement() {
-        replaceExisting = false;
+        updateMode = UpdateMode.THROW;
+    }
+
+    /**
+     * Tells the importer to ignore attempts to replace existing templates.
+     */
+    public void ignoreReplacement() {
+        updateMode = UpdateMode.IGNORE;
     }
 
     /**
@@ -231,7 +238,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
         if (existingTemplate == null) {
             saveNewTemplate(template, json);
         }
-        else if (replaceExisting) {
+        else if (updateMode == UpdateMode.REPLACE) {
             if (updateVetted || !isObjectVetted(json.optString("full_username"), existingTemplate)) {
                 replaceExistingTemplate(template, existingTemplate, json);
             }
@@ -239,7 +246,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
                 throw new VettedWorkflowObjectException("Cannot replace Template because existing template is vetted.");
             }
         }
-        else {
+        else if (updateMode == UpdateMode.THROW) {
             throw new WorkflowException("a duplicate template was found and replacement is not enabled");
         }
         registry.add(Template.class, template.getName(), template);
