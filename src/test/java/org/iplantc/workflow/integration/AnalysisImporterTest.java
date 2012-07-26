@@ -770,6 +770,25 @@ public class AnalysisImporterTest {
     }
 
     /**
+     * Verifies that an analysis will not be replaced if updates are ignored.
+     * 
+     * @throws JSONException if a JSON error occurs.
+     * @throws IOException if one of the test input files can't be read.
+     */
+    @Test
+    public void shouldNotUpdateAnalysisWhenUpdatesAreDisabled() throws JSONException, IOException {
+        importer.ignoreReplacement();
+        JSONObject json = getTestJSONObject("multiple_imports_with_unvetted_analysis");
+        importer.importObject(json);
+
+        // Make a small change to jsonString and re-import
+        json = getTestJSONObject("multiple_imports_with_unvetted_analysis_changed");
+        importer.importObject(json);
+        assertEquals(1, getAnalysisDao().getSavedObjects().size());
+        assertEquals("analysisdescription", getAnalysisDao().getSavedObjects().get(0).getDescription());
+    }
+
+    /**
      * Verifies that the user's workspace is initialized.
      *
      * @throws JSONException if the JSON object doesn't meet the expectations of the importer.

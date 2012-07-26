@@ -57,9 +57,9 @@ public class NotificationSetImporter implements ObjectImporter {
     private HeterogeneousRegistry registry = new NullHeterogeneousRegistry();
 
     /**
-     * True if existing notification sets should be replaced.
+     * Indicates what should be done if an existing notification set matches the one that's being imported.
      */
-    private boolean replaceExisting;
+    private UpdateMode updateMode = UpdateMode.DEFAULT;
 
     /**
      * Initializes a new instance of this class.
@@ -80,15 +80,35 @@ public class NotificationSetImporter implements ObjectImporter {
     /**
      * Enables the replacement of existing notification sets.
      */
+    @Override
     public void enableReplacement() {
-        replaceExisting = true;
+        setUpdateMode(UpdateMode.REPLACE);
     }
 
     /**
      * Disables the replacement of existing notification sets.
      */
+    @Override
     public void disableReplacement() {
-        replaceExisting = false;
+        setUpdateMode(UpdateMode.THROW);
+    }
+
+    /**
+     * Instructs the importer to ignore attempts to replace existing notification sets.
+     */
+    @Override
+    public void ignoreReplacement() {
+        setUpdateMode(UpdateMode.IGNORE);
+    }
+
+    /**
+     * Explicitly sets the update mode.
+     * 
+     * @param updateMode the new update mode.
+     */
+    @Override
+    public void setUpdateMode(UpdateMode updateMode) {
+        this.updateMode = updateMode;
     }
 
     /**
@@ -97,18 +117,19 @@ public class NotificationSetImporter implements ObjectImporter {
      * @param json the JSON object.
      * @throws JSONException if the JSON object is missing a required attribute or contains an unexpected type.
      */
+    @Override
     public void importObject(JSONObject json) throws JSONException {
         TitoNotificationSetUnmarshaller unmarshaller = new TitoNotificationSetUnmarshaller(registry);
         NotificationSet notificationSet = unmarshaller.fromJson(json);
         List<NotificationSet> existingNotificationSets = findExistingNotificationSets(notificationSet);
-        if (existingNotificationSets.size() == 0) {
+        if (existingNotificationSets.isEmpty()) {
             notificationSetDao.save(notificationSet);
         }
-        else if (replaceExisting) {
+        else if (updateMode == UpdateMode.REPLACE) {
             notificationSetDao.deleteAll(existingNotificationSets);
             notificationSetDao.save(notificationSet);
         }
-        else {
+        else if (updateMode == UpdateMode.THROW) {
             throw new WorkflowException("a duplicate notification set was found and replacement isn't enabled");
         }
     }
@@ -130,6 +151,7 @@ public class NotificationSetImporter implements ObjectImporter {
      * @throws JSONException if any object in the JSON array is missing a required attribute or contains an unexpected
      *         type.
      */
+    @Override
     public void importObjectList(JSONArray array) throws JSONException {
         for (int i = 0; i < array.length(); i++) {
             importObject(array.getJSONObject(i));

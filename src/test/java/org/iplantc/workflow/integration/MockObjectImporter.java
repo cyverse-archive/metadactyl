@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.iplantc.workflow.integration.ObjectImporter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,9 +26,9 @@ public class MockObjectImporter implements ObjectImporter {
     private List<JSONArray> importedArrays = new LinkedList<JSONArray>();
 
     /**
-     * True if existing objects with the same name should be replaced.
+     * Indicates what should be done if an existing object matches the one being imported.
      */
-    private boolean replaceExisting;
+    private UpdateMode updateMode = UpdateMode.DEFAULT;
 
     /**
      * @return the list of imported objects.
@@ -46,18 +45,11 @@ public class MockObjectImporter implements ObjectImporter {
     }
 
     /**
-     * @return the current replacement flag value.
-     */
-    public boolean replacementsEnabled() {
-        return replaceExisting;
-    }
-
-    /**
      * Enables the replacement of existing objects.
      */
     @Override
     public void enableReplacement() {
-        replaceExisting = true;
+        setUpdateMode(UpdateMode.REPLACE);
     }
 
     /**
@@ -65,7 +57,32 @@ public class MockObjectImporter implements ObjectImporter {
      */
     @Override
     public void disableReplacement() {
-        replaceExisting = false;
+        setUpdateMode(UpdateMode.THROW);
+    }
+
+    /**
+     * Instructs the importer to ignore attempts to replace existing objects.
+     */
+    @Override
+    public void ignoreReplacement() {
+        setUpdateMode(UpdateMode.IGNORE);
+    }
+
+    /**
+     * Explicitly sets the update mode.
+     * 
+     * @param updateMode the new update mode.
+     */
+    @Override
+    public void setUpdateMode(UpdateMode updateMode) {
+        this.updateMode = updateMode;
+    }
+
+    /**
+     * @return the current update mode.
+     */
+    public UpdateMode getUpdateMode() {
+        return updateMode;
     }
 
     /**

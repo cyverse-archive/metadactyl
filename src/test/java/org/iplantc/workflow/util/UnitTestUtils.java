@@ -6,6 +6,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.components.DeployedComponent;
 import org.iplantc.persistence.dto.data.DataFormat;
+import org.iplantc.persistence.dto.data.DataSource;
 import org.iplantc.persistence.dto.data.DeployedComponentDataFile;
 import org.iplantc.persistence.dto.data.IntegrationDatum;
 import org.iplantc.persistence.dto.step.TransformationStep;
@@ -15,6 +16,7 @@ import org.iplantc.persistence.dto.workspace.Workspace;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.core.TransformationActivityReference;
 import org.iplantc.workflow.dao.mock.MockDataFormatDao;
+import org.iplantc.workflow.dao.mock.MockDataSourceDao;
 import org.iplantc.workflow.dao.mock.MockInfoTypeDao;
 import org.iplantc.workflow.dao.mock.MockMultiplicityDao;
 import org.iplantc.workflow.dao.mock.MockPropertyTypeDao;
@@ -72,6 +74,11 @@ public class UnitTestUtils {
      * The list of standard multiplicity names.
      */
     private static final String[] MULTIPLICITY_NAMES = {"single", "many", "folder", "collection"};
+
+    /**
+     * The list of standard data source names.
+     */
+    private static final String[] DATA_SOURCE_NAMES = {"file", "stdout", "stderr"};
 
     /**
      * Creates a generalized registry to use for testing.
@@ -380,6 +387,32 @@ public class UnitTestUtils {
         multiplicity.setLabel("label of multiplicity " + name);
         multiplicity.setDescription("description of multiplicity " + name);
         return multiplicity;
+    }
+
+    /**
+     * Adds the set of standard data sources to a mock data source DAO.
+     * 
+     * @param dao the mock data source DAO.
+     */
+    public static void initializeDataSourceDao(MockDataSourceDao dao) {
+        for (String name : DATA_SOURCE_NAMES) {
+            dao.save(createDataSource(name));
+        }
+    }
+
+    /**
+     * Creates a data source with the given name.
+     * 
+     * @param name the data source name.
+     * @return the data source.
+     */
+    public static DataSource createDataSource(String name) {
+        DataSource dataSource = new DataSource();
+        dataSource.setUuid(ImportUtils.generateId());
+        dataSource.setName(name);
+        dataSource.setLabel("label of data source " + name);
+        dataSource.setDescription("description of data source " + name);
+        return dataSource;
     }
 
     /**

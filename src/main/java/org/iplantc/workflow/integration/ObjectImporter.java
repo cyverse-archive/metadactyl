@@ -22,6 +22,18 @@ public interface ObjectImporter {
     public void disableReplacement();
 
     /**
+     * Ignores attempts to replace existing objects.
+     */
+    public void ignoreReplacement();
+
+    /**
+     * Explicitly sets the update mode.
+     * 
+     * @param updateMode the new update mode.
+     */
+    public void setUpdateMode(UpdateMode updateMode);
+
+    /**
      * Imports a single object using information in a JSON object.
      * 
      * @param json the JSON object.

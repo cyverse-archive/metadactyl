@@ -1,7 +1,6 @@
 package org.iplantc.workflow.experiment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +34,7 @@ import static org.iplantc.workflow.experiment.ParamUtils.setParamNameAndValue;
 
 /**
  * Formats a submission request for a job that will be executed on Condor. The code in this class was mostly extracted
- * from ExperimentRunner and only minor refactoring work was done.
+ * from ExperimentRunner and only minor refactoring work was done.  Note: this class not thread safe.
  */
 public class CondorJobRequestFormatter implements JobRequestFormatter {
 
@@ -58,6 +57,10 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     private boolean debug;
 
     private FileResolverFactory fileResolverFactory;
+
+    private String stdoutFilename;
+
+    private String stderrFilename;
 
     public CondorJobRequestFormatter(DaoFactory daoFactory, UrlAssembler urlAssembler,
             UserDetails userDetails, JSONObject experiment) {
@@ -103,6 +106,9 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         for (TransformationStep currentStep : steps) {
             JSONObject step1 = new JSONObject();
 
+            stderrFilename = null;
+            stdoutFilename = null;
+
             step1.put("name", currentStep.getName());
             step1.put("type", CONDOR_TYPE);
             stepMap.put(step1.getString("name"), step1);
@@ -144,6 +150,14 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             String componentId = template.getComponent();
             step1.put("component", new DeployedComponentFormatter(daoFactory).formatComponent(componentId));
 
+            // Add the output redirections if there are any.
+            if (stderrFilename != null) {
+                step1.put("stderr", stderrFilename);
+            }
+            if (stdoutFilename != null) {
+                step1.put("stdout", stdoutFilename);
+            }
+
             /**
              * assemble the job JSON request *
              */
@@ -174,6 +188,18 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             param.put("order", order);
             param.put("id", outputObject.getId());
             params.add(param);
+
+            updateRedirectionFilenames(outputObject, value);
+        }
+    }
+
+    private void updateRedirectionFilenames(DataObject dataObject, String filename) {
+        String dataSourceName = dataObject.getDataSourceName();
+        if (StringUtils.equals(dataSourceName, "stdout")) {
+            stdoutFilename = filename;
+        }
+        else if (StringUtils.equals(dataSourceName, "stderr")) {
+            stderrFilename = filename;
         }
     }
 
@@ -192,6 +218,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             out.put("multiplicity", outputObject.getMultiplicityName());
             out.put("retain", debug || outputObject.getRetain());
             outputs_section.add(out);
+
+            updateRedirectionFilenames(outputObject, outputObject.getName());
         }
     }
 

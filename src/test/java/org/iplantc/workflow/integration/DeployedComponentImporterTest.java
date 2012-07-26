@@ -278,6 +278,41 @@ public class DeployedComponentImporterTest {
     }
 
     /**
+     * Verifies that the importer silently ignore attempts to replace an existing deployed component if replacement is
+     * disabled.
+     * 
+     * @throws JSONException if we try to use an invalid attribute name.
+     */
+    @Test
+    public void shouldNotReplaceExistingDeployedComponentIfReplacementIgnored() throws JSONException {
+        JSONArray array = new JSONArray();
+        array.put(generateJson(null, "zaz", "/usr/bin", "rexecutable", null, null, null));
+        array.put(generateJson(null, "zaz", "/usr/bin", "executable", null, null, null));
+        deployedComponentImporter.ignoreReplacement();
+        deployedComponentImporter.importObjectList(array);
+        assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
+        assertEquals("rexecutable", daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0).getType());
+    }
+
+    /**
+     * Verifies that the importer still registers a duplicate deployed component in the registry, even if no update is
+     * performed.
+     * 
+     * @throws JSONException if a JSON error occurs.
+     */
+    @Test
+    public void shouldRegisterExistingDeployedComponentIfReplacementIgnored() throws JSONException {
+        deployedComponentImporter.importObject(generateJson(null, "zaz", "/usr/bin", "rexecutable", null, null, null));
+        deployedComponentImporter.ignoreReplacement();
+        HeterogeneousRegistryImpl registry = UnitTestUtils.createRegistry();
+        deployedComponentImporter.setRegistry(registry);
+        deployedComponentImporter.importObject(generateJson(null, "zaz", "/usr/bin", "executable", null, null, null));
+        assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
+        assertEquals("rexecutable", daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0).getType());
+        assertNotNull(registry.get(DeployedComponent.class, "zaz"));
+    }
+
+    /**
      * Verifies that the importer will replace an existing deployed component if it's configured to do so.
      * 
      * @throws JSONException if we try to use an invalid attribute name.

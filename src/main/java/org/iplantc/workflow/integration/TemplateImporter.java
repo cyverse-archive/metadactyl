@@ -10,6 +10,8 @@ import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.integration.json.TitoTemplateUnmarshaller;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistry;
 import org.iplantc.workflow.integration.util.NullHeterogeneousRegistry;
+import org.iplantc.workflow.integration.validation.TemplateValidator;
+import org.iplantc.workflow.integration.validation.TemplateValidatorFactory;
 import org.iplantc.workflow.model.Template;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -104,9 +106,9 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
     private HeterogeneousRegistry registry = new NullHeterogeneousRegistry();
 
     /**
-     * True if existing templates with the same name should be replaced.
+     * Indicates what should be done if an existing template matches the template being imported.
      */
-    private boolean replaceExisting;
+    private UpdateMode updateMode = UpdateMode.DEFAULT;
 
     /**
      * True if we should allow vetted templates to be updated.
@@ -117,6 +119,11 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
      * Used when vetting the template.
      */
     private ObjectVetter<TransformationActivity> analysisVetter;
+
+    /**
+     * Used to validate templates that are being imported.
+     */
+    private TemplateValidator templateValidator = TemplateValidatorFactory.createDefaultTemplateValidator();
 
     /**
      * @return the DAO factory.
@@ -144,7 +151,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
      */
     @Override
     public void enableReplacement() {
-        replaceExisting = true;
+        setUpdateMode(UpdateMode.REPLACE);
     }
 
     /**
@@ -152,7 +159,25 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
      */
     @Override
     public void disableReplacement() {
-        replaceExisting = false;
+        setUpdateMode(UpdateMode.THROW);
+    }
+
+    /**
+     * Tells the importer to ignore attempts to replace existing templates.
+     */
+    @Override
+    public void ignoreReplacement() {
+        setUpdateMode(UpdateMode.IGNORE);
+    }
+
+    /**
+     * Explicitly sets the update mode.
+     * 
+     * @param updateMode the new update mode.
+     */
+    @Override
+    public void setUpdateMode(UpdateMode updateMode) {
+        this.updateMode = updateMode;
     }
 
     /**
@@ -218,12 +243,13 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
     @Override
     public void importObject(JSONObject json) throws JSONException {
         Template template = unmarshallTemplate(json);
+        templateValidator.validate(template);
         validateTemplate(template);
         Template existingTemplate = findExistingTemplate(template);
         if (existingTemplate == null) {
             saveNewTemplate(template, json);
         }
-        else if (replaceExisting) {
+        else if (updateMode == UpdateMode.REPLACE) {
             if (updateVetted || !isObjectVetted(json.optString("full_username"), existingTemplate)) {
                 replaceExistingTemplate(template, existingTemplate, json);
             }
@@ -231,7 +257,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
                 throw new VettedWorkflowObjectException("Cannot replace Template because existing template is vetted.");
             }
         }
-        else {
+        else if (updateMode == UpdateMode.THROW) {
             throw new WorkflowException("a duplicate template was found and replacement is not enabled");
         }
         registry.add(Template.class, template.getName(), template);

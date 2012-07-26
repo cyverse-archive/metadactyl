@@ -5,6 +5,7 @@ import static org.iplantc.workflow.util.ValidationUtils.validateFieldLength;
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.NamedAndUnique;
 import org.iplantc.persistence.dto.data.DataFormat;
+import org.iplantc.persistence.dto.data.DataSource;
 import org.iplantc.workflow.WorkflowException;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +28,7 @@ public class DataObject implements NamedAndUnique {
     private String label;
     private InfoType infoType;
     private DataFormat dataFormat;
+    private DataSource dataSource;
     private Multiplicity multiplicity;
     private int orderd;
     private String switchString;
@@ -104,6 +106,14 @@ public class DataObject implements NamedAndUnique {
         this.dataFormat = dataFormat;
     }
 
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     public String getMultiplicityName() {
         return multiplicity == null ? "" : multiplicity.getName();
     }
@@ -162,6 +172,13 @@ public class DataObject implements NamedAndUnique {
      */
     public void setImplicit(boolean implicit) {
         this.implicit = implicit;
+    }
+
+    /**
+     * Gets the name of the data source.
+     */
+    public String getDataSourceName() {
+        return dataSource == null ? "" : dataSource.getName();
     }
 
     @Override

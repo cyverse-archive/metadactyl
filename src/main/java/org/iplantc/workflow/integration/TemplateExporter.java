@@ -4,6 +4,7 @@ import java.util.List;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
+import org.iplantc.workflow.integration.json.IdRetentionStrategy;
 import org.iplantc.workflow.integration.json.TitoTemplateMarshaller;
 import org.iplantc.workflow.model.Template;
 import org.json.JSONObject;
@@ -31,6 +32,15 @@ public class TemplateExporter {
     public TemplateExporter(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
         marshaller = new TitoTemplateMarshaller(daoFactory, false);
+    }
+
+    /**
+     * @param daoFactory used to obtain data access objects.
+     * @param idRetentionStrategy the ID retention strategy that the marshaler should use.
+     */
+    public TemplateExporter(DaoFactory daoFactory, IdRetentionStrategy idRetentionStrategy) {
+        this.daoFactory = daoFactory;
+        marshaller = new TitoTemplateMarshaller(daoFactory, false, idRetentionStrategy);
     }
 
     /**

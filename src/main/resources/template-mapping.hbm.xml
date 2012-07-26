@@ -189,6 +189,7 @@
     <property name="label" column="label" />
     <many-to-one name="infoType" class="org.iplantc.workflow.data.InfoType" column="info_type" cascade="none" />
     <many-to-one name="dataFormat" class="org.iplantc.persistence.dto.data.DataFormat" column="data_format" cascade="none" />
+    <many-to-one name="dataSource" class="org.iplantc.persistence.dto.data.DataSource" column="data_source_id" cascade="none" />
     <many-to-one name="multiplicity" class="org.iplantc.workflow.data.Multiplicity" column="multiplicity" cascade="none" />
     <property name="orderd" column="orderd" />
     <property name="switchString" column="switch" />

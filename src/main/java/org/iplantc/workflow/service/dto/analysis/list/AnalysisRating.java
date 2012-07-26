@@ -30,7 +30,7 @@ public class AnalysisRating extends AbstractDto {
     /**
      * The Confluence ID of a comment on the analysis by the current user.
      */
-    @JsonField(name = "comment_id", optional = true)
+    @JsonField(name = "comment_id", optional = true, defaultValue = "")
     private Long commentId;
 
     /**

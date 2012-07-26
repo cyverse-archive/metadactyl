@@ -145,4 +145,14 @@ public class JsonUtils {
         }
         return array;
     }
+
+    /**
+     * Converts an instance of org.json.JSONObject to an instance of net.sf.json.JSONObject.
+     * 
+     * @param json the original JSON object.
+     * @return the converted JSON object.
+     */
+    public static net.sf.json.JSONObject toNetSfJsonObject(JSONObject json) {
+        return net.sf.json.JSONObject.fromObject(json.toString());
+    }
 }

@@ -188,9 +188,9 @@ public class WorkflowImporterTest {
     @Test
     public void testPullingValuesOutOfSections() throws IOException, JSONException {
         JSONObject json = getTestJSONObject("workflow_import_section_test");
-        WorkflowImporter importer = createWorkflowImporterAlmostForReal();
-        importer.importWorkflow(json);
-        MockObjectImporter tmplImp = (MockObjectImporter) importer.getImporter("templates");
+        WorkflowImporter localImporter = createWorkflowImporterAlmostForReal();
+        localImporter.importWorkflow(json);
+        MockObjectImporter tmplImp = (MockObjectImporter) localImporter.getImporter("templates");
 
         assertNotNull(tmplImp);
     }
@@ -205,6 +205,8 @@ public class WorkflowImporterTest {
         assertTrue(replacementEnabledForAllImporters());
         importer.disableReplacement();
         assertTrue(replacementDisabledForAllImporters());
+        importer.ignoreReplacement();
+        assertTrue(replacementIgnoredForAllImporters());
     }
 
     /**
@@ -215,7 +217,7 @@ public class WorkflowImporterTest {
     private boolean replacementEnabledForAllImporters() {
         boolean replacementEnabled = true;
         for (MockObjectImporter currentImporter : objectImporterMap.values()) {
-            if (!currentImporter.replacementsEnabled()) {
+            if (currentImporter.getUpdateMode() != UpdateMode.REPLACE) {
                 replacementEnabled = false;
                 break;
             }
@@ -224,14 +226,14 @@ public class WorkflowImporterTest {
     }
 
     /**
-     * Determines whether or not the replacements are disabled for all importers in our importer map.
+     * Determines whether or not replacements are disabled for all importers in our importer map.
      * 
      * @return true if replacements are disabled for all importers.
      */
     private boolean replacementDisabledForAllImporters() {
         boolean replacementDisabled = true;
         for (MockObjectImporter currentImporter : objectImporterMap.values()) {
-            if (currentImporter.replacementsEnabled()) {
+            if (currentImporter.getUpdateMode() != UpdateMode.THROW) {
                 replacementDisabled = false;
                 break;
             }
@@ -240,16 +242,32 @@ public class WorkflowImporterTest {
     }
 
     /**
+     * Determines whether or not replacements are ignored for all importers in our importer map.
+     * 
+     * @return true if replacements are ignored for all importers.
+     */
+    private boolean replacementIgnoredForAllImporters() {
+        boolean replacementIgnored = true;
+        for (MockObjectImporter currentImporter : objectImporterMap.values()) {
+            if (currentImporter.getUpdateMode() != UpdateMode.IGNORE) {
+                replacementIgnored = false;
+                break;
+            }
+        }
+        return replacementIgnored;
+    }
+
+    /**
      * Create an importer with realistic importer key-names.
      * 
      * @return a workflow importer with mock object importers.
      */
     private WorkflowImporter createWorkflowImporterAlmostForReal() {
-        WorkflowImporter importer = new WorkflowImporter();
-        importer.addImporter("components", new MockObjectImporter());
-        importer.addImporter("templates", new MockObjectImporter());
-        importer.addImporter("notification_sets", new MockObjectImporter());
-        importer.addImporter("analyses", new MockObjectImporter());
-        return importer;
+        WorkflowImporter localImporter = new WorkflowImporter();
+        localImporter.addImporter("components", new MockObjectImporter());
+        localImporter.addImporter("templates", new MockObjectImporter());
+        localImporter.addImporter("notification_sets", new MockObjectImporter());
+        localImporter.addImporter("analyses", new MockObjectImporter());
+        return localImporter;
     }
 }

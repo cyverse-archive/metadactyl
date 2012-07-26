@@ -2,8 +2,10 @@ package org.iplantc.workflow.dao.hibernate;
 
 import org.hibernate.Session;
 import org.iplantc.persistence.dao.WorkspaceDao;
+import org.iplantc.persistence.dao.data.DataSourceDao;
 import org.iplantc.persistence.dao.data.IntegrationDatumDao;
 import org.iplantc.persistence.dao.hibernate.HibernateWorkspaceDao;
+import org.iplantc.persistence.dao.hibernate.data.HibernateDataSourceDao;
 import org.iplantc.persistence.dao.hibernate.data.HibernateIntegrationDatumDao;
 import org.iplantc.persistence.dao.hibernate.listing.HibernateAnalysisGroupDao;
 import org.iplantc.persistence.dao.hibernate.listing.HibernateAnalysisListingDao;
@@ -32,7 +34,7 @@ import org.iplantc.workflow.dao.ValueTypeDao;
 
 /**
  * A factory for generating data access objects.
- * 
+ *
  * @author Dennis Roberts
  */
 public class HibernateDaoFactory implements DaoFactory {
@@ -44,7 +46,7 @@ public class HibernateDaoFactory implements DaoFactory {
 
     /**
      * Creates a new data access object factory with the given database session.
-     * 
+     *
      * @param session the database session.
      */
     public HibernateDaoFactory(Session session) {
@@ -186,7 +188,7 @@ public class HibernateDaoFactory implements DaoFactory {
     public UserDao getUserDao() {
         return new HibernateUserDao(session);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -203,12 +205,19 @@ public class HibernateDaoFactory implements DaoFactory {
         return new HibernateReferenceGenomeDao(session);
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public IntegrationDatumDao getIntegrationDatumDao() {
-		return new HibernateIntegrationDatumDao(session);
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public IntegrationDatumDao getIntegrationDatumDao() {
+        return new HibernateIntegrationDatumDao(session);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DataSourceDao getDataSourceDao() {
+        return new HibernateDataSourceDao(session);
+    }
 }
- 
