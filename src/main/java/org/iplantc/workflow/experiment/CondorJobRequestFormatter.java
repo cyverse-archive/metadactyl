@@ -372,8 +372,6 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
                 result.add(createInputJson(path, input));
             }
             else {
-                LOG.warn("File IDs: " + path);
-
                 JSONArray jsonFiles = (JSONArray) JSONSerializer.toJSON(path);
                 for (int i = 0, pathCount = jsonFiles.size(); i < pathCount; i++) {
                     String currentPath = jsonFiles.getString(i);

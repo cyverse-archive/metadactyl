@@ -2,7 +2,6 @@ package org.iplantc.workflow.integration.validation;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
 import org.iplantc.workflow.model.Template;
 
 /**
@@ -11,8 +10,6 @@ import org.iplantc.workflow.model.Template;
  * @author Dennis Roberts
  */
 public class ChainingTemplateValidator implements TemplateValidator {
-
-    private static final Logger LOG = Logger.getLogger(ChainingTemplateValidator.class);
 
     /**
      * The list of validators to apply.
@@ -33,7 +30,6 @@ public class ChainingTemplateValidator implements TemplateValidator {
      */
     @Override
     public void validate(Template template) {
-        LOG.warn("validating using " + validators.size() + " validators");
         for (TemplateValidator validator : validators) {
             validator.validate(template);
         }

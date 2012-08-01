@@ -51,7 +51,7 @@ public class AnalysisGeneratingTemplateImporter extends TemplateImporter {
      */
     @Override
     public void saveNewTemplate(Template template, JSONObject json) {
-        LOG.warn("saving a new template: " + template.getName());
+        LOG.debug("saving a new template: " + template.getName());
         getDaoFactory().getTemplateDao().save(template);
         generateAnalysis(template, json);
     }
@@ -61,7 +61,7 @@ public class AnalysisGeneratingTemplateImporter extends TemplateImporter {
      */
     @Override
     public void replaceExistingTemplate(Template template, Template existingTemplate, JSONObject json) {
-        LOG.warn("replacing an existing template: " + template.getName());
+        LOG.debug("replacing an existing template: " + template.getName());
         template.setId(existingTemplate.getId());
         getDaoFactory().getTemplateDao().delete(existingTemplate);
         getDaoFactory().getTemplateDao().save(template);
