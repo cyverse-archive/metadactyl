@@ -21,6 +21,8 @@ import org.iplantc.workflow.dao.mock.MockPropertyTypeDao;
 import org.iplantc.workflow.dao.mock.MockRuleTypeDao;
 import org.iplantc.workflow.data.DataObject;
 import org.iplantc.workflow.data.InfoType;
+import org.iplantc.workflow.integration.validation.TemplateValidator;
+import org.iplantc.workflow.integration.validation.TemplateValidatorFactory;
 import org.iplantc.workflow.integration.validation.TooManyOutputRedirectionsException;
 import org.iplantc.workflow.mock.MockWorkspaceInitializer;
 import org.iplantc.workflow.model.Property;
@@ -92,6 +94,11 @@ public class AnalysisGeneratingTemplateImporterTest {
     private MockWorkspaceInitializer workspaceInitializer;
 
     /**
+     * The validator to use when importing templates.
+     */
+    private TemplateValidator templateValidator = TemplateValidatorFactory.createDefaultTemplateValidator();
+
+    /**
      * Initializes each of the unit tests.
      */
     @Before
@@ -108,7 +115,8 @@ public class AnalysisGeneratingTemplateImporterTest {
         initializeTemplateGroupImporter();
         initializeUserService();
         initializeWorkspaceInitializer();
-        importer = new AnalysisGeneratingTemplateImporter(daoFactory, templateGroupImporter, workspaceInitializer);
+        importer = new AnalysisGeneratingTemplateImporter(daoFactory, templateGroupImporter, workspaceInitializer,
+                templateValidator);
     }
 
     /**

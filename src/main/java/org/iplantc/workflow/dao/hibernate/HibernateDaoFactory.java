@@ -2,9 +2,11 @@ package org.iplantc.workflow.dao.hibernate;
 
 import org.hibernate.Session;
 import org.iplantc.persistence.dao.WorkspaceDao;
+import org.iplantc.persistence.dao.components.ToolTypeDao;
 import org.iplantc.persistence.dao.data.DataSourceDao;
 import org.iplantc.persistence.dao.data.IntegrationDatumDao;
 import org.iplantc.persistence.dao.hibernate.HibernateWorkspaceDao;
+import org.iplantc.persistence.dao.hibernate.components.HibernateToolTypeDao;
 import org.iplantc.persistence.dao.hibernate.data.HibernateDataSourceDao;
 import org.iplantc.persistence.dao.hibernate.data.HibernateIntegrationDatumDao;
 import org.iplantc.persistence.dao.hibernate.listing.HibernateAnalysisGroupDao;
@@ -219,5 +221,13 @@ public class HibernateDaoFactory implements DaoFactory {
     @Override
     public DataSourceDao getDataSourceDao() {
         return new HibernateDataSourceDao(session);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ToolTypeDao getToolTypeDao() {
+        return new HibernateToolTypeDao(session);
     }
 }

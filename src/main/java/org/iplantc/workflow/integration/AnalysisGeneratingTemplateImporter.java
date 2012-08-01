@@ -9,6 +9,7 @@ import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.TransformationActivityDao;
 import org.iplantc.workflow.integration.json.TitoIntegrationDatumUnmarshaller;
+import org.iplantc.workflow.integration.validation.TemplateValidator;
 import org.iplantc.workflow.model.Template;
 import org.iplantc.workflow.service.WorkspaceInitializer;
 import org.json.JSONException;
@@ -39,8 +40,8 @@ public class AnalysisGeneratingTemplateImporter extends TemplateImporter {
      * @param templateGroupImporter used to add analyses to template groups.
      */
     public AnalysisGeneratingTemplateImporter(DaoFactory daoFactory, TemplateGroupImporter templateGroupImporter,
-            WorkspaceInitializer workspaceInitializer) {
-        super(daoFactory);
+            WorkspaceInitializer workspaceInitializer, TemplateValidator templateValidator) {
+        super(daoFactory, false, templateValidator);
         this.templateGroupImporter = templateGroupImporter;
         this.workspaceInitializer = workspaceInitializer;
     }

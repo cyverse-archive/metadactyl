@@ -141,7 +141,7 @@ public class DeployedComponentImporter implements ObjectImporter {
         existingComponent.setLocation(component.getLocation());
         existingComponent.setAttribution(component.getAttribution());
         existingComponent.setDescription(component.getDescription());
-        existingComponent.setType(component.getType());
+        existingComponent.setToolType(component.getToolType());
         existingComponent.setVersion(component.getVersion());
         daoFactory.getDeployedComponentDao().save(existingComponent);
     }

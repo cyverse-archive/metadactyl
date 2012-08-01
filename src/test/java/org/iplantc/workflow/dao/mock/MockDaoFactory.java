@@ -1,6 +1,7 @@
 package org.iplantc.workflow.dao.mock;
 
 import org.iplantc.persistence.dao.WorkspaceDao;
+import org.iplantc.persistence.dao.components.ToolTypeDao;
 import org.iplantc.persistence.dao.data.DataSourceDao;
 import org.iplantc.persistence.dao.data.IntegrationDatumDao;
 import org.iplantc.persistence.dao.listing.AnalysisGroupDao;
@@ -114,6 +115,11 @@ public class MockDaoFactory implements DaoFactory {
      * The mock data source DAO.
      */
     private MockDataSourceDao dataSourceDao;
+
+    /**
+     * The mock tool type DAO.
+     */
+    private MockToolTypeDao toolTypeDao;
 
     /**
      * @param dataFormatDao the new mock data format DAO.
@@ -354,6 +360,13 @@ public class MockDaoFactory implements DaoFactory {
     }
 
     /**
+     * @return the tool type DAO.
+     */
+    public MockToolTypeDao getMockToolTypeDao() {
+        return toolTypeDao;
+    }
+
+    /**
      * Initializes the factory with all empty data access objects.
      */
     public MockDaoFactory() {
@@ -374,6 +387,7 @@ public class MockDaoFactory implements DaoFactory {
         referenceGenomeDao = new MockReferenceGenomeDao();
         integrationDatumDao = new MockIntegrationDatumDao();
         dataSourceDao = new MockDataSourceDao();
+        toolTypeDao = new MockToolTypeDao();
     }
 
     /**
@@ -538,5 +552,13 @@ public class MockDaoFactory implements DaoFactory {
     @Override
     public DataSourceDao getDataSourceDao() {
         return dataSourceDao;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ToolTypeDao getToolTypeDao() {
+        return toolTypeDao;
     }
 }

@@ -93,7 +93,7 @@ public class ValueType implements RepresentableAsJson, NamedAndUnique {
      * @param description a brief description of the value type.
      */
     public void setDescription(String description) {
-        validateFieldLength(this.getClass(), "description", description, 40);
+        validateFieldLength(this.getClass(), "description", description, 255);
         this.description = description;
     }
 

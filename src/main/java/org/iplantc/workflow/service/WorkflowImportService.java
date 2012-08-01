@@ -31,6 +31,8 @@ import org.iplantc.workflow.integration.UpdateMode;
 import org.iplantc.workflow.integration.WorkflowImporter;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistry;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistryImpl;
+import org.iplantc.workflow.integration.validation.TemplateValidator;
+import org.iplantc.workflow.integration.validation.TemplateValidatorFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -65,6 +67,11 @@ public class WorkflowImportService {
      * Used to initialize the user's workspace if necessary.
      */
     private WorkspaceInitializer workspaceInitializer;
+
+    /**
+     * Used to validate templates that are being imported.
+     */
+    private TemplateValidator templateValidator = TemplateValidatorFactory.createDefaultTemplateValidator();
 
     /**
      * Initializes a new workflow import service.
@@ -158,7 +165,7 @@ public class WorkflowImportService {
     private TemplateImporter createTemplateImporter(Session session, HeterogeneousRegistry registry,
             boolean updateVetted) {
         DaoFactory daoFactory = new HibernateDaoFactory(session);
-        TemplateImporter templateImporter = new TemplateImporter(daoFactory, updateVetted);
+        TemplateImporter templateImporter = new TemplateImporter(daoFactory, updateVetted, templateValidator);
         templateImporter.setRegistry(registry);
         return templateImporter;
     }
@@ -175,7 +182,7 @@ public class WorkflowImportService {
         DaoFactory daoFactory = new HibernateDaoFactory(session);
         TemplateGroupImporter templateGroupImporter = createTemplateGroupImporter(daoFactory);
         AnalysisGeneratingTemplateImporter templateImporter = new AnalysisGeneratingTemplateImporter(daoFactory,
-                templateGroupImporter, workspaceInitializer);
+                templateGroupImporter, workspaceInitializer, templateValidator);
         templateImporter.setRegistry(registry);
         return templateImporter;
     }
@@ -457,5 +464,12 @@ public class WorkflowImportService {
         else {
             throw e;
         }
+    }
+
+    /**
+     * @param templateValidator the new template validator.
+     */
+    public void setTemplateValidator(TemplateValidator templateValidator) {
+        this.templateValidator = templateValidator;
     }
 }

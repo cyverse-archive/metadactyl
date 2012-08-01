@@ -1,6 +1,7 @@
 package org.iplantc.workflow.dao;
 
 import org.iplantc.persistence.dao.WorkspaceDao;
+import org.iplantc.persistence.dao.components.ToolTypeDao;
 import org.iplantc.persistence.dao.data.DataSourceDao;
 import org.iplantc.persistence.dao.data.IntegrationDatumDao;
 import org.iplantc.persistence.dao.listing.AnalysisGroupDao;
@@ -160,4 +161,11 @@ public interface DaoFactory {
      * @return the new data access object.
      */
     public DataSourceDao getDataSourceDao();
+
+    /**
+     * Creates and returns a data access object for tool types.
+     * 
+     * @return the new data access object.
+     */
+    public ToolTypeDao getToolTypeDao();
 }

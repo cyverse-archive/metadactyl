@@ -55,7 +55,7 @@ public class TitoDeployedComponentMarshallerTest {
         component.setId("componentid");
         component.setName("componentname");
         component.setLocation("componentlocation");
-        component.setType("componenttype");
+        component.setToolType(UnitTestUtils.createToolType("componenttype"));
         component.setDescription("componentdescription");
         component.setVersion("componentversion");
         component.setAttribution("componentattribution");

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import static org.iplantc.workflow.util.JsonTestDataImporter.getTestJSONObject;
 
 import org.iplantc.persistence.dto.components.DeployedComponent;
+import org.iplantc.workflow.UnknownToolTypeException;
 import org.iplantc.workflow.dao.mock.MockDaoFactory;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistryImpl;
 import org.iplantc.workflow.util.UnitTestUtils;
@@ -40,6 +41,7 @@ public class DeployedComponentImporterTest {
     @Before
     public void initialize() {
 		daoFactory = new MockDaoFactory();
+        UnitTestUtils.initToolTypeDao(daoFactory.getToolTypeDao());
         deployedComponentImporter = new DeployedComponentImporter(daoFactory);
     }
 
@@ -50,14 +52,14 @@ public class DeployedComponentImporterTest {
      */
     @Test
     public void testFullySpecifiedComponent() throws JSONException {
-        JSONObject json = generateJson("someid", "foo", "bar", "baz", "blarg", "glarb", "quux");
+        JSONObject json = generateJson("someid", "foo", "bar", "executable", "blarg", "glarb", "quux");
         deployedComponentImporter.importObject(json);
         assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
         DeployedComponent component = daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0);
         assertEquals("someid", component.getId());
         assertEquals("foo", component.getName());
         assertEquals("bar", component.getLocation());
-        assertEquals("baz", component.getType());
+        assertEquals("executable", component.getType());
         assertEquals("blarg", component.getDescription());
         assertEquals("glarb", component.getVersion());
         assertEquals("quux", component.getAttribution());
@@ -70,14 +72,14 @@ public class DeployedComponentImporterTest {
      */
     @Test
     public void testMinimallySpecifiedComponent() throws JSONException {
-        JSONObject json = generateJson(null, "name", "location", "type", null, null, null);
+        JSONObject json = generateJson(null, "name", "location", "executable", null, null, null);
         deployedComponentImporter.importObject(json);
         assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
         DeployedComponent component = daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0);
         assertTrue(component.getId().matches("c[0-9a-f]{32}"));
         assertEquals("name", component.getName());
         assertEquals("location", component.getLocation());
-        assertEquals("type", component.getType());
+        assertEquals("executable", component.getType());
         assertNull(component.getDescription());
         assertNull(component.getVersion());
         assertNull(component.getAttribution());
@@ -91,15 +93,15 @@ public class DeployedComponentImporterTest {
     @Test
     public void shouldMatchExistingComponentsOnNameAndLocation() throws JSONException {
         deployedComponentImporter.enableReplacement();
-        JSONObject original = generateJson(null, "name", "location", "type", null, null, null);
+        JSONObject original = generateJson(null, "name", "location", "executable", null, null, null);
         deployedComponentImporter.importObject(original);
-        JSONObject updated = generateJson(null, "name", "location", "epyt", null, null, null);
+        JSONObject updated = generateJson(null, "name", "location", "fAPI", null, null, null);
         deployedComponentImporter.importObject(updated);
         assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
         DeployedComponent component = daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0);
         assertEquals("name", component.getName());
         assertEquals("location", component.getLocation());
-        assertEquals("epyt", component.getType());
+        assertEquals("fAPI", component.getType());
     }
 
     /**
@@ -110,9 +112,9 @@ public class DeployedComponentImporterTest {
     @Test
     public void shouldNotMatchExistingComponentOnNameAlone() throws JSONException {
         deployedComponentImporter.enableReplacement();
-        JSONObject original = generateJson(null, "name", "location", "type", null, null, null);
+        JSONObject original = generateJson(null, "name", "location", "executable", null, null, null);
         deployedComponentImporter.importObject(original);
-        JSONObject updated = generateJson(null, "name", "noitacol", "epyt", null, null, null);
+        JSONObject updated = generateJson(null, "name", "noitacol", "fAPI", null, null, null);
         deployedComponentImporter.importObject(updated);
         assertEquals(2, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
     }
@@ -125,9 +127,9 @@ public class DeployedComponentImporterTest {
     @Test
     public void shouldNotMatchExistingComponentOnLocationAlone() throws JSONException {
         deployedComponentImporter.enableReplacement();
-        JSONObject original = generateJson(null, "name", "location", "type", null, null, null);
+        JSONObject original = generateJson(null, "name", "location", "executable", null, null, null);
         deployedComponentImporter.importObject(original);
-        JSONObject updated = generateJson(null, "eman", "location", "epyt", null, null, null);
+        JSONObject updated = generateJson(null, "eman", "location", "fAPI", null, null, null);
         deployedComponentImporter.importObject(updated);
         assertEquals(2, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
     }
@@ -141,10 +143,10 @@ public class DeployedComponentImporterTest {
     @Test
     public void shouldAlwaysMatchExistingComponentOnId() throws JSONException {
         deployedComponentImporter.enableReplacement();
-        deployedComponentImporter.importObject(generateJson("i", "n", "l", "t", "d", "v", "a"));
-        deployedComponentImporter.importObject(generateJson("i", "o", "l", "t", "d", "v", "a"));
-        deployedComponentImporter.importObject(generateJson("i", "n", "m", "t", "d", "v", "a"));
-        deployedComponentImporter.importObject(generateJson("i", "o", "m", "t", "d", "v", "a"));
+        deployedComponentImporter.importObject(generateJson("i", "n", "l", "executable", "d", "v", "a"));
+        deployedComponentImporter.importObject(generateJson("i", "o", "l", "executable", "d", "v", "a"));
+        deployedComponentImporter.importObject(generateJson("i", "n", "m", "executable", "d", "v", "a"));
+        deployedComponentImporter.importObject(generateJson("i", "o", "m", "executable", "d", "v", "a"));
         assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
     }
 
@@ -155,7 +157,7 @@ public class DeployedComponentImporterTest {
      */
     @Test(expected = JSONException.class)
     public void missingNameShouldCauseException() throws JSONException {
-        JSONObject json = generateJson(null, null, "location", "type", null, null, null);
+        JSONObject json = generateJson(null, null, "location", "executable", null, null, null);
         deployedComponentImporter.importObject(json);
     }
 
@@ -166,7 +168,7 @@ public class DeployedComponentImporterTest {
      */
     @Test(expected = JSONException.class)
     public void missingLocationShouldCauseException() throws JSONException {
-        JSONObject json = generateJson(null, "name", null, "type", null, null, null);
+        JSONObject json = generateJson(null, "name", null, "executable", null, null, null);
         deployedComponentImporter.importObject(json);
     }
 
@@ -182,6 +184,18 @@ public class DeployedComponentImporterTest {
     }
 
     /**
+     * Verifies that an unknown deployed component type generates an exception.
+     * 
+     * @throws UnknownToolTypeException if the tool type isn't found (expected result).
+     * @throws JSONException if a JSON error occurs.
+     */
+    @Test(expected = UnknownToolTypeException.class)
+    public void unknownTypeShouldCauseException() throws UnknownToolTypeException, JSONException {
+        JSONObject json = generateJson(null, "name", "location", "blah", null, null, null);
+        deployedComponentImporter.importObject(json);
+    }
+
+    /**
      * Verifies that we can import multiple components at once.
      * 
      * @throws JSONException if we try to use an invalid attribute name.
@@ -189,8 +203,8 @@ public class DeployedComponentImporterTest {
     @Test
     public void testMultipleComponents() throws JSONException {
         JSONArray array = new JSONArray();
-        array.put(generateJson("someid", "foo", "bar", "baz", "blarg", "glarb", "quux"));
-        array.put(generateJson(null, "name", "location", "type", null, null, null));
+        array.put(generateJson("someid", "foo", "bar", "executable", "blarg", "glarb", "quux"));
+        array.put(generateJson(null, "name", "location", "fAPI", null, null, null));
         deployedComponentImporter.importObjectList(array);
         assertEquals(2, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
         DeployedComponent component1 = daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0);
@@ -198,14 +212,14 @@ public class DeployedComponentImporterTest {
         assertEquals("someid", component1.getId());
         assertEquals("foo", component1.getName());
         assertEquals("bar", component1.getLocation());
-        assertEquals("baz", component1.getType());
+        assertEquals("executable", component1.getType());
         assertEquals("blarg", component1.getDescription());
         assertEquals("glarb", component1.getVersion());
         assertEquals("quux", component1.getAttribution());
         assertTrue(component2.getId().matches("c[0-9a-f]{32}"));
         assertEquals("name", component2.getName());
         assertEquals("location", component2.getLocation());
-        assertEquals("type", component2.getType());
+        assertEquals("fAPI", component2.getType());
         assertNull(component2.getDescription());
         assertNull(component2.getVersion());
         assertNull(component2.getAttribution());
@@ -220,7 +234,7 @@ public class DeployedComponentImporterTest {
     public void shouldRegisterDeployedComponents() throws JSONException {
         HeterogeneousRegistryImpl registry = UnitTestUtils.createRegistry();
         deployedComponentImporter.setRegistry(registry);
-        deployedComponentImporter.importObject(generateJson(null, "roo", "rar", "raz", null, null, null));
+        deployedComponentImporter.importObject(generateJson(null, "roo", "rar", "executable", null, null, null));
         assertEquals(3, registry.size(DeployedComponent.class));
         assertNotNull(registry.get(DeployedComponent.class, "roo"));
     }
@@ -235,8 +249,8 @@ public class DeployedComponentImporterTest {
         HeterogeneousRegistryImpl registry = UnitTestUtils.createRegistry();
         deployedComponentImporter.setRegistry(registry);
         JSONArray array = new JSONArray();
-        array.put(generateJson(null, "roo", "rar", "raz", null, null, null));
-        array.put(generateJson(null, "glarb", "blrfl", "quux", null, null, null));
+        array.put(generateJson(null, "roo", "rar", "executable", null, null, null));
+        array.put(generateJson(null, "glarb", "blrfl", "fAPI", null, null, null));
         deployedComponentImporter.importObjectList(array);
         assertEquals(4, registry.size(DeployedComponent.class));
         assertNotNull(registry.get(DeployedComponent.class, "roo"));
@@ -252,11 +266,11 @@ public class DeployedComponentImporterTest {
     @Test
     public void shouldNotReplaceExistingDeployedComponentIfReplacementDisabled() throws JSONException {
         JSONArray array = new JSONArray();
-        array.put(generateJson(null, "zaz", "/usr/bin", "rexecutable", null, null, null));
         array.put(generateJson(null, "zaz", "/usr/bin", "executable", null, null, null));
+        array.put(generateJson(null, "zaz", "/usr/bin", "fAPI", null, null, null));
         deployedComponentImporter.importObjectList(array);
         assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
-        assertEquals("rexecutable", daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0).getType());
+        assertEquals("executable", daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0).getType());
     }
 
     /**
@@ -267,13 +281,13 @@ public class DeployedComponentImporterTest {
      */
     @Test
     public void shouldRegisterExistingDeployedComponentIfReplacementDisabled() throws JSONException {
-        deployedComponentImporter.importObject(generateJson(null, "zaz", "/usr/bin", "rexecutable", null, null, null));
+        deployedComponentImporter.importObject(generateJson(null, "zaz", "/usr/bin", "executable", null, null, null));
         deployedComponentImporter.disableReplacement();
         HeterogeneousRegistryImpl registry = UnitTestUtils.createRegistry();
         deployedComponentImporter.setRegistry(registry);
-        deployedComponentImporter.importObject(generateJson(null, "zaz", "/usr/bin", "executable", null, null, null));
+        deployedComponentImporter.importObject(generateJson(null, "zaz", "/usr/bin", "fAPI", null, null, null));
         assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
-        assertEquals("rexecutable", daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0).getType());
+        assertEquals("executable", daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0).getType());
         assertNotNull(registry.get(DeployedComponent.class, "zaz"));
     }
 
@@ -286,12 +300,12 @@ public class DeployedComponentImporterTest {
     @Test
     public void shouldNotReplaceExistingDeployedComponentIfReplacementIgnored() throws JSONException {
         JSONArray array = new JSONArray();
-        array.put(generateJson(null, "zaz", "/usr/bin", "rexecutable", null, null, null));
         array.put(generateJson(null, "zaz", "/usr/bin", "executable", null, null, null));
+        array.put(generateJson(null, "zaz", "/usr/bin", "fAPI", null, null, null));
         deployedComponentImporter.ignoreReplacement();
         deployedComponentImporter.importObjectList(array);
         assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
-        assertEquals("rexecutable", daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0).getType());
+        assertEquals("executable", daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0).getType());
     }
 
     /**
@@ -302,13 +316,13 @@ public class DeployedComponentImporterTest {
      */
     @Test
     public void shouldRegisterExistingDeployedComponentIfReplacementIgnored() throws JSONException {
-        deployedComponentImporter.importObject(generateJson(null, "zaz", "/usr/bin", "rexecutable", null, null, null));
+        deployedComponentImporter.importObject(generateJson(null, "zaz", "/usr/bin", "executable", null, null, null));
         deployedComponentImporter.ignoreReplacement();
         HeterogeneousRegistryImpl registry = UnitTestUtils.createRegistry();
         deployedComponentImporter.setRegistry(registry);
-        deployedComponentImporter.importObject(generateJson(null, "zaz", "/usr/bin", "executable", null, null, null));
+        deployedComponentImporter.importObject(generateJson(null, "zaz", "/usr/bin", "fAPI", null, null, null));
         assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
-        assertEquals("rexecutable", daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0).getType());
+        assertEquals("executable", daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0).getType());
         assertNotNull(registry.get(DeployedComponent.class, "zaz"));
     }
 
@@ -320,12 +334,12 @@ public class DeployedComponentImporterTest {
     @Test
     public void shouldReplaceExistingDeployedComponentIfReplacementEnabled() throws JSONException {
         JSONArray array = new JSONArray();
-        array.put(generateJson(null, "bar", "/usr/bin", "rexecutable", null, null, null));
         array.put(generateJson(null, "bar", "/usr/bin", "executable", null, null, null));
+        array.put(generateJson(null, "bar", "/usr/bin", "fAPI", null, null, null));
         deployedComponentImporter.enableReplacement();
         deployedComponentImporter.importObjectList(array);
         assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
-        assertEquals("executable", daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0).getType());
+        assertEquals("fAPI", daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0).getType());
     }
 
     /**
@@ -336,13 +350,13 @@ public class DeployedComponentImporterTest {
     @Test
     public void shouldAddUpdatedExistingDeployedComponentToRegistry() throws JSONException {
         deployedComponentImporter.enableReplacement();
-        deployedComponentImporter.importObject(generateJson("foo", "bar", "/usr/bin", "rexecutable", null, null, null));
+        deployedComponentImporter.importObject(generateJson("foo", "bar", "/usr/bin", "executable", null, null, null));
         HeterogeneousRegistryImpl registry = UnitTestUtils.createRegistry();
         deployedComponentImporter.setRegistry(registry);
-        deployedComponentImporter.importObject(generateJson("foo", "rab", "/usr/bin", "executable", null, null, null));
+        deployedComponentImporter.importObject(generateJson("foo", "rab", "/usr/bin", "fAPI", null, null, null));
         assertNotNull(registry.get(DeployedComponent.class, "rab"));
         assertEquals("foo", registry.get(DeployedComponent.class, "rab").getId());
-        assertEquals("executable", registry.get(DeployedComponent.class, "rab").getType());
+        assertEquals("fAPI", registry.get(DeployedComponent.class, "rab").getType());
     }
 
     /**
