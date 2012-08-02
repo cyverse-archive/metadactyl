@@ -1,7 +1,9 @@
 package org.iplantc.workflow.experiment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,6 +47,11 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     private static final Logger LOG = Logger.getLogger(CondorJobRequestFormatter.class);
 
     private static final Pattern FILE_URL_PATTERN = Pattern.compile("^(?:file://|/)");
+
+    private static final String[] IGNORED_PROPERTY_TYPE_NAMES = {"EnvironmentVariable"};
+    
+    private static final Set<String> IGNORED_PROPERTY_TYPES
+            = new HashSet<String>(Arrays.asList(IGNORED_PROPERTY_TYPE_NAMES));
 
     private DaoFactory daoFactory;
 
@@ -133,6 +140,11 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             // Format the properties.
             formatProperties(analysis, template, currentStep, transformation, params, keyset, config, jinputs,
                     stepArray);
+
+            // Format the environment-variable settings.
+            CondorEnvironmentVariableFormatter envFormatter
+                    = new CondorEnvironmentVariableFormatter(template, currentStep.getName(), transformation, config);
+            step1.put("environment", envFormatter.format());
 
             // Format outputs and properties for outputs taht are not referenced by other properties.
             JSONArray outputs_section = new JSONArray();
@@ -614,7 +626,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         else if (StringUtils.equals(propertyTypeName, "Output")) {
             CollectionUtils.addIgnoreNull(jprops, formatOutputProperty(property, value));
         }
-        else {
+        else if (!IGNORED_PROPERTY_TYPES.contains(property.getPropertyTypeName())) {
             CollectionUtils.addIgnoreNull(jprops, formatDefaultProperty(property, value));
         }
 

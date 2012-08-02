@@ -1,6 +1,7 @@
 package org.iplantc.workflow.integration.validation;
 
 import org.iplantc.workflow.WorkflowException;
+import org.iplantc.workflow.integration.util.NullHeterogeneousRegistry;
 import org.iplantc.workflow.model.Template;
 import org.junit.Test;
 
@@ -17,7 +18,7 @@ public class ChainingTemplateValidatorTest {
      */
     @Test
     public void shouldPassIfNoValidationsAreDone() {
-        new ChainingTemplateValidator().validate(new Template());
+        new ChainingTemplateValidator().validate(new Template(), new NullHeterogeneousRegistry());
     }
 
     /**
@@ -29,7 +30,7 @@ public class ChainingTemplateValidatorTest {
         ChainingTemplateValidator validator = new ChainingTemplateValidator();
         validator.addValidator(new PassingTemplateValidator());
         validator.addValidator(new PassingTemplateValidator());
-        validator.validate(new Template());
+        validator.validate(new Template(), new NullHeterogeneousRegistry());
     }
 
     /**
@@ -40,6 +41,6 @@ public class ChainingTemplateValidatorTest {
         ChainingTemplateValidator validator = new ChainingTemplateValidator();
         validator.addValidator(new PassingTemplateValidator());
         validator.addValidator(new FailingTemplateValidator());
-        validator.validate(new Template());
+        validator.validate(new Template(), new NullHeterogeneousRegistry());
     }
 }

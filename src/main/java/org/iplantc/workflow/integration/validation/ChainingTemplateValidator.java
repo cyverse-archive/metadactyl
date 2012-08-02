@@ -2,6 +2,7 @@ package org.iplantc.workflow.integration.validation;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.iplantc.workflow.integration.util.HeterogeneousRegistry;
 import org.iplantc.workflow.model.Template;
 
 /**
@@ -29,9 +30,9 @@ public class ChainingTemplateValidator implements TemplateValidator {
      * {@inheritDoc}
      */
     @Override
-    public void validate(Template template) {
+    public void validate(Template template, HeterogeneousRegistry registry) {
         for (TemplateValidator validator : validators) {
-            validator.validate(template);
+            validator.validate(template, registry);
         }
     }
 }

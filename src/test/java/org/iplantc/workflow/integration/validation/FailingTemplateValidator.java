@@ -1,6 +1,7 @@
 package org.iplantc.workflow.integration.validation;
 
 import org.iplantc.workflow.WorkflowException;
+import org.iplantc.workflow.integration.util.HeterogeneousRegistry;
 import org.iplantc.workflow.model.Template;
 
 /**
@@ -14,7 +15,7 @@ public class FailingTemplateValidator implements TemplateValidator {
      * {@inheritDoc}
      */
     @Override
-    public void validate(Template template) {
+    public void validate(Template template, HeterogeneousRegistry registry) {
         throw new WorkflowException("validation failed");
     }
 }

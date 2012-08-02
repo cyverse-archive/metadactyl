@@ -244,7 +244,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
     @Override
     public void importObject(JSONObject json) throws JSONException {
         Template template = unmarshallTemplate(json);
-        templateValidator.validate(template);
+        templateValidator.validate(template, registry);
         validateTemplate(template);
         Template existingTemplate = findExistingTemplate(template);
         if (existingTemplate == null) {
