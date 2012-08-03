@@ -272,4 +272,21 @@ public class Property extends WorkflowElement {
     public String toString() {
         return toJson().toString();
     }
+
+    /**
+     * Creates a copy of an existing property.
+     * 
+     * @param orig the original property.
+     * @return the copy.
+     */
+    public static Property copy(Property orig) {
+        Property copy = new Property(orig.getId(), orig.getName(), orig.getLabel(), orig.getDescription());
+        copy.propertyType = orig.propertyType;
+        copy.validator = orig.validator;
+        copy.order = orig.order;
+        copy.isVisible = orig.isVisible;
+        copy.defaultValue = orig.defaultValue;
+        copy.omitIfBlank = orig.omitIfBlank;
+        return copy;
+    }
 }

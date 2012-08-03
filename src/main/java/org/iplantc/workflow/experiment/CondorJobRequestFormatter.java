@@ -69,6 +69,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
     private String stderrFilename;
 
+    private Map<String, String> outputPropertyValues = new HashMap<String, String>();
+
     public CondorJobRequestFormatter(DaoFactory daoFactory, UrlAssembler urlAssembler,
             UserDetails userDetails, JSONObject experiment) {
         this.daoFactory = daoFactory;
@@ -190,18 +192,18 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
                 continue;
             }
 
-            JSONObject param = new JSONObject();
-
             String value = transformation.containsProperty(outputObject.getId())
                     ? transformation.getValueForProperty(CONDOR_TYPE)
                     : outputObject.getName();
-            setParamNameAndValue(param, outputObject.getSwitchString(), value);
 
-            param.put("order", order);
-            param.put("id", outputObject.getId());
-            params.add(param);
-
-            updateRedirectionFilenames(outputObject, value);
+            if (!StringUtils.isBlank(value)) {
+                JSONObject param = new JSONObject();
+                setParamNameAndValue(param, outputObject.getSwitchString(), value);
+                param.put("order", order);
+                param.put("id", outputObject.getId());
+                params.add(param);
+                updateRedirectionFilenames(outputObject, value);
+            }
         }
     }
 
@@ -222,16 +224,20 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
     private void formatDefinedOutputs(Template template, JSONArray outputs_section) {
         for (DataObject outputObject : template.getOutputs()) {
-            JSONObject out = new JSONObject();
 
-            out.put("name", outputObject.getName());
-            out.put("property", outputObject.getName());
-            out.put("type", outputObject.getInfoTypeName());
-            out.put("multiplicity", outputObject.getMultiplicityName());
-            out.put("retain", debug || outputObject.getRetain());
-            outputs_section.add(out);
+            String id = outputObject.getId();
+            String value = outputPropertyValues.containsKey(id) ? outputPropertyValues.get(id) : outputObject.getName();
 
-            updateRedirectionFilenames(outputObject, outputObject.getName());
+            if (!StringUtils.isBlank(value)) {
+                JSONObject out = new JSONObject();
+                out.put("name", value);
+                out.put("property", value);
+                out.put("type", outputObject.getInfoTypeName());
+                out.put("multiplicity", outputObject.getMultiplicityName());
+                out.put("retain", debug || outputObject.getRetain());
+                outputs_section.add(out);
+                updateRedirectionFilenames(outputObject, value);
+            }
         }
     }
 
@@ -650,11 +656,12 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     }
 
     protected JSONObject formatOutputProperty(Property property, String value) {
-        if (property.getDataObject().isImplicit()) {
+        DataObject output = property.getDataObject();
+        if (output.isImplicit()) {
             return null;
         }
-
-        return formatDefaultProperty(property, value);
+        outputPropertyValues.put(output.getId(), value);
+        return StringUtils.equals(output.getDataSourceName(), "file") ? formatDefaultProperty(property, value) : null;
     }
 
     protected JSONObject formatDefaultProperty(Property property, String value) {
