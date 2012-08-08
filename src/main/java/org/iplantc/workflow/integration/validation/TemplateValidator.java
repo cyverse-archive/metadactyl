@@ -1,5 +1,6 @@
 package org.iplantc.workflow.integration.validation;
 
+import org.iplantc.workflow.integration.util.HeterogeneousRegistry;
 import org.iplantc.workflow.model.Template;
 
 /**
@@ -14,6 +15,7 @@ public interface TemplateValidator {
      * Validates a template.
      * 
      * @param template the template to validate.
+     * @param registry used to look up elements that aren't in the database yet.
      */
-    public void validate(Template template);
+    public void validate(Template template, HeterogeneousRegistry registry);
 }

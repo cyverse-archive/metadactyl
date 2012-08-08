@@ -1,7 +1,9 @@
 package org.iplantc.workflow.experiment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,6 +48,11 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
     private static final Pattern FILE_URL_PATTERN = Pattern.compile("^(?:file://|/)");
 
+    private static final String[] IGNORED_PROPERTY_TYPE_NAMES = {"EnvironmentVariable"};
+    
+    private static final Set<String> IGNORED_PROPERTY_TYPES
+            = new HashSet<String>(Arrays.asList(IGNORED_PROPERTY_TYPE_NAMES));
+
     private DaoFactory daoFactory;
 
     private UrlAssembler urlAssembler;
@@ -61,6 +68,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     private String stdoutFilename;
 
     private String stderrFilename;
+
+    private Map<String, String> outputPropertyValues = new HashMap<String, String>();
 
     public CondorJobRequestFormatter(DaoFactory daoFactory, UrlAssembler urlAssembler,
             UserDetails userDetails, JSONObject experiment) {
@@ -134,6 +143,11 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             formatProperties(analysis, template, currentStep, transformation, params, keyset, config, jinputs,
                     stepArray);
 
+            // Format the environment-variable settings.
+            CondorEnvironmentVariableFormatter envFormatter
+                    = new CondorEnvironmentVariableFormatter(template, currentStep.getName(), transformation, config);
+            step1.put("environment", envFormatter.format());
+
             // Format outputs and properties for outputs taht are not referenced by other properties.
             JSONArray outputs_section = new JSONArray();
             formatOutputs(template, outputs_section);
@@ -178,18 +192,18 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
                 continue;
             }
 
-            JSONObject param = new JSONObject();
-
             String value = transformation.containsProperty(outputObject.getId())
                     ? transformation.getValueForProperty(CONDOR_TYPE)
                     : outputObject.getName();
-            setParamNameAndValue(param, outputObject.getSwitchString(), value);
 
-            param.put("order", order);
-            param.put("id", outputObject.getId());
-            params.add(param);
-
-            updateRedirectionFilenames(outputObject, value);
+            if (!StringUtils.isBlank(value)) {
+                JSONObject param = new JSONObject();
+                setParamNameAndValue(param, outputObject.getSwitchString(), value);
+                param.put("order", order);
+                param.put("id", outputObject.getId());
+                params.add(param);
+                updateRedirectionFilenames(outputObject, value);
+            }
         }
     }
 
@@ -210,16 +224,20 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
     private void formatDefinedOutputs(Template template, JSONArray outputs_section) {
         for (DataObject outputObject : template.getOutputs()) {
-            JSONObject out = new JSONObject();
 
-            out.put("name", outputObject.getName());
-            out.put("property", outputObject.getName());
-            out.put("type", outputObject.getInfoTypeName());
-            out.put("multiplicity", outputObject.getMultiplicityName());
-            out.put("retain", debug || outputObject.getRetain());
-            outputs_section.add(out);
+            String id = outputObject.getId();
+            String value = outputPropertyValues.containsKey(id) ? outputPropertyValues.get(id) : outputObject.getName();
 
-            updateRedirectionFilenames(outputObject, outputObject.getName());
+            if (!StringUtils.isBlank(value)) {
+                JSONObject out = new JSONObject();
+                out.put("name", value);
+                out.put("property", value);
+                out.put("type", outputObject.getInfoTypeName());
+                out.put("multiplicity", outputObject.getMultiplicityName());
+                out.put("retain", debug || outputObject.getRetain());
+                outputs_section.add(out);
+                updateRedirectionFilenames(outputObject, value);
+            }
         }
     }
 
@@ -372,8 +390,6 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
                 result.add(createInputJson(path, input));
             }
             else {
-                LOG.warn("File IDs: " + path);
-
                 JSONArray jsonFiles = (JSONArray) JSONSerializer.toJSON(path);
                 for (int i = 0, pathCount = jsonFiles.size(); i < pathCount; i++) {
                     String currentPath = jsonFiles.getString(i);
@@ -616,7 +632,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         else if (StringUtils.equals(propertyTypeName, "Output")) {
             CollectionUtils.addIgnoreNull(jprops, formatOutputProperty(property, value));
         }
-        else {
+        else if (!IGNORED_PROPERTY_TYPES.contains(property.getPropertyTypeName())) {
             CollectionUtils.addIgnoreNull(jprops, formatDefaultProperty(property, value));
         }
 
@@ -640,11 +656,12 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     }
 
     protected JSONObject formatOutputProperty(Property property, String value) {
-        if (property.getDataObject().isImplicit()) {
+        DataObject output = property.getDataObject();
+        if (output.isImplicit()) {
             return null;
         }
-
-        return formatDefaultProperty(property, value);
+        outputPropertyValues.put(output.getId(), value);
+        return StringUtils.equals(output.getDataSourceName(), "file") ? formatDefaultProperty(property, value) : null;
     }
 
     protected JSONObject formatDefaultProperty(Property property, String value) {

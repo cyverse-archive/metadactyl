@@ -2,6 +2,7 @@ package org.iplantc.workflow.integration.validation;
 
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.workflow.data.DataObject;
+import org.iplantc.workflow.integration.util.HeterogeneousRegistry;
 import org.iplantc.workflow.model.Template;
 import org.iplantc.workflow.util.ListUtils;
 import org.iplantc.workflow.util.Predicate;
@@ -29,7 +30,7 @@ public class OutputRedirectionTemplateValidator implements TemplateValidator {
      * {@inheritDoc}
      */
     @Override
-    public void validate(Template template) {
+    public void validate(Template template, HeterogeneousRegistry registry) {
         int count = ListUtils.count(new Predicate<DataObject>() {
             @Override
             public Boolean call(DataObject arg) {

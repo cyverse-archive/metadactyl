@@ -123,7 +123,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
     /**
      * Used to validate templates that are being imported.
      */
-    private TemplateValidator templateValidator = TemplateValidatorFactory.createDefaultTemplateValidator();
+    private TemplateValidator templateValidator;
 
     /**
      * @return the DAO factory.
@@ -184,17 +184,18 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
      * @param DaoFactory the factory used to generate data access objects.
      */
     public TemplateImporter(DaoFactory daoFactory) {
-        this(daoFactory, false);
+        this(daoFactory, false, TemplateValidatorFactory.createDefaultTemplateValidator());
     }
 
     /**
      * @param daoFactory the factory used to generate data access objects.
      * @param updateVetted true if we should allow vetted analyses to be updated.
      */
-    public TemplateImporter(DaoFactory daoFactory, boolean updateVetted) {
+    public TemplateImporter(DaoFactory daoFactory, boolean updateVetted, TemplateValidator templateValidator) {
         this.daoFactory = daoFactory;
         this.analysisVetter = new AnalysisImporter(daoFactory, null, null);
         this.updateVetted = updateVetted;
+        this.templateValidator = templateValidator;
     }
 
     /**
@@ -243,7 +244,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
     @Override
     public void importObject(JSONObject json) throws JSONException {
         Template template = unmarshallTemplate(json);
-        templateValidator.validate(template);
+        templateValidator.validate(template, registry);
         validateTemplate(template);
         Template existingTemplate = findExistingTemplate(template);
         if (existingTemplate == null) {

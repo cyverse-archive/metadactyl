@@ -1,5 +1,6 @@
 package org.iplantc.workflow.integration.validation;
 
+import org.iplantc.workflow.integration.util.NullHeterogeneousRegistry;
 import org.iplantc.workflow.model.Template;
 import org.junit.Test;
 
@@ -17,7 +18,7 @@ public class TemplateValidatorFactoryTest {
     @Test
     public void validationShouldPassIfNoRedirectionIsUsed() {
         Template template = ValidatorTestUtils.createTemplate("file", "file");
-        TemplateValidatorFactory.createDefaultTemplateValidator().validate(template);
+        TemplateValidatorFactory.createDefaultTemplateValidator().validate(template, new NullHeterogeneousRegistry());
     }
     
     /**
@@ -27,7 +28,7 @@ public class TemplateValidatorFactoryTest {
     @Test
     public void validationShouldPassIfRedirectionIsUsedOnceForEachStream() {
         Template template = ValidatorTestUtils.createTemplate("stdout", "stderr");
-        TemplateValidatorFactory.createDefaultTemplateValidator().validate(template);
+        TemplateValidatorFactory.createDefaultTemplateValidator().validate(template, new NullHeterogeneousRegistry());
     }
 
     /**
@@ -36,7 +37,7 @@ public class TemplateValidatorFactoryTest {
     @Test(expected = TooManyOutputRedirectionsException.class)
     public void validationShouldFailIfRedirectionIsUsedTwiceForStdout() {
         Template template = ValidatorTestUtils.createTemplate("stdout", "stdout");
-        TemplateValidatorFactory.createDefaultTemplateValidator().validate(template);
+        TemplateValidatorFactory.createDefaultTemplateValidator().validate(template, new NullHeterogeneousRegistry());
     }
 
     /**
@@ -45,6 +46,6 @@ public class TemplateValidatorFactoryTest {
     @Test(expected = TooManyOutputRedirectionsException.class)
     public void validationShouldFailIfRedirectionIsUsedTwiceForStderr() {
         Template template = ValidatorTestUtils.createTemplate("stderr", "stderr");
-        TemplateValidatorFactory.createDefaultTemplateValidator().validate(template);
+        TemplateValidatorFactory.createDefaultTemplateValidator().validate(template, new NullHeterogeneousRegistry());
     }
 }

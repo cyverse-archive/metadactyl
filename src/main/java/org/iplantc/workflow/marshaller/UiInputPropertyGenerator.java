@@ -1,6 +1,6 @@
 package org.iplantc.workflow.marshaller;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
@@ -13,7 +13,7 @@ import org.iplantc.workflow.model.Validator;
 
 /**
  * Converts data objects to input properties for the discovery environment UI.
- * 
+ *
  * @author Dennis Roberts
  */
 public class UiInputPropertyGenerator {
@@ -39,7 +39,7 @@ public class UiInputPropertyGenerator {
 
     /**
      * Converts a data object to an input property.
-     * 
+     *
      * @param input the data object to convert.
      * @return the input property.
      */
@@ -57,7 +57,7 @@ public class UiInputPropertyGenerator {
 
     /**
      * Generates the property type for the given data object.
-     * 
+     *
      * @param input the data object.
      * @return the property type.
      */
@@ -68,26 +68,24 @@ public class UiInputPropertyGenerator {
     }
 
     /**
-     * Generates the validator for the given data object.
-     * 
-     * @param input the data object.
+     * Generates the validator for a data object.
+     *
+     * @param dataObject the data object.
      * @return the validator.
      */
-    protected Validator generateValidator(DataObject input) {
-        Validator validator = new Validator();
-        validator.setName("");
-        validator.setRequired(input.isRequired());
-        validator.setRules(generateValidationRules(input));
+    protected Validator generateValidator(DataObject dataObject) {
+        Validator validator = UiMarshalingUtils.generateValidator(dataObject);
+        validator.setRules(generateValidationRules(dataObject));
         return validator;
     }
 
     /**
      * Creates validation rules for the given data object.
-     * 
+     *
      * @param input the data object.
      * @return the list of validation rules.
      */
     protected List<Rule> generateValidationRules(DataObject input) {
-        return new LinkedList<Rule>();
+        return new ArrayList<Rule>();
     }
 }

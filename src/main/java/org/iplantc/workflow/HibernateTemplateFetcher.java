@@ -25,6 +25,7 @@ public class HibernateTemplateFetcher extends HibernateAccessor implements Templ
     /**
      * Fetches a template by analysis id.
      */
+    @Override
     public Template fetchTemplateByName(String id) throws Exception {
         Session session = getSessionFactory().openSession();
         try {

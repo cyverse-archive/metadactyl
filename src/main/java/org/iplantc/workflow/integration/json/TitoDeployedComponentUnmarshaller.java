@@ -2,8 +2,10 @@ package org.iplantc.workflow.integration.json;
 
 import java.util.Set;
 import org.iplantc.persistence.dto.components.DeployedComponent;
+import org.iplantc.persistence.dto.components.ToolType;
 import org.iplantc.persistence.dto.data.DeployedComponentDataFile;
 import org.iplantc.persistence.dto.data.IntegrationDatum;
+import org.iplantc.workflow.UnknownToolTypeException;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.integration.util.ImportUtils;
 import org.json.JSONArray;
@@ -39,7 +41,7 @@ public class TitoDeployedComponentUnmarshaller extends AbstractTitoDataFileUnmar
         DeployedComponent deployedComponent = new DeployedComponent();
         deployedComponent.setId(ImportUtils.getId(json, "id", "c"));
         deployedComponent.setName(json.getString("name"));
-        deployedComponent.setType(json.getString("type"));
+        deployedComponent.setToolType(getToolType(json.getString("type")));
         deployedComponent.setLocation(json.getString("location"));
         deployedComponent.setDescription(json.optString("description", null));
         deployedComponent.setVersion(json.optString("version", null));
@@ -51,7 +53,22 @@ public class TitoDeployedComponentUnmarshaller extends AbstractTitoDataFileUnmar
         return deployedComponent;
     }
 
-	/**
+    /**
+     * Gets the selected tool type for the deployed component.
+     * 
+     * @param name the tool type name.
+     * @return the tool type.
+     * @throws UnknownToolTypeException if a matching tool type isn't found.
+     */
+    private ToolType getToolType(String name) {
+        ToolType result = daoFactory.getToolTypeDao().findByName(name);
+        if (result == null) {
+            throw new UnknownToolTypeException("name", name);
+        }
+        return result;
+    }
+
+    /**
 	 * Gets the integration datum for the deployed component.  If a matching integration datum already exists then that
 	 * one will be used.  Otherwise, a new integration datum will be created.
 	 * 

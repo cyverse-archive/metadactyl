@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.lang.StringUtils;
+import org.iplantc.persistence.dao.components.ToolTypeDao;
 import org.iplantc.persistence.dto.components.DeployedComponent;
+import org.iplantc.persistence.dto.components.ToolType;
 import org.iplantc.persistence.dto.data.DataFormat;
 import org.iplantc.persistence.dto.data.DataSource;
 import org.iplantc.persistence.dto.data.DeployedComponentDataFile;
@@ -13,6 +15,7 @@ import org.iplantc.persistence.dto.step.TransformationStep;
 import org.iplantc.persistence.dto.transformation.Transformation;
 import org.iplantc.persistence.dto.user.User;
 import org.iplantc.persistence.dto.workspace.Workspace;
+import org.iplantc.workflow.UnknownToolTypeException;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.core.TransformationActivityReference;
 import org.iplantc.workflow.dao.mock.MockDataFormatDao;
@@ -79,6 +82,11 @@ public class UnitTestUtils {
      * The list of standard data source names.
      */
     private static final String[] DATA_SOURCE_NAMES = {"file", "stdout", "stderr"};
+
+    /**
+     * The list of standard tool type names.
+     */
+    private static final String[] TOOL_TYPE_NAMES = {"executable", "fAPI" };
 
     /**
      * Creates a generalized registry to use for testing.
@@ -197,7 +205,7 @@ public class UnitTestUtils {
         component.setId(name + "id");
         component.setName(name);
         component.setLocation(name + "location");
-        component.setType(name + "type");
+        component.setToolType(createToolType(name + "type"));
         return component;
     }
 
@@ -426,7 +434,7 @@ public class UnitTestUtils {
         DeployedComponent deployedComponent = new DeployedComponent();
         deployedComponent.setName(name);
         deployedComponent.setId(id);
-        deployedComponent.setType("executable");
+        deployedComponent.setToolType(createKnownToolType("executable"));
         deployedComponent.setLocation("/path/to/bin");
         deployedComponent.setAttribution(name + "attribution");
         deployedComponent.setVersion(name + "version");
@@ -451,13 +459,66 @@ public class UnitTestUtils {
         component.setId(id);
         component.setName(name);
         component.setLocation(location);
-        component.setType("executable");
+        component.setToolType(createKnownToolType("executable"));
         component.setAttribution(name + "attribution");
         component.setVersion(name + "version");
         component.setDescription(name + "description");
         component.setDeployedComponentDataFiles(createDeployedComponentDataFiles());
         component.setIntegrationDatum(createIntegrationDatum());
         return component;
+    }
+
+    /**
+     * Creates a tool type with a known name.
+     * 
+     * @param name the name to use.
+     * @return the tool type.
+     * @throws UnknownToolTypeException if the given name isn't in the list of known tool names.
+     */
+    public static ToolType createKnownToolType(String name) {
+        for (int i = 0; i < TOOL_TYPE_NAMES.length; i++) {
+            if (StringUtils.equals(TOOL_TYPE_NAMES[i], name)) {
+                return createToolType(i, name);
+            }
+        }
+        throw new UnknownToolTypeException("name", name);
+    }
+
+    /**
+     * Initializes a tool type DAO for testing.
+     * 
+     * @param dao the DAO to initialize.
+     */
+    public static void initToolTypeDao(ToolTypeDao dao) {
+        for (int i = 0; i < TOOL_TYPE_NAMES.length; i++) {
+            dao.save(createToolType(i, TOOL_TYPE_NAMES[i]));
+        }
+    }
+
+    /**
+     * Creates a new tool type with the given name.
+     * 
+     * @param name the tool type name.
+     * @return the tool type.
+     */
+    public static ToolType createToolType(String name) {
+        return createToolType(name.hashCode(), name);
+    }
+
+    /**
+     * Creates a new tool type with the given id and name.
+     * 
+     * @param id the tool type identifier.
+     * @param name the tool type name.
+     * @return the tool type.
+     */
+    public static ToolType createToolType(long id, String name) {
+        ToolType toolType = new ToolType();
+        toolType.setId(id);
+        toolType.setName(name);
+        toolType.setLabel(name + "-label");
+        toolType.setDescription(name + "-description");
+        return toolType;
     }
 
     /**

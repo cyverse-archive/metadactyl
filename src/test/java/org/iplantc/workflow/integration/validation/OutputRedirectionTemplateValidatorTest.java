@@ -1,5 +1,6 @@
 package org.iplantc.workflow.integration.validation;
 
+import org.iplantc.workflow.integration.util.NullHeterogeneousRegistry;
 import org.iplantc.workflow.model.Template;
 import org.junit.Test;
 
@@ -19,7 +20,7 @@ public class OutputRedirectionTemplateValidatorTest {
     @Test
     public void shouldSucceedWithNoOutputRedirections() {
         Template template = createTemplate("file", "file");
-        new OutputRedirectionTemplateValidator("stdout").validate(template);
+        new OutputRedirectionTemplateValidator("stdout").validate(template, new NullHeterogeneousRegistry());
     }
 
     /**
@@ -29,7 +30,7 @@ public class OutputRedirectionTemplateValidatorTest {
     @Test
     public void shouldSuccedWithOneOuptutRedirection() {
         Template template = createTemplate("stdout", "file");
-        new OutputRedirectionTemplateValidator("stdout").validate(template);
+        new OutputRedirectionTemplateValidator("stdout").validate(template, new NullHeterogeneousRegistry());
     }
 
     /**
@@ -38,6 +39,6 @@ public class OutputRedirectionTemplateValidatorTest {
     @Test(expected = TooManyOutputRedirectionsException.class)
     public void shouldFailWithTwoOutputRedirections() {
         Template template = createTemplate("stdout", "stdout");
-        new OutputRedirectionTemplateValidator("stdout").validate(template);
+        new OutputRedirectionTemplateValidator("stdout").validate(template, new NullHeterogeneousRegistry());
     }
 }

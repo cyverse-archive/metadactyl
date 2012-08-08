@@ -43,7 +43,6 @@ public class WorkflowElementRetrievalService {
         subServiceMap.put("components", new DeployedComponentRetrievalService(sessionFactory));
         subServiceMap.put("formats", new DataFormatRetrievalService(sessionFactory));
         subServiceMap.put("info-types", new InfoTypeRetrievalService(sessionFactory));
-        subServiceMap.put("property-types", new PropertyTypeRetrievalService(sessionFactory));
         subServiceMap.put("rule-types", new RuleTypeRetrievalService(sessionFactory));
         subServiceMap.put("value-types", new ValueTypeRetrievalService(sessionFactory));
         subServiceMap.put("data-sources", new DataSourceRetrievalService(sessionFactory));

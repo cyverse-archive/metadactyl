@@ -15,6 +15,7 @@ import org.iplantc.workflow.model.PropertyGroup;
 import org.iplantc.workflow.model.PropertyType;
 import org.iplantc.workflow.model.Template;
 import org.iplantc.workflow.user.UserDetails;
+import org.iplantc.workflow.util.UnitTestUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -289,7 +290,7 @@ public class FapiJobRequestFormatterTest {
         component.setName("deployed component name");
         component.setLocation("deployed component location");
         component.setDescription("deployed component description");
-        component.setType("deployed component type");
+        component.setToolType(UnitTestUtils.createToolType("deployed component type"));
         return component;
     }
 

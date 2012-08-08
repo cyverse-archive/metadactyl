@@ -140,7 +140,13 @@ public class UiAnalysisMarshaller {
 
                     String propertyType = property.getPropertyTypeName();
                     if (propertyType.equalsIgnoreCase("output")) {
-                        continue;
+                        DataObject output = property.getDataObject();
+                        if (transformation.containsProperty(output.getId())
+                                || analysis.isTargetInMapping(stepName, output.getId()) || output.isImplicit()) {
+                            continue;
+                        }
+                        property = Property.copy(property);
+                        property.setValidator(UiMarshalingUtils.generateValidator(output));
                     } else if (propertyType.equalsIgnoreCase("input")) {
                         DataObject input = property.getDataObject();
 
