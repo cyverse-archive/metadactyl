@@ -1,5 +1,6 @@
 package org.iplantc.workflow.service;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.iplantc.hibernate.util.SessionTask;
@@ -17,6 +18,7 @@ import org.json.JSONObject;
  * @author Dennis Roberts
  */
 public class AnalysisDeletionService {
+    private static final Logger LOG = Logger.getLogger(AnalysisDeletionService.class);
 
     /**
      * The database session factory.
@@ -69,7 +71,14 @@ public class AnalysisDeletionService {
         try {
             JSONObject app = new JSONObject(jsonString);
 
-            zoidbergClient.deleteAnalysis(app.optString("user"), app.optString("analysis_id"));
+            try {
+                zoidbergClient.deleteAnalysis(app.optString("user"), app.optString("analysis_id"));
+            }
+            catch (WorkflowException zoidbergException) {
+                // Intentionally ignore zoidberg deletion errors.
+                LOG.warn("Could not delete App in Zoidberg", zoidbergException);
+            }
+
             createAnalysisDeleter(session).logicallyDelete(app);
         }
         catch (JSONException e) {
