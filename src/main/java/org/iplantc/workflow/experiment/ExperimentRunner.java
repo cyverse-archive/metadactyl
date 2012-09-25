@@ -72,7 +72,6 @@ public class ExperimentRunner extends HibernateAccessor {
         JsonLogger.info("runExperiment received the following input: " + experiment.toString(2));
 
         try {
-            long workspaceId = Long.parseLong(experiment.getString("workspace_id"));
             UserDetails userDetails = userService.getCurrentUserDetails();
 
             JSONObject job = formatJobRequest(experiment, session, userDetails);
@@ -80,8 +79,8 @@ public class ExperimentRunner extends HibernateAccessor {
             submitJob(job);
         }
         catch (Exception ex) {
-            JsonLogger.error("Caught exception when processing");
-            throw new Exception("ExperimentRunner ", ex);
+            LOG.error("Caught exception when processing", ex);
+            throw new Exception("ExperimentRunner error: " + ex.getMessage(), ex);
         }
     }
 
