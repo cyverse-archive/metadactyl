@@ -212,15 +212,27 @@ public class FapiInputParamFormatter {
     private List<String> specifiedFilesToList(DataObject input, String specifiedFiles) {
         List<String> files;
         if (input.getMultiplicityName().equals("many")) {
-            JSONArray jsonFiles = (JSONArray)JSONSerializer.toJSON(specifiedFiles);
             files = new ArrayList<String>();
-            files.addAll(jsonFiles);
+            JSONArray jsonFiles = jsonArrayFromString(specifiedFiles);
+            if (jsonFiles != null) {
+                files.addAll(jsonFiles);
+            }
         }
         else {
             files = Arrays.asList(specifiedFiles);
         }
         updatePaths(files);
         return files;
+    }
+
+    private JSONArray jsonArrayFromString(String paths) {
+        JSONArray json = null;
+        try {
+            json = (JSONArray) JSONSerializer.toJSON(paths);
+        }
+        catch (Exception ignore) {
+        }
+        return json;
     }
 
     /**
