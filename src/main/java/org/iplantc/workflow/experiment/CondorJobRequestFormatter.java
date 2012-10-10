@@ -390,7 +390,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
                 result.add(createInputJson(path, input));
             }
             else {
-                JSONArray jsonFiles = jsonArrayFromString(path);
+                JSONArray jsonFiles = ParamUtils.jsonArrayFromString(path);
                 if (jsonFiles != null) {
                     for (int i = 0, pathCount = jsonFiles.size(); i < pathCount; i++) {
                         String currentPath = jsonFiles.getString(i);
@@ -406,16 +406,6 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     private String extractInputName(String path) {
         JSONObject json = jsonObjectFromString(path);
         return json == null ? path : json.optString("name");
-    }
-
-    private JSONArray jsonArrayFromString(String paths) {
-        JSONArray json = null;
-        try {
-            json = (JSONArray) JSONSerializer.toJSON(paths);
-        }
-        catch (Exception ignore) {
-        }
-        return json;
     }
 
     private JSONObject jsonObjectFromString(String path) {

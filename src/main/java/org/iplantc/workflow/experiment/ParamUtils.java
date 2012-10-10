@@ -1,6 +1,8 @@
 package org.iplantc.workflow.experiment;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -35,4 +37,20 @@ public class ParamUtils {
             param.put("value", value);
         }
     }
+
+    /**
+     * Attempts to parse a JSON array from the given string. Returns null on errors.
+     *
+     * @param value the JSON array to parse.
+     * @return JSONArray on success, or null on errors.
+     */
+    public static JSONArray jsonArrayFromString(String value) {
+        try {
+            return (JSONArray) JSONSerializer.toJSON(value);
+        }
+        catch (Exception ignore) {
+            return null;
+        }
+    }
+
 }
