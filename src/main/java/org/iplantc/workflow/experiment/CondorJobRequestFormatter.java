@@ -408,14 +408,13 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         return json == null ? path : json.optString("name");
     }
 
-    private JSONObject jsonObjectFromString(String path) {
-        JSONObject json = null;
+    private JSONObject jsonObjectFromString(String json) {
         try {
-            json = (JSONObject) JSONSerializer.toJSON(path);
+            return (JSONObject) JSONSerializer.toJSON(json);
         }
         catch (Exception ignore) {
+            return null;
         }
-        return json;
     }
 
     private void logDataObject(String label, DataObject input) {
@@ -621,6 +620,9 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         if (StringUtils.equals(propertyTypeName, "Selection") || StringUtils.equals(propertyTypeName, "ValueSelection")) {
             CollectionUtils.addIgnoreNull(jprops, formatSelectionProperty(property, value));
         }
+        else if (StringUtils.equals(propertyTypeName, "TreeSelection")) {
+            jprops.addAll(formatTreeSelectionProperty(property, value));
+        }
         else if (StringUtils.equals(propertyTypeName, "Flag")) {
             CollectionUtils.addIgnoreNull(jprops, formatFlagProperty(property, value));
         }
@@ -710,8 +712,9 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
     private JSONObject formatSelectionProperty(Property property, String arg) {
         JSONObject result;
-        if (isJsonObject(arg)) {
-            result = formatNewStyleSelectionProperty(property, arg);
+        JSONObject jsonArg = jsonObjectFromString(arg);
+        if (jsonArg != null) {
+            result = formatNewStyleSelectionProperty(property, jsonArg);
         }
         else {
             result = formatOldStyleSelectionProperty(property, arg);
@@ -752,11 +755,10 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
      * @param arg the argument.
      * @return the formatted parameter or null if the parameter shouldn't be formatted.
      */
-    private JSONObject formatNewStyleSelectionProperty(Property property, String arg) {
+    private JSONObject formatNewStyleSelectionProperty(Property property, JSONObject arg) {
         JSONObject result = null;
-        JSONObject json = (JSONObject) JSONSerializer.toJSON(arg);
-        String name = json.optString("name");
-        String value = json.optString("value");
+        String name = arg.optString("name");
+        String value = arg.optString("value");
         if (!StringUtils.isEmpty(name) || !StringUtils.isEmpty(value)) {
             result = initialPropertyJson(property);
             result.put("id", property.getId());
@@ -765,20 +767,18 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         return result;
     }
 
-    /**
-     * Determines whether or not the given string represents a JSON object.
-     *
-     * @param value the string to check.
-     * @return true if the string represents a JSON object.
-     */
-    private boolean isJsonObject(String value) {
-        try {
-            JSON json = JSONSerializer.toJSON(value);
-            return !json.isArray();
+    private List<JSONObject> formatTreeSelectionProperty(Property property, String values) {
+        List<JSONObject> params = new ArrayList<JSONObject>();
+        JSONArray args = ParamUtils.jsonArrayFromString(values);
+
+        if (args != null) {
+            for (int i = 0; i < args.size(); i++) {
+                JSONObject result = formatNewStyleSelectionProperty(property, args.getJSONObject(i));
+                CollectionUtils.addIgnoreNull(params, result);
+            }
         }
-        catch (Exception e) {
-            return false;
-        }
+
+        return params;
     }
 
     private JSONObject initialPropertyJson(Property property) {
