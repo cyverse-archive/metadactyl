@@ -1,16 +1,17 @@
 package org.iplantc.workflow.experiment.property;
 
+import static org.iplantc.workflow.experiment.ParamUtils.setParamNameAndValue;
+
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.step.TransformationStep;
 import org.iplantc.workflow.model.Property;
-
-import static org.iplantc.workflow.experiment.ParamUtils.setParamNameAndValue;
 
 /**
  * The property formatter to use for Selection arguments.
@@ -35,7 +36,7 @@ public class SelectionPropertyFormatter extends PropertyFormatter {
      * {@inheritDoc}
      */
     @Override
-    public JSONObject formatProperty() {
+    public JSON formatProperty() {
         JSONObject result;
         String value = getValue();
         if (StringUtils.isBlank(value)) {

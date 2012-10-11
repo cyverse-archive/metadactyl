@@ -1,6 +1,7 @@
 package org.iplantc.workflow.experiment.property;
 
 import static org.junit.Assert.assertNull;
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.iplantc.workflow.model.Property;
@@ -22,8 +23,9 @@ public class FlagPropertyFormatterTest extends BasePropertyFormatterTester {
         Property property = createProperty("-foo,-bar", "false", 1, "Selection");
         FlagPropertyFormatter formatter = new FlagPropertyFormatter(config, createStep(), property,
             createPropertyValueMap());
-        JSONObject formattedProperty = formatter.formatProperty();
-        assertFormattedPropertyValid(formattedProperty, "id", "-bar", 1, "");
+        JSON formattedProperty = formatter.formatProperty();
+        assertJSONObject(formattedProperty);
+        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "-bar", 1, "");
     }
 
     /**
@@ -35,8 +37,9 @@ public class FlagPropertyFormatterTest extends BasePropertyFormatterTester {
         Property property = createProperty("-foo,-bar", "false", 1, "Selection");
         FlagPropertyFormatter formatter = new FlagPropertyFormatter(config, createStep(), property,
             createPropertyValueMap());
-        JSONObject formattedProperty = formatter.formatProperty();
-        assertFormattedPropertyValid(formattedProperty, "id", "-foo", 1, "");
+        JSON formattedProperty = formatter.formatProperty();
+        assertJSONObject(formattedProperty);
+        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "-foo", 1, "");
     }
 
     /**
@@ -48,8 +51,9 @@ public class FlagPropertyFormatterTest extends BasePropertyFormatterTester {
         Property property = createProperty("-foo", "false", 1, "Selection");
         FlagPropertyFormatter formatter = new FlagPropertyFormatter(config, createStep(), property,
             createPropertyValueMap());
-        JSONObject formattedProperty = formatter.formatProperty();
-        assertFormattedPropertyValid(formattedProperty, "id", "-foo", 1, "");
+        JSON formattedProperty = formatter.formatProperty();
+        assertJSONObject(formattedProperty);
+        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "-foo", 1, "");
     }
 
     /**
@@ -61,7 +65,7 @@ public class FlagPropertyFormatterTest extends BasePropertyFormatterTester {
         Property property = createProperty("-foo", "false", 1, "Selection");
         FlagPropertyFormatter formatter = new FlagPropertyFormatter(config, createStep(), property,
             createPropertyValueMap());
-        JSONObject formattedProperty = formatter.formatProperty();
+        JSON formattedProperty = formatter.formatProperty();
         assertNull(formattedProperty);
     }
 }

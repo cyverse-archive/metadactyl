@@ -2,7 +2,10 @@ package org.iplantc.workflow.experiment.property;
 
 import java.util.List;
 import java.util.Map;
+
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
+
 import org.iplantc.persistence.dto.step.TransformationStep;
 import org.iplantc.workflow.model.Property;
 
@@ -28,7 +31,7 @@ public class OutputPropertyFormatter extends DefaultPropertyFormatter {
      * {@inheritDoc}
      */
     @Override
-    public JSONObject formatProperty() {
+    public JSON formatProperty() {
         if (property.getDataObject().isImplicit()) {
             return null;
         } else {

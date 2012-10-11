@@ -1,16 +1,21 @@
 package org.iplantc.workflow.experiment.property;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
+
 import org.iplantc.persistence.dto.step.TransformationStep;
+import org.iplantc.persistence.dto.transformation.Transformation;
 import org.iplantc.workflow.model.Property;
 import org.iplantc.workflow.model.PropertyType;
-import org.iplantc.persistence.dto.transformation.Transformation;
 
 /**
  * Common methods for all property formatter unit tests. The purpose of the weird name is to prevent this class from
@@ -144,5 +149,25 @@ public class BasePropertyFormatterTester {
         assertEquals(name, json.getString("name"));
         assertEquals(order, json.getInt("order"));
         assertEquals(value, json.getString("value"));
+    }
+
+    /**
+     * Verifies that the given JSON is a JSON object.
+     * 
+     * @param json The JSON object to verify.
+     */
+    protected void assertJSONObject(JSON json) {
+        assertNotNull(json);
+        assertFalse(json.isArray());
+    }
+
+    /**
+     * Verifies that the given JSON is a JSON array.
+     * 
+     * @param json The JSON array to verify.
+     */
+    protected void assertJSONArray(JSON json) {
+        assertNotNull(json);
+        assertTrue(json.isArray());
     }
 }

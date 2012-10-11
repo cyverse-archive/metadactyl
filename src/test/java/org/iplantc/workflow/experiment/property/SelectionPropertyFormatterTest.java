@@ -1,6 +1,7 @@
 package org.iplantc.workflow.experiment.property;
 
 import static org.junit.Assert.assertNull;
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.iplantc.workflow.model.Property;
@@ -22,7 +23,7 @@ public class SelectionPropertyFormatterTest extends BasePropertyFormatterTester 
         Property property = createProperty("", 2, "Selection");
         SelectionPropertyFormatter formatter = new SelectionPropertyFormatter(config, createStep(), property,
             createPropertyValueMap());
-        JSONObject formattedProperty = formatter.formatProperty();
+        JSON formattedProperty = formatter.formatProperty();
         assertNull(formattedProperty);
     }
 
@@ -35,8 +36,9 @@ public class SelectionPropertyFormatterTest extends BasePropertyFormatterTester 
         Property property = createProperty("-foo,-bar,-baz", propertyJson("-bar", "bar"), 2, "Selection");
         SelectionPropertyFormatter formatter = new SelectionPropertyFormatter(config, createStep(), property,
             createPropertyValueMap());
-        JSONObject formattedProperty = formatter.formatProperty();
-        assertFormattedPropertyValid(formattedProperty, "id", "-bar", 2, "bar");
+        JSON formattedProperty = formatter.formatProperty();
+        assertJSONObject(formattedProperty);
+        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "-bar", 2, "bar");
     }
 
     /**
@@ -49,8 +51,9 @@ public class SelectionPropertyFormatterTest extends BasePropertyFormatterTester 
         Property property = createProperty("-foo,-bar,-baz", "2", 2, "Selection");
         SelectionPropertyFormatter formatter = new SelectionPropertyFormatter(config, createStep(), property,
             createPropertyValueMap());
-        JSONObject formattedProperty = formatter.formatProperty();
-        assertFormattedPropertyValid(formattedProperty, "id", "-baz", 2, "");
+        JSON formattedProperty = formatter.formatProperty();
+        assertJSONObject(formattedProperty);
+        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "-baz", 2, "");
     }
 
     /**
@@ -62,8 +65,9 @@ public class SelectionPropertyFormatterTest extends BasePropertyFormatterTester 
         Property property = createProperty("-foo foo,-bar bar,-baz baz", "0", 2, "Selection");
         SelectionPropertyFormatter formatter = new SelectionPropertyFormatter(config, createStep(), property,
             createPropertyValueMap());
-        JSONObject formattedProperty = formatter.formatProperty();
-        assertFormattedPropertyValid(formattedProperty, "id", "-foo", 2, "foo");
+        JSON formattedProperty = formatter.formatProperty();
+        assertJSONObject(formattedProperty);
+        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "-foo", 2, "foo");
     }
 
     /**
@@ -75,8 +79,9 @@ public class SelectionPropertyFormatterTest extends BasePropertyFormatterTester 
         Property property = createProperty("-foo,-bar,-baz", propertyJson("-bar", "bar"), 2, "Selection");
         SelectionPropertyFormatter formatter = new SelectionPropertyFormatter(config, createStep(), property,
             createPropertyValueMap());
-        JSONObject formattedProperty = formatter.formatProperty();
-        assertFormattedPropertyValid(formattedProperty, "id", "-baz", 2, "baz");
+        JSON formattedProperty = formatter.formatProperty();
+        assertJSONObject(formattedProperty);
+        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "-baz", 2, "baz");
     }
 
     /**
@@ -88,8 +93,9 @@ public class SelectionPropertyFormatterTest extends BasePropertyFormatterTester 
         Property property = createProperty("", "", 2, "Selection");
         SelectionPropertyFormatter formatter = new SelectionPropertyFormatter(config, createStep(),
                 property, createPropertyValueMap());
-        JSONObject formattedProperty = formatter.formatProperty();
-        assertFormattedPropertyValid(formattedProperty, "id", "-baz", 2, "baz");
+        JSON formattedProperty = formatter.formatProperty();
+        assertJSONObject(formattedProperty);
+        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "-baz", 2, "baz");
     }
 
     /**
@@ -113,8 +119,9 @@ public class SelectionPropertyFormatterTest extends BasePropertyFormatterTester 
         Property property = createProperty("", "", 2, "Selection");
         SelectionPropertyFormatter formatter = new SelectionPropertyFormatter(config, createStep(),
                 property, createPropertyValueMap());
-        JSONObject formattedProperty = formatter.formatProperty();
-        assertFormattedPropertyValid(formattedProperty, "id", "", 2, "baz");
+        JSON formattedProperty = formatter.formatProperty();
+        assertJSONObject(formattedProperty);
+        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "", 2, "baz");
     }
 
     /**
@@ -126,8 +133,9 @@ public class SelectionPropertyFormatterTest extends BasePropertyFormatterTester 
         Property property = createProperty("", "", 2, "Selection");
         SelectionPropertyFormatter formatter = new SelectionPropertyFormatter(config, createStep(),
                 property, createPropertyValueMap());
-        JSONObject formattedProperty = formatter.formatProperty();
-        assertFormattedPropertyValid(formattedProperty, "id", "-baz", 2, "");
+        JSON formattedProperty = formatter.formatProperty();
+        assertJSONObject(formattedProperty);
+        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "-baz", 2, "");
     }
 
     /**

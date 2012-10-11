@@ -3,10 +3,12 @@ package org.iplantc.workflow.experiment;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.iplantc.persistence.dto.step.TransformationStep;
 
+import org.iplantc.persistence.dto.step.TransformationStep;
+import org.iplantc.persistence.dto.transformation.Transformation;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
@@ -16,7 +18,6 @@ import org.iplantc.workflow.experiment.property.PropertyFormatterFactory;
 import org.iplantc.workflow.model.Property;
 import org.iplantc.workflow.model.PropertyGroup;
 import org.iplantc.workflow.model.Template;
-import org.iplantc.persistence.dto.transformation.Transformation;
 
 /**
  * The foundational API step formatter.
@@ -28,37 +29,37 @@ public class FapiStepFormatter {
     /**
      * The factory used to create data access objects.
      */
-    private DaoFactory daoFactory;
+    private final DaoFactory daoFactory;
 
     /**
      * The type of step being formatted.
      */
-    private String stepType;
+    private final String stepType;
 
     /**
      * The name of the user who submitted the request.
      */
-    private String username;
+    private final String username;
 
     /**
      * The experiment that was submitted to the experiment runner service.
      */
-    private JSONObject experiment;
+    private final JSONObject experiment;
 
     /**
      * The analysis being formatted.
      */
-    private TransformationActivity analysis;
+    private final TransformationActivity analysis;
 
     /**
      * The step being formatted.
      */
-    private TransformationStep step;
+    private final TransformationStep step;
 
     /**
      * A map of property names to property values.
      */
-    private Map<String, List<String>> propertyValues;
+    private final Map<String, List<String>> propertyValues;
 
     /**
      * @param daoFactory the factory used to create data access objects.
@@ -264,10 +265,29 @@ public class FapiStepFormatter {
      */
     private void addParamsForProperties(JSONArray params, List<Property> properties) {
         for (Property property : properties) {
-            JSONObject param = formatParamForProperty(property);
-            if (param != null && param.optInt("order", -1) >= 0) {
-                params.add(param);
+            JSON json = formatParamForProperty(property);
+            if (json != null) {
+                if (json.isArray()) {
+                    JSONArray paramArray = (JSONArray)json;
+                    for (int i = 0; i < paramArray.size(); i++) {
+                        addParamForProperties(params, paramArray.getJSONObject(i));
+                    }
+                } else {
+                    addParamForProperties(params, (JSONObject)json);
+                }
             }
+        }
+    }
+
+    /**
+     * Adds the given param to the given params array if the param has an order of 0 or more.
+     * 
+     * @param params
+     * @param param
+     */
+    private void addParamForProperties(JSONArray params, JSONObject param) {
+        if (param != null && param.optInt("order", -1) >= 0) {
+            params.add(param);
         }
     }
 
@@ -277,7 +297,7 @@ public class FapiStepFormatter {
      * @param property the property.
      * @return the formatted parameter.
      */
-    private JSONObject formatParamForProperty(Property property) {
+    private JSON formatParamForProperty(Property property) {
         PropertyFormatter propertyFormatter = PropertyFormatterFactory.getFormatter(experiment.getJSONObject("config"),
             step, property, propertyValues);
         return propertyFormatter.formatProperty();
