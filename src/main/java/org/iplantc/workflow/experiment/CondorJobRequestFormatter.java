@@ -1,5 +1,7 @@
 package org.iplantc.workflow.experiment;
 
+import static org.iplantc.workflow.experiment.ParamUtils.setParamNameAndValue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,10 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-import net.sf.json.JSON;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -32,8 +35,6 @@ import org.iplantc.workflow.user.UserDetails;
 import org.iplantc.workflow.util.ListUtils;
 import org.iplantc.workflow.util.Predicate;
 
-import static org.iplantc.workflow.experiment.ParamUtils.setParamNameAndValue;
-
 /**
  * Formats a submission request for a job that will be executed on Condor. The code in this class was mostly extracted
  * from ExperimentRunner and only minor refactoring work was done.  Note: this class not thread safe.
@@ -53,23 +54,23 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     private static final Set<String> IGNORED_PROPERTY_TYPES
             = new HashSet<String>(Arrays.asList(IGNORED_PROPERTY_TYPE_NAMES));
 
-    private DaoFactory daoFactory;
+    private final DaoFactory daoFactory;
 
-    private UrlAssembler urlAssembler;
+    private final UrlAssembler urlAssembler;
 
-    private UserDetails userDetails;
+    private final UserDetails userDetails;
 
-    private JSONObject experiment;
+    private final JSONObject experiment;
 
-    private boolean debug;
+    private final boolean debug;
 
-    private FileResolverFactory fileResolverFactory;
+    private final FileResolverFactory fileResolverFactory;
 
     private String stdoutFilename;
 
     private String stderrFilename;
 
-    private Map<String, String> outputPropertyValues = new HashMap<String, String>();
+    private final Map<String, String> outputPropertyValues = new HashMap<String, String>();
 
     public CondorJobRequestFormatter(DaoFactory daoFactory, UrlAssembler urlAssembler,
             UserDetails userDetails, JSONObject experiment) {
