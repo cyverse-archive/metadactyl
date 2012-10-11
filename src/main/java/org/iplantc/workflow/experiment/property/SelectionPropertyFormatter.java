@@ -46,7 +46,7 @@ public class SelectionPropertyFormatter extends PropertyFormatter {
             result = formatOldStyleProperty(Integer.parseInt(value));
         }
         else {
-            result = formatNewStyleProperty(value);
+            result = formatNewStyleProperty((JSONObject)JSONSerializer.toJSON(value));
         }
         return result;
     }
@@ -57,9 +57,8 @@ public class SelectionPropertyFormatter extends PropertyFormatter {
      * @param value the property value.
      * @return the formatted property.
      */
-    private JSONObject formatNewStyleProperty(String value) {
-        JSONObject propertyJson = (JSONObject) JSONSerializer.toJSON(getValue());
-        return formatProperty(propertyJson.getString("name"), propertyJson.getString("value"));
+    protected JSONObject formatNewStyleProperty(JSONObject propertyJson) {
+        return formatProperty(propertyJson.getString("name"), propertyJson.optString("value"));
     }
 
     /**
