@@ -1,15 +1,16 @@
 package org.iplantc.workflow.experiment.property;
 
+import static org.iplantc.workflow.experiment.ParamUtils.setParamNameAndValue;
+
 import java.util.List;
 import java.util.Map;
 
-import org.iplantc.workflow.model.Property;
-
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
+
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.step.TransformationStep;
-
-import static org.iplantc.workflow.experiment.ParamUtils.setParamNameAndValue;
+import org.iplantc.workflow.model.Property;
 
 /**
  * The default property formatter to use when there is no special case for the property type.
@@ -33,11 +34,11 @@ public class DefaultPropertyFormatter extends PropertyFormatter {
      * {@inheritDoc}
      */
     @Override
-    public JSONObject formatProperty() {
+    public JSON formatProperty() {
         JSONObject json = null;
         String value = getValue();
         if (!StringUtils.isBlank(value) || !property.getOmitIfBlank()) {
-            json = super.formatProperty();
+            json = (JSONObject)super.formatProperty();
             setParamNameAndValue(json, property.getName(), value);
             registerPropertyValue(value);
         }

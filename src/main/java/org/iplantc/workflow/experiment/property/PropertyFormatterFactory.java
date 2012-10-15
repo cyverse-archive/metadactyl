@@ -42,6 +42,9 @@ public class PropertyFormatterFactory {
         else if (isSelectionProperty(propertyTypeName)) {
             formatter = new SelectionPropertyFormatter(config, step, property, propertyValues);
         }
+        else if (StringUtils.equals(propertyTypeName, "TreeSelection")) {
+            formatter = new TreeSelectionPropertyFormatter(config, step, property, propertyValues);
+        }
         else if (StringUtils.equals(propertyTypeName, "Input")) {
             formatter = new SkipPropertyFormatter(config, step, property, propertyValues);
         }

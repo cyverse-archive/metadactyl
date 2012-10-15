@@ -50,7 +50,6 @@ public class Rule extends WorkflowElement {
      * @param argument the argument to add.
      */
     public void addArgument(String argument) {
-        validateFieldLength(this.getClass(), "argument", argument, 255);
         arguments.add(argument);
     }
 
@@ -60,9 +59,6 @@ public class Rule extends WorkflowElement {
      * @param arguments the new list of arguments.
      */
     public void setArguments(List<String> arguments) {
-        for (int i = 0; i < arguments.size(); i++) {
-            validateFieldLength(this.getClass(), "arguments[" + i + "]", arguments.get(i), 255);
-        }
         this.arguments = new LinkedList<String>(arguments);
     }
 

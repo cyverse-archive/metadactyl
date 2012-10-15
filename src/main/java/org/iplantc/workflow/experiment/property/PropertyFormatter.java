@@ -3,11 +3,13 @@ package org.iplantc.workflow.experiment.property;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.iplantc.workflow.model.Property;
-import org.iplantc.persistence.dto.transformation.Transformation;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
+
 import org.iplantc.persistence.dto.step.TransformationStep;
+import org.iplantc.persistence.dto.transformation.Transformation;
+import org.iplantc.workflow.model.Property;
 
 /**
  * Formats properties for submission to the job execution framework.
@@ -117,7 +119,7 @@ public abstract class PropertyFormatter {
      * 
      * @return the formatted property
      */
-    public JSONObject formatProperty() {
+    public JSON formatProperty() {
         JSONObject json = new JSONObject();
         json.put("order", property.getOrder());
         json.put("name", property.getName());

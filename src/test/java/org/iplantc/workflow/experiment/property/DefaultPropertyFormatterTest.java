@@ -1,7 +1,7 @@
 package org.iplantc.workflow.experiment.property;
 
 import static org.junit.Assert.assertNull;
-
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.iplantc.workflow.model.Property;
@@ -23,8 +23,9 @@ public class DefaultPropertyFormatterTest extends BasePropertyFormatterTester {
         Property property = createProperty("some value", 0, "Text");
         DefaultPropertyFormatter formatter = new DefaultPropertyFormatter(config, createStep(), property,
                 createPropertyValueMap());
-        JSONObject formattedProperty = formatter.formatProperty();
-        assertFormattedPropertyValid(formattedProperty, "id", "name", 0, "some value");
+        JSON formattedProperty = formatter.formatProperty();
+        assertJSONObject(formattedProperty);
+        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "name", 0, "some value");
     }
 
     /**
@@ -36,8 +37,9 @@ public class DefaultPropertyFormatterTest extends BasePropertyFormatterTester {
         Property property = createProperty("some value", 0, "Text");
         DefaultPropertyFormatter formatter = new DefaultPropertyFormatter(config, createStep(), property,
                 createPropertyValueMap());
-        JSONObject formattedProperty = formatter.formatProperty();
-        assertFormattedPropertyValid(formattedProperty, "id", "name", 0, "some other value");
+        JSON formattedProperty = formatter.formatProperty();
+        assertJSONObject(formattedProperty);
+        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "name", 0, "some other value");
     }
 
     /**
@@ -49,8 +51,9 @@ public class DefaultPropertyFormatterTest extends BasePropertyFormatterTester {
         Property property = createProperty("some value", 0, "Text");
         DefaultPropertyFormatter formatter = new DefaultPropertyFormatter(config, createStep("value"), property,
                 createPropertyValueMap());
-        JSONObject formattedProperty = formatter.formatProperty();
-        assertFormattedPropertyValid(formattedProperty, "id", "name", 0, "value");
+        JSON formattedProperty = formatter.formatProperty();
+        assertJSONObject(formattedProperty);
+        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "name", 0, "value");
     }
 
     /**
@@ -62,8 +65,9 @@ public class DefaultPropertyFormatterTest extends BasePropertyFormatterTester {
         Property property = createProperty("", 0, "Text", false);
         DefaultPropertyFormatter formatter = new DefaultPropertyFormatter(config, createStep(), property,
                 createPropertyValueMap());
-        JSONObject formattedProperty = formatter.formatProperty();
-        assertFormattedPropertyValid(formattedProperty, "id", "name", 0, "");
+        JSON formattedProperty = formatter.formatProperty();
+        assertJSONObject(formattedProperty);
+        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "name", 0, "");
     }
 
     /**

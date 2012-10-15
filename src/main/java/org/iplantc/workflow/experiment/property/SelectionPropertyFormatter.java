@@ -1,16 +1,17 @@
 package org.iplantc.workflow.experiment.property;
 
+import static org.iplantc.workflow.experiment.ParamUtils.setParamNameAndValue;
+
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.step.TransformationStep;
 import org.iplantc.workflow.model.Property;
-
-import static org.iplantc.workflow.experiment.ParamUtils.setParamNameAndValue;
 
 /**
  * The property formatter to use for Selection arguments.
@@ -35,7 +36,7 @@ public class SelectionPropertyFormatter extends PropertyFormatter {
      * {@inheritDoc}
      */
     @Override
-    public JSONObject formatProperty() {
+    public JSON formatProperty() {
         JSONObject result;
         String value = getValue();
         if (StringUtils.isBlank(value)) {
@@ -45,7 +46,7 @@ public class SelectionPropertyFormatter extends PropertyFormatter {
             result = formatOldStyleProperty(Integer.parseInt(value));
         }
         else {
-            result = formatNewStyleProperty(value);
+            result = formatNewStyleProperty((JSONObject)JSONSerializer.toJSON(value));
         }
         return result;
     }
@@ -56,9 +57,8 @@ public class SelectionPropertyFormatter extends PropertyFormatter {
      * @param value the property value.
      * @return the formatted property.
      */
-    private JSONObject formatNewStyleProperty(String value) {
-        JSONObject propertyJson = (JSONObject) JSONSerializer.toJSON(getValue());
-        return formatProperty(propertyJson.getString("name"), propertyJson.getString("value"));
+    protected JSONObject formatNewStyleProperty(JSONObject propertyJson) {
+        return formatProperty(propertyJson.getString("name"), propertyJson.optString("value"));
     }
 
     /**

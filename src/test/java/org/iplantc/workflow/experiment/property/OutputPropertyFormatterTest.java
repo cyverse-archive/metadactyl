@@ -1,8 +1,9 @@
 package org.iplantc.workflow.experiment.property;
 
 import static org.junit.Assert.assertNull;
-
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
+
 import org.iplantc.workflow.data.DataObject;
 import org.iplantc.workflow.model.Property;
 import org.junit.Test;
@@ -26,8 +27,9 @@ public class OutputPropertyFormatterTest extends BasePropertyFormatterTester {
 
         OutputPropertyFormatter formatter = new OutputPropertyFormatter(config, createStep(), property,
                                                                         createPropertyValueMap());
-        JSONObject formattedProperty = formatter.formatProperty();
-        assertFormattedPropertyValid(formattedProperty, "id", "name", 0, "some value");
+        JSON formattedProperty = formatter.formatProperty();
+        assertJSONObject(formattedProperty);
+        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "name", 0, "some value");
     }
 
     /**

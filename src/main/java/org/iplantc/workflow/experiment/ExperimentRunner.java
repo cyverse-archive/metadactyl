@@ -3,8 +3,8 @@ package org.iplantc.workflow.experiment;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import net.sf.json.JSONObject;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -45,13 +45,14 @@ public class ExperimentRunner extends HibernateAccessor {
     public ExperimentRunner() {
     }
 
-    public void runExperiment(JSONObject experiment) throws Exception {
+    public String runExperiment(JSONObject experiment) throws Exception {
         Session session = getSessionFactory().openSession();
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
-            runExperiment(experiment, session);
+            String result = runExperiment(experiment, session);
             tx.commit();
+            return result;
         }
         catch (Exception e) {
             if (tx != null) {
@@ -67,7 +68,7 @@ public class ExperimentRunner extends HibernateAccessor {
 
     }
 
-    private void runExperiment(JSONObject experiment, Session session) throws Exception {
+    private String runExperiment(JSONObject experiment, Session session) throws Exception {
         LOG.debug("Running experiment: " + experiment);
         JsonLogger.info("runExperiment received the following input: " + experiment.toString(2));
 
@@ -77,11 +78,18 @@ public class ExperimentRunner extends HibernateAccessor {
             JSONObject job = formatJobRequest(experiment, session, userDetails);
             storeJobSubmission(experiment, job.getString("uuid"));
             submitJob(job);
+            return formatResponse(job);
         }
         catch (Exception ex) {
             LOG.error("Caught exception when processing", ex);
             throw new Exception("ExperimentRunner error: " + ex.getMessage(), ex);
         }
+    }
+
+    private String formatResponse(JSONObject job) {
+        JSONObject json = new JSONObject();
+        json.put("job_id", job.getString("uuid"));
+        return json.toString();
     }
 
     private void storeJobSubmission(JSONObject experiment, String jobUuid) {
@@ -102,7 +110,7 @@ public class ExperimentRunner extends HibernateAccessor {
         return factory.getFormatter(experiment).formatJobRequest();
     }
 
-    protected void submitJob(JSONObject job) throws UnsupportedEncodingException, IOException, ClientProtocolException {
+    protected String submitJob(JSONObject job) throws UnsupportedEncodingException, IOException {
         /**
          * send message *
          */
@@ -117,7 +125,9 @@ public class ExperimentRunner extends HibernateAccessor {
         post.setEntity(new StringEntity(job.toString(), "application/json", "UTF-8"));
 
         HttpResponse response = client.execute(post);
-        LOG.debug("Response from HttpClient post: " + response.getStatusLine().getStatusCode());
+        LOG.debug("Response status from HttpClient post: " + response.getStatusLine().getStatusCode());
+
+        return IOUtils.toString(response.getEntity().getContent());
     }
 
     public void setUserService(UserService userService) {
