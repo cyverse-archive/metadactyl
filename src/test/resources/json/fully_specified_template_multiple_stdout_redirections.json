@@ -20,7 +20,7 @@
                     "order": 57,
                     "value": "propertyvalue",
                     "visible": false,
-                    "omitIfBlank": true,
+                    "omit_if_blank": true,
                     "validator": {
                         "id": "validatorid",
                         "name": "validatorname",
@@ -53,7 +53,7 @@
                     "description": "",
                     "type": "Input",
                     "isVisible": true,
-                    "omitIfBlank": true,
+                    "omit_if_blank": true,
                     "value": "",
                     "order": 27,
                     "data_object": {
@@ -78,7 +78,7 @@
                     "description": "",
                      "type": "Input",
                     "isVisible": true,
-                    "omitIfBlank": false,
+                    "omit_if_blank": false,
                     "value": "",
                     "order": 57,
                     "data_object": {
@@ -112,7 +112,7 @@
                     "description": "",
                     "type": "Output",
                     "isVisible": true,
-                    "omitIfBlank": true,
+                    "omit_if_blank": true,
                     "value": "",
                     "order": 11,
                     "data_object": {
@@ -139,7 +139,7 @@
                     "description": "",
                     "type": "Output",
                     "isVisible": true,
-                    "omitIfBlank": true,
+                    "omit_if_blank": true,
                     "value": "",
                     "order": 11,
                     "data_object": {

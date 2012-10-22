@@ -1,7 +1,7 @@
 package org.iplantc.workflow.integration.json;
 
-import static org.iplantc.workflow.integration.util.JsonUtils.putIfNotNull;
 import static org.iplantc.workflow.integration.json.TitoMultiplicityNames.titoMultiplicityName;
+import static org.iplantc.workflow.integration.util.JsonUtils.putIfNotNull;
 
 import java.util.List;
 
@@ -33,17 +33,17 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
     /**
      * Used to look up items in the database.
      */
-    private DaoFactory daoFactory;
+    private final DaoFactory daoFactory;
 
     /**
      * True if backward references should be used in the generated JSON.
      */
-    private boolean useReferences;
+    private final boolean useReferences;
 
     /**
      * The identifier retention strategy to use.
      */
-    private IdRetentionStrategy idRetentionStrategy;
+    private final IdRetentionStrategy idRetentionStrategy;
 
     /**
      * Initializes a new instance with the default ID retention strategy (CopyIdRetentionStrategy).
@@ -252,7 +252,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
         json.put("isVisible", true);
         json.put("value", "");
         json.put("order", input.getOrderd());
-        json.put("omitIfBlank", true);
+        json.put("omit_if_blank", true);
         json.put("data_object", marshalDataObject(input, "Input"));
         return json;
     }
@@ -274,7 +274,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
         json.put("isVisible", false);
         json.put("value", "");
         json.put("order", output.getOrderd());
-        json.put("omitIfBlank", true);
+        json.put("omit_if_blank", true);
         json.put("data_object", marshalDataObject(output, "Output"));
         return json;
     }
@@ -330,7 +330,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
         json.put("isVisible", property.getIsVisible());
         json.put("value", property.getDefaultValue());
         json.put("order", property.getOrder());
-        json.put("omitIfBlank", property.getOmitIfBlank());
+        json.put("omit_if_blank", property.getOmitIfBlank());
         putIfNotNull(json, "validator", marshalValidator(property.getValidator()));
         putIfNotNull(json, "data_object", marshalDataObject(property.getDataObject(), property.getPropertyTypeName()));
         return json;
