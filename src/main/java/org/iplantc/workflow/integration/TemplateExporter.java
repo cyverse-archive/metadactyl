@@ -1,6 +1,7 @@
 package org.iplantc.workflow.integration;
 
 import java.util.List;
+
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
@@ -19,12 +20,12 @@ public class TemplateExporter {
     /**
      * Used to obtain data access objects.
      */
-    private DaoFactory daoFactory;
+    private final DaoFactory daoFactory;
 
     /**
      * Used to marshal templates.
      */
-    private TitoTemplateMarshaller marshaller;
+    private final TitoTemplateMarshaller marshaller;
 
     /**
      * @param daoFactory used to obtain data access objects.
@@ -51,10 +52,11 @@ public class TemplateExporter {
      */
     public JSONObject exportTemplate(String templateId) {
         Template template = daoFactory.getTemplateDao().findById(templateId);
+        TransformationActivity app = daoFactory.getTransformationActivityDao().findById(templateId);
         if (template == null) {
             throw new WorkflowException("no template with ID, " + templateId + ", found");
         }
-        return marshaller.toJson(template);
+        return marshaller.toJson(template, app);
     }
 
     /**

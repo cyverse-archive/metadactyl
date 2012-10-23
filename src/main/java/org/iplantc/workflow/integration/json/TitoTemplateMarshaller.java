@@ -9,6 +9,7 @@ import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.components.DeployedComponent;
 import org.iplantc.workflow.WorkflowException;
+import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.data.DataObject;
 import org.iplantc.workflow.integration.util.ImportUtils;
@@ -72,8 +73,19 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
      */
     @Override
     public JSONObject toJson(Template object) {
+        return toJson(object, null);
+    }
+
+    /**
+     * Converts a Template object to a JSON document.
+     * 
+     * @param object the Java object
+     * @param app An App for the template, containing additional information such as references.
+     * @return a JSON object.
+     */
+    public JSONObject toJson(Template object, TransformationActivity app) {
         try {
-            return marshalTemplate(object);
+            return marshalTemplate(object, app);
         }
         catch (JSONException e) {
             throw new WorkflowException("error producing JSON object", e);
@@ -82,16 +94,20 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Converts a template to a JSON object.
-     *
+     * 
      * @param template the template to convert.
+     * @param app An App for the template, containing additional information such as references.
      * @return the JSON object.
      * @throws JSONException if a JSON error occurs.
      */
-    private JSONObject marshalTemplate(Template template) throws JSONException {
+    private JSONObject marshalTemplate(Template template, TransformationActivity app)
+            throws JSONException {
         JSONObject json = new JSONObject();
+
         json.put("id", idRetentionStrategy.getId(template.getId()));
         json.put("name", template.getName());
         json.put("label", template.getLabel());
+        json.put("description", template.getDescription());
         if (useReferences) {
             json.put("component_ref", getComponentName(template.getComponent()));
         }
@@ -101,6 +117,11 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
         }
         json.put("type", template.getTemplateType());
         json.put("groups", marshalPropertyGroupContainer(template));
+        if (app != null && app.getReferences() != null) {
+            TitoAnalysisMarshaller appMarshaller = new TitoAnalysisMarshaller(daoFactory, false);
+            json.put("references", appMarshaller.marshalReferences(app.getReferences()));
+        }
+
         return json;
     }
 
