@@ -1,5 +1,6 @@
 package org.iplantc.workflow.integration.json;
 
+import java.util.Date;
 import static org.iplantc.workflow.integration.json.TitoMultiplicityNames.titoMultiplicityName;
 import static org.iplantc.workflow.integration.util.JsonUtils.putIfNotNull;
 
@@ -48,7 +49,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Initializes a new instance with the default ID retention strategy (CopyIdRetentionStrategy).
-     * 
+     *
      * @param daoFactory used to obtain data access objects.
      * @param useReferences true if backward references should be used in the resulting JSON.
      */
@@ -78,7 +79,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Converts a Template object to a JSON document.
-     * 
+     *
      * @param object the Java object
      * @param app An App for the template, containing additional information such as references.
      * @return a JSON object.
@@ -94,7 +95,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
 
     /**
      * Converts a template to a JSON object.
-     * 
+     *
      * @param template the template to convert.
      * @param app An App for the template, containing additional information such as references.
      * @return the JSON object.
@@ -105,6 +106,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
         JSONObject json = new JSONObject();
 
         json.put("id", idRetentionStrategy.getId(template.getId()));
+        json.put("tito", idRetentionStrategy.getId(template.getId()));
         json.put("name", template.getName());
         json.put("label", template.getLabel());
         json.put("description", template.getDescription());
@@ -117,12 +119,24 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
         }
         json.put("type", template.getTemplateType());
         json.put("groups", marshalPropertyGroupContainer(template));
+        json.put("edited_date", marshalDate(app == null ? null : app.getEditedDate()));
+        json.put("published_date", marshalDate(app == null ? null : app.getIntegrationDate()));
         if (app != null && app.getReferences() != null) {
             TitoAnalysisMarshaller appMarshaller = new TitoAnalysisMarshaller(daoFactory, false);
             json.put("references", appMarshaller.marshalReferences(app.getReferences()));
         }
 
         return json;
+    }
+
+    /**
+     * Marshals a date, which may be null.
+     *
+     * @param date the date to marshal.
+     * @return the number of milliseconds since the epoch as a string or the empty string if the date is null.
+     */
+    private String marshalDate(Date date) {
+        return date == null ? "" : String.valueOf(date.getTime());
     }
 
     /**
@@ -312,7 +326,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
         json.put("id", idRetentionStrategy.getId(group.getId()));
         json.put("name", group.getName());
         json.put("label", group.getLabel());
-        json.put("description", group.getDescription());
+        json.put("description", StringUtils.defaultString(group.getDescription()));
         json.put("type", group.getGroupType());
         json.put("isVisible", group.isVisible());
         json.put("properties", marshalProperties(group.getProperties()));
@@ -375,7 +389,9 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
             json.put("order", dataObject.getOrderd());
             json.put("cmdSwitch", dataObject.getSwitchString());
             json.put("file_info_type", dataObject.getInfoTypeName());
+            json.put("file_info_type_id", dataObject.getInfoTypeId());
             json.put("format", dataObject.getDataFormatName());
+            json.put("format_id", dataObject.getDataFormatId());
             json.put("data_source", dataObject.getDataSourceName());
             json.put("description", dataObject.getDescription());
             json.put("required", dataObject.isRequired());
@@ -412,9 +428,8 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
      * @throws JSONException if a JSON error occurs.
      */
     private JSONArray marshalRules(List<Rule> rules) throws JSONException {
-        JSONArray array = null;
+        JSONArray array = new JSONArray();
         if (rules != null && rules.size() > 0) {
-            array = new JSONArray();
             for (Rule rule : rules) {
                 array.put(marshalRule(rule));
             }

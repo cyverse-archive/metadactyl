@@ -1,23 +1,31 @@
 package org.iplantc.workflow.service;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import java.util.UUID;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.iplantc.hibernate.util.SessionTask;
 import org.iplantc.hibernate.util.SessionTaskWrapper;
 import org.iplantc.persistence.dto.data.IntegrationDatum;
+import org.iplantc.workflow.AnalysisNotFoundException;
+import org.iplantc.workflow.AnalysisOwnershipException;
+import org.iplantc.workflow.AnalysisPublicException;
+import org.iplantc.workflow.AnalysisStepCountException;
+import org.iplantc.workflow.TemplateNotFoundException;
 import org.iplantc.workflow.WorkflowException;
-import org.iplantc.workflow.client.ZoidbergClient;
+import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
-import org.iplantc.workflow.integration.TemplateExporter;
+import org.iplantc.workflow.integration.json.CopyIdRetentionStrategy;
+import org.iplantc.workflow.integration.json.IdRetentionStrategy;
 import org.iplantc.workflow.integration.json.NoIdRetentionStrategy;
 import org.iplantc.workflow.integration.json.TitoIntegrationDatumMashaller;
-import org.iplantc.workflow.integration.util.JsonUtils;
+import org.iplantc.workflow.integration.json.TitoTemplateMarshaller;
+import org.iplantc.workflow.model.Template;
 import org.iplantc.workflow.service.dto.AnalysisId;
 import org.iplantc.workflow.user.UserDetails;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * A service that allows analyses to be exported to Tito for editing.
@@ -30,11 +38,6 @@ public class AnalysisEditService {
      * The Hibernate session factory.
      */
     private SessionFactory sessionFactory;
-
-    /**
-     * A client used to communicate with Zoidberg.
-     */
-    private ZoidbergClient zoidbergClient;
 
     /**
      * Used to get the user's details.
@@ -51,13 +54,6 @@ public class AnalysisEditService {
      */
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
-    }
-
-    /**
-     * @param zoidbergClient a client used to communicate with Zoidberg.
-     */
-    public void setZoidbergClient(ZoidbergClient zoidbergClient) {
-        this.zoidbergClient = zoidbergClient;
     }
 
     /**
@@ -84,7 +80,6 @@ public class AnalysisEditService {
      */
     public String prepareAnalysisForEditing(final String analysisId) {
         return new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<String>() {
-
             @Override
             public String perform(Session session) {
                 return editAnalysis(new HibernateDaoFactory(session), analysisId);
@@ -101,7 +96,6 @@ public class AnalysisEditService {
      */
     public String copyAnalysis(final String analysisId) {
         return new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<String>() {
-
             @Override
             public String perform(Session session) {
                 return copyAnalysis(new HibernateDaoFactory(session), analysisId);
@@ -119,15 +113,98 @@ public class AnalysisEditService {
      * @return the (possibly new) analysis identifier.
      */
     private String editAnalysis(DaoFactory daoFactory, String analysisId) {
+        TransformationActivity analysis = getAnalysis(daoFactory, analysisId);
         UserDetails userDetails = userService.getCurrentUserDetails();
-        JSONObject analysis = getAnalysisFromZoidberg(analysisId, userDetails.getShortUsername());
-        if (analysis != null) {
-            ensureAnalysisNotDeleted(analysis);
-            return new AnalysisId(analysisId).toString();
+        verifyUserOwnership(analysis, userDetails);
+        verifyAnalysisNotPublic(daoFactory, analysis);
+        verifyNumberOfSteps(analysis);
+        return marshalAnalysis(daoFactory, analysis, new CopyIdRetentionStrategy()).toString();
+    }
+
+    /**
+     * Finds an analysis in the database.
+     *
+     * @param daoFactory used to obtain data access objects.
+     * @param analysisId the analysis identifier.
+     * @return the analysis;
+     * @throws AnalysisNotFoundException if an analysis with the given ID can't be found.
+     */
+    private TransformationActivity getAnalysis(DaoFactory daoFactory, String analysisId) {
+        TransformationActivity analysis = daoFactory.getTransformationActivityDao().findById(analysisId);
+        if (analysis == null) {
+            throw new AnalysisNotFoundException(analysisId);
         }
-        else {
-            return copyAnalysis(daoFactory, analysisId, userDetails);
+        return analysis;
+    }
+
+    /**
+     * Obtains the first template associated with an analysis.
+     *
+     * @param daoFactory used to obtain data access objects.
+     * @param analysis the analysis.
+     * @return the template.
+     * @throws templateNotFoundException if the template can't be found.
+     */
+    private Template getFirstTemplate(DaoFactory daoFactory, TransformationActivity analysis) {
+        String templateId = analysis.step(0).getTemplateId();
+        Template template = daoFactory.getTemplateDao().findById(templateId);
+        if (template == null) {
+            throw new TemplateNotFoundException(templateId);
         }
+        return template;
+    }
+
+    /**
+     * Verifies that the user owns the analysis that is being edited.
+     *
+     * @param analysis the analysis.
+     * @param userDetails details about the authenticated user.
+     * @throws AnalysisOwnershipException if the user does not own the analysis.
+     */
+    private void verifyUserOwnership(TransformationActivity analysis, UserDetails userDetails) {
+        String integratorName = analysis.getIntegrationDatum().getIntegratorName();
+        String authenticatedName = userDetails.getShortUsername();
+        if (!StringUtils.equals(integratorName, authenticatedName)) {
+            throw new AnalysisOwnershipException(integratorName, analysis.getId());
+        }
+    }
+
+    /**
+     * Verifies that an analysis has not been made public.
+     *
+     * @param daoFactory used to obtain data access objects.
+     * @param analysis the analysis that the user is trying to edit.
+     * @throws AnalysisPublicException if the analysis has already been made public.
+     */
+    private void verifyAnalysisNotPublic(DaoFactory daoFactory, TransformationActivity analysis) {
+        if (daoFactory.getAnalysisListingDao().findByExternalId(analysis.getId()).isPublic()) {
+            throw new AnalysisPublicException(analysis.getId());
+        }
+    }
+
+    /**
+     * Verifies that Tito is capable of editing the analysis based on the number of steps.
+     *
+     * @param analysis the analysis to validate.
+     */
+    private void verifyNumberOfSteps(TransformationActivity analysis) {
+        if (analysis.getStepCount() != 1) {
+            throw new AnalysisStepCountException(analysis.getId(), analysis.getStepCount());
+        }
+    }
+
+    /**
+     * Marshals an analysis.
+     *
+     * @param daoFactory used to obtain data access objects.
+     * @param analysis the analysis to marshal.
+     * @return the marshaled analysis.
+     */
+    private JSONObject marshalAnalysis(DaoFactory daoFactory, TransformationActivity analysis,
+            IdRetentionStrategy idRetentionStrategy) {
+        Template template = getFirstTemplate(daoFactory, analysis);
+        TitoTemplateMarshaller marshaller = new TitoTemplateMarshaller(daoFactory, false, idRetentionStrategy);
+        return marshaller.toJson(template, analysis);
     }
 
     /**
@@ -140,49 +217,6 @@ public class AnalysisEditService {
      */
     private String copyAnalysis(DaoFactory daoFactory, String analysisId) {
         return copyAnalysis(daoFactory, analysisId, userService.getCurrentUserDetails());
-    }
-
-    /**
-     * Retrieves the analysis from Zoidberg.
-     *
-     * @param analysisId the analysis identifier.
-     * @param username the username.
-     * @return the analysis.
-     */
-    private JSONObject getAnalysisFromZoidberg(String analysisId, String username) {
-        JSONObject result = zoidbergClient.getAnalysesWithId(analysisId);
-        JSONArray analyses = result.getJSONArray("objects");
-        for (int i = 0; i < analyses.size(); i++) {
-            JSONObject analysis = analyses.getJSONObject(i);
-            if (analysis.optString("user").equals(username)) {
-                return analysis;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Ensures that the analysis isn't marked as deleted.
-     *
-     * @param analysis the analysis.
-     */
-    private void ensureAnalysisNotDeleted(JSONObject analysis) {
-        if (analysis.optBoolean("deleted", false)) {
-            analysis.remove("deleted");
-            zoidbergClient.updateAnalysis(analysis);
-        }
-    }
-
-    /**
-     * Retrieves the analysis using the metadata retriever.
-     *
-     * @param daoFactory used to obtain data access objects.
-     * @param analysisId the analysis identifier.
-     * @return the analysis.
-     */
-    private JSONObject exportAnalysis(DaoFactory daoFactory, String analysisId) {
-        return JsonUtils.toNetSfJsonObject(new TemplateExporter(daoFactory, new NoIdRetentionStrategy()).exportTemplate(
-                analysisId));
     }
 
     /**
@@ -209,52 +243,59 @@ public class AnalysisEditService {
      * @return the new analysis identifier.
      */
     private String copyAnalysis(DaoFactory daoFactory, String analysisId, UserDetails userDetails) {
-        JSONObject analysis = exportAnalysis(daoFactory, analysisId);
-        analysis = convertAnalysisToCopy(analysis, userDetails);
-
-        analysisId = zoidbergClient.saveAnalysis(analysis);
-
-        analysis.put("tito", analysisId);
-        analysis.put("id", analysisId);
-
-        importAnalysis(analysis.toString());
-
-        return new AnalysisId(analysisId).toString();
+        TransformationActivity analysis = getAnalysis(daoFactory, analysisId);
+        verifyNumberOfSteps(analysis);
+        return copyAnalysis(daoFactory, analysis, userDetails);
     }
 
     /**
-     * Converts the app to a copy for the given user info.
+     * Prepares a new copy of an analysis for editing.
+     *
+     * @param daoFactory used to obtain data access objects.
+     * @param analysis the analysis to copy.
+     * @param userDetails information about the current user.
+     * @return the new analysis identifier.
+     */
+    private String copyAnalysis(DaoFactory daoFactory, TransformationActivity analysis, UserDetails userDetails) {
+        JSONObject json = marshalAnalysis(daoFactory, analysis, new NoIdRetentionStrategy());
+        String newId = UUID.randomUUID().toString().toUpperCase();
+        json = convertAnalysisToCopy(json, newId, userDetails);
+        importAnalysis(json.toString());
+        return new AnalysisId(newId).toString();
+    }
+
+    /**
+     * Converts the app to a copy for the given analysis identifier and user info.
      *
      * @param analysis the app to convert.
      * @param userDetails information about the current user.
      * @return the app as a copy.
      */
-    private JSONObject convertAnalysisToCopy(JSONObject analysis, UserDetails userDetails) {
+    private JSONObject convertAnalysisToCopy(JSONObject analysis, String newId, UserDetails userDetails) {
         TitoIntegrationDatumMashaller marshaller = new TitoIntegrationDatumMashaller();
-        String analysisName = "Copy of " + analysis.getString("name");
-        String username = userDetails.getShortUsername();
-        String email = userDetails.getEmail();
-        String fullUsername = userDetails.getUsername();
-
-        analysis.put("name", analysisName);
-        analysis.put("full_username", fullUsername);
-        analysis.put("implementation", marshaller.toJson(createIntegrationDatum(email, username)).toString());
-        analysis.put("user", username);
-
+        try {
+            analysis.put("id", newId);
+            analysis.put("tito", newId);
+            analysis.put("name", "Copy of " + analysis.getString("name"));
+            analysis.put("implementation", marshaller.toJson(createIntegrationDatum(userDetails)).toString());
+            analysis.put("user", userDetails.getShortUsername());
+        }
+        catch (JSONException e) {
+            throw new WorkflowException("unable to convert analysis", e);
+        }
         return analysis;
     }
 
     /**
      * Creates an integration datum for the current user.
      *
-     * @param email the user's e-mail address.
-     * @param username the username.
+     * @param userDetails information about the authenticated user.
      * @return the integration datum.
      */
-    private IntegrationDatum createIntegrationDatum(String email, String username) {
+    private IntegrationDatum createIntegrationDatum(UserDetails userDetails) {
         IntegrationDatum integrationDatum = new IntegrationDatum();
-        integrationDatum.setIntegratorEmail(email);
-        integrationDatum.setIntegratorName(username);
+        integrationDatum.setIntegratorEmail(userDetails.getEmail());
+        integrationDatum.setIntegratorName(userDetails.getShortUsername());
         return integrationDatum;
     }
 }

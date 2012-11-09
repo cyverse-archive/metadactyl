@@ -270,7 +270,7 @@ public class TitoTemplateMarshallerTest {
         assertTrue(property2.has("validator"));
 
         JSONObject validator2 = property2.getJSONObject("validator");
-        assertFalse(validator2.has("rules"));
+        assertTrue(validator2.has("rules"));
 
         JSONObject property3 = properties.getJSONObject(2);
         assertTrue(property3.has("validator"));
@@ -278,15 +278,18 @@ public class TitoTemplateMarshallerTest {
         JSONObject validator3 = property3.getJSONObject("validator");
         assertTrue(validator3.has("rules"));
 
-        JSONArray rules = validator3.getJSONArray("rules");
-        assertEquals(2, rules.length());
+        JSONArray rules2 = validator2.getJSONArray("rules");
+        assertEquals(0, rules2.length());
 
-        JSONObject rule1 = rules.getJSONObject(0);
+        JSONArray rules3 = validator3.getJSONArray("rules");
+        assertEquals(2, rules3.length());
+
+        JSONObject rule1 = rules3.getJSONObject(0);
         assertTrue(rule1.has("firstruletypename"));
         JSONArray rule1args = rule1.getJSONArray("firstruletypename");
         assertEquals(0, rule1args.length());
 
-        JSONObject rule2 = rules.getJSONObject(1);
+        JSONObject rule2 = rules3.getJSONObject(1);
         assertTrue(rule2.has("secondruletypename"));
         JSONArray rule2args = rule2.getJSONArray("secondruletypename");
         assertEquals(3, rule2args.length());
