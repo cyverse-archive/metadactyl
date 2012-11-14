@@ -24,6 +24,7 @@ import org.iplantc.workflow.integration.json.TitoTemplateMarshaller;
 import org.iplantc.workflow.model.Template;
 import org.iplantc.workflow.service.dto.AnalysisId;
 import org.iplantc.workflow.user.UserDetails;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -118,7 +119,27 @@ public class AnalysisEditService {
         verifyUserOwnership(analysis, userDetails);
         verifyAnalysisNotPublic(daoFactory, analysis);
         verifyNumberOfSteps(analysis);
-        return marshalAnalysis(daoFactory, analysis, new CopyIdRetentionStrategy()).toString();
+        return AddObjectWrapper(marshalAnalysis(daoFactory, analysis, new CopyIdRetentionStrategy())).toString();
+    }
+
+    /**
+     * Adds a wrapper around an analysis similar to the one returned by the OSM.
+     *
+     * @param analysis the analysis to wrap.
+     * @return the wrapped analysis.
+     * @throws WorkflowException if a JSON error occurs.
+     */
+    private JSONObject AddObjectWrapper(JSONObject analysis) {
+        try {
+            JSONObject wrapper = new JSONObject();
+            JSONArray objects = new JSONArray();
+            objects.put(analysis);
+            wrapper.put("objects", objects);
+            return wrapper;
+        }
+        catch (JSONException e) {
+            throw new WorkflowException("unable to add object wrapper", e);
+        }
     }
 
     /**
@@ -277,7 +298,7 @@ public class AnalysisEditService {
             analysis.put("id", newId);
             analysis.put("tito", newId);
             analysis.put("name", "Copy of " + analysis.getString("name"));
-            analysis.put("implementation", marshaller.toJson(createIntegrationDatum(userDetails)).toString());
+            analysis.put("implementation", marshaller.toJson(createIntegrationDatum(userDetails)));
             analysis.put("user", userDetails.getShortUsername());
         }
         catch (JSONException e) {

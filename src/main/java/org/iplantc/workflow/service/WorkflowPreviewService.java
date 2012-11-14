@@ -3,7 +3,9 @@ package org.iplantc.workflow.service;
 import org.apache.commons.lang.Validate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import org.iplantc.hibernate.util.SessionTask;
+import org.iplantc.hibernate.util.SessionTaskWrapper;
+import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
 import org.iplantc.workflow.integration.preview.WorkflowPreviewer;
@@ -12,7 +14,7 @@ import org.json.JSONObject;
 
 /**
  * A service used to convert workflows in the import format to workflows in the format required by the UI.
- * 
+ *
  * @author Dennis Roberts
  */
 public class WorkflowPreviewService {
@@ -34,78 +36,52 @@ public class WorkflowPreviewService {
     /**
      * Converts the given JSON string from the format consumed by the workflow import service to the format
      * required by the Discovery Environment UI.
-     * 
+     *
      * @param jsonString the original JSON string.
      * @return the converted JSON string.
      * @throws JSONException if the JSONString is invalid or doesn't meet the requirements.
      */
-    public String previewWorkflow(String jsonString) throws JSONException {
-        String result = null;
-        Session session = sessionFactory.openSession();
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
-            WorkflowPreviewer previewer = createPreviewer(session);
-            result = previewer.preview(new JSONObject(jsonString)).toString();
-            tx.commit();
-        }
-        catch (JSONException e) {
-            if (tx != null) {
-                tx.rollback();
+    public String previewWorkflow(final String jsonString) throws JSONException {
+        return new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<String>() {
+           @Override
+            public String perform(Session session) {
+                try {
+                    WorkflowPreviewer previewer = createPreviewer(session);
+                    return previewer.preview(new JSONObject(jsonString)).toString();
+                }
+                catch (JSONException e) {
+                    throw new WorkflowException(e);
+                }
             }
-            throw e;
-        }
-        catch (RuntimeException e) {
-            if (tx != null) {
-                tx.rollback();
-            }
-            throw e;
-        }
-        finally {
-            session.close();
-        }
-        return result;
+        });
     }
 
     /**
      * Converts the given JSON string from the format consumed by the workflow import service to the format required
      * by the Discovery Environment UI.
-     * 
+     *
      * @param jsonString the original JSON string.
      * @return the converted JSON string.
      * @throws JSONException if the JSONString is invalid or doesn't meet the requirements.
      */
-    public String previewTemplate(String jsonString) throws JSONException {
-        String result = null;
-        Session session = sessionFactory.openSession();
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
-            WorkflowPreviewer previewer = createPreviewer(session);
-            result = previewer.previewTemplate(new JSONObject(jsonString)).toString();
-            tx.commit();
-        }
-        catch (JSONException e) {
-            if (tx != null) {
-                tx.rollback();
+    public String previewTemplate(final String jsonString) throws JSONException {
+        return new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<String>() {
+            @Override
+            public String perform(Session session) {
+                try {
+                    WorkflowPreviewer previewer = createPreviewer(session);
+                    return previewer.previewTemplate(new JSONObject(jsonString)).toString();
+                }
+                catch (JSONException e) {
+                    throw new WorkflowException(e);
+                }
             }
-            throw e;
-        }
-        catch (RuntimeException e) {
-            if (tx != null) {
-                tx.rollback();
-            }
-            throw e;
-        }
-        finally {
-            session.close();
-        }
-        return result;
+        });
     }
 
     /**
      * Creates the object used to generate the preview JSON.
-     * 
+     *
      * @param session the database session.
      * @return the previewer.
      */

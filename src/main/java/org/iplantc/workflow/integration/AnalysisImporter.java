@@ -1,5 +1,7 @@
 package org.iplantc.workflow.integration;
 
+import java.util.ArrayList;
+import java.util.List;
 import static org.iplantc.workflow.integration.util.AnalysisImportUtils.findExistingAnalysis;
 
 import org.apache.commons.lang.StringUtils;
@@ -25,7 +27,7 @@ import org.json.JSONObject;
 /**
  * Used to import analyses from JSON objects. Each analysis consists of an ID, name and description along with a list
  * of steps in the analysis and a list of input-to-output mappings. The format of the input is:
- * 
+ *
  * <pre>
  * <code>
  * {   "analysis_id": &lt;analysis_id&gt;,
@@ -61,7 +63,7 @@ import org.json.JSONObject;
  * }
  * </code>
  * </pre>
- * 
+ *
  * @author Dennis Roberts
  */
 public class AnalysisImporter implements ObjectImporter, ObjectVetter<TransformationActivity> {
@@ -122,7 +124,7 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
 
     /**
      * Explicitly sets the update mode for the importer.
-     * 
+     *
      * @param updateMode the new update mode.
      */
     @Override
@@ -132,7 +134,7 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
 
     /**
      * Initializes a new analysis importer instance.
-     * 
+     *
      * @param daoFactory the factory used to create data access objects.
      * @param TemplateGroupImporter used to import template groups.
      * @param WorkspaceInitializer used to initialize user's workspaces.
@@ -144,7 +146,7 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
 
     /**
      * Initializes a new analysis importer instance.
-     * 
+     *
      * @param daoFactory the factory used to create data access objects.
      * @param TemplateGroupImporter used to import template groups.
      * @param WorkspaceInitializer used to initialize user's workspaces.
@@ -160,7 +162,7 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
 
     /**
      * Sets the registry of named objects.
-     * 
+     *
      * @param registry the new registry.
      */
     public void setRegistry(HeterogeneousRegistry registry) {
@@ -169,12 +171,12 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
 
     /**
      * Determines if an Analysis has been vetted.
-     * 
+     *
      * @param username
      *  Fully qualified name of user.
      * @param analysis
      *  Analysis to check
-     * @return 
+     * @return
      *  True if the analysis is vetted, false otherwise.
      */
     @Override
@@ -190,12 +192,13 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
 
     /**
      * Imports an analysis.
-     * 
+     *
      * @param json the JSON object to import.
+     * @return the analysis ID.
      * @throws JSONException if the JSON object we receive is invalid.
      */
     @Override
-    public void importObject(JSONObject json) throws JSONException {
+    public String importObject(JSONObject json) throws JSONException {
         String analysisId = JsonUtils.nonEmptyOptString(json, null, "analysis_id", "id");
         String analysisName = json.optString("analysis_name");
         TitoAnalysisUnmarshaller unmarshaller = new TitoAnalysisUnmarshaller(daoFactory, registry);
@@ -226,19 +229,23 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
             throw new WorkflowException("a duplicate analysis was found and replacement is not enabled");
         }
         registry.add(TransformationActivity.class, analysis.getName(), analysis);
+        return analysis.getId();
     }
 
     /**
      * Imports a list of analyses.
-     * 
+     *
      * @param array the JSON array to import.
+     * @return the list of analysis IDs.
      * @throws JSONException if the JSON array we receive is invalid.
      */
     @Override
-    public void importObjectList(JSONArray array) throws JSONException {
+    public List<String> importObjectList(JSONArray array) throws JSONException {
+        List<String> result = new ArrayList<String>();
         for (int i = 0; i < array.length(); i++) {
-            importObject(array.getJSONObject(i));
+            result.add(importObject(array.getJSONObject(i)));
         }
+        return result;
     }
 
     /**
@@ -252,7 +259,7 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
 
     /**
      * Gets the workspace identifier.
-     * 
+     *
      * @param username the name of the user.
      * @return the workspace ID.
      * @throws WorkflowException if the integrator's workspace isn't found.

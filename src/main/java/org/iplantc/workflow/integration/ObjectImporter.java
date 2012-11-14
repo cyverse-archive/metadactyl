@@ -1,12 +1,13 @@
 package org.iplantc.workflow.integration;
 
+import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * Used to import objects from JSON objects or arrays.
- * 
+ *
  * @author Dennis Roberts
  */
 public interface ObjectImporter {
@@ -28,24 +29,26 @@ public interface ObjectImporter {
 
     /**
      * Explicitly sets the update mode.
-     * 
+     *
      * @param updateMode the new update mode.
      */
     public void setUpdateMode(UpdateMode updateMode);
 
     /**
      * Imports a single object using information in a JSON object.
-     * 
+     *
      * @param json the JSON object.
+     * @return the object ID.
      * @throws JSONException if the JSON object does not meet the expectations of the importer.
      */
-    public void importObject(JSONObject json) throws JSONException;
+    public String importObject(JSONObject json) throws JSONException;
 
     /**
      * Imports a list of objects using information in a JSON array.
-     * 
+     *
      * @param array the JSON array
+     * @return a list of object IDs.
      * @throws JSONException if the JSON array does not meet the expectations of the importer.
      */
-    public void importObjectList(JSONArray array) throws JSONException;
+    public List<String> importObjectList(JSONArray array) throws JSONException;
 }

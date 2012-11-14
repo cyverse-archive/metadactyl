@@ -1,5 +1,7 @@
 package org.iplantc.workflow.integration;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.log4j.Logger;
 import org.iplantc.persistence.dto.components.DeployedComponent;
 import org.iplantc.workflow.dao.DaoFactory;
@@ -74,7 +76,7 @@ public class DeployedComponentImporter implements ObjectImporter {
 
     /**
      * Explicitly sets the update mode.
-     * 
+     *
      * @param updateMode the new update mode.
      */
     @Override
@@ -95,13 +97,14 @@ public class DeployedComponentImporter implements ObjectImporter {
      * Imports a deployed component using values from the given JSON object.
      *
      * @param json the JSON object describing the deployed component.
+     * @return the deployed component ID.
      * @throws JSONException if the JSON object is missing a required attribute.
      */
     @Override
-    public void importObject(JSONObject json) throws JSONException {
+    public String importObject(JSONObject json) throws JSONException {
         TitoDeployedComponentUnmarshaller unmarshaller = new TitoDeployedComponentUnmarshaller(daoFactory);
         DeployedComponent newComponent = unmarshaller.fromJson(json);
-        saveOrUpdate(newComponent, json.optString("id", null));
+        return saveOrUpdate(newComponent, json.optString("id", null));
     }
 
     /**
@@ -109,24 +112,29 @@ public class DeployedComponentImporter implements ObjectImporter {
      *
      * @param component deployed component to save or update.
      * @param specifiedId the identifier specified in the import JSON.
+     * @return the deployed component ID.
      */
-    private void saveOrUpdate(DeployedComponent component, String specifiedId) {
+    private String saveOrUpdate(DeployedComponent component, String specifiedId) {
         DeployedComponent existingComponent = findExistingComponent(component, specifiedId);
         if (existingComponent == null) {
             daoFactory.getDeployedComponentDao().save(component);
             registerDeployedComponent(component);
+            return component.getId();
         }
         else if (updateMode == UpdateMode.REPLACE) {
             updateExistingComponent(component, existingComponent);
             registerDeployedComponent(existingComponent);
+            return existingComponent.getId();
         }
         else if (updateMode == UpdateMode.IGNORE) {
             registerDeployedComponent(existingComponent);
+            return existingComponent.getId();
         }
         else {
             LOG.warn("a duplicate deployed component was found for " + component.toJson().toString()
                     + " and replacement was not enabled; no update was performed");
             registerDeployedComponent(existingComponent);
+            return existingComponent.getId();
         }
     }
 
@@ -173,12 +181,15 @@ public class DeployedComponentImporter implements ObjectImporter {
      * Imports multiple deployed components from the given JSON array.
      *
      * @param array the JSON array describing the list of deployed components.
+     * @return the list of deployed component IDs.
      * @throws JSONException if any of the JSON objects are missing required attributes.
      */
     @Override
-    public void importObjectList(JSONArray array) throws JSONException {
+    public List<String> importObjectList(JSONArray array) throws JSONException {
+        List<String> result = new ArrayList<String>();
         for (int i = 0; i < array.length(); i++) {
-            importObject(array.getJSONObject(i));
+            result.add(importObject(array.getJSONObject(i)));
         }
+        return result;
     }
 }
