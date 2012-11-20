@@ -14,10 +14,10 @@ import org.springframework.util.ObjectUtils;
 /**
  * A DataObject class defines the data components of a template or a TransformationTask to
  * describe input and output relationship and types.
- * 
- * 
+ *
+ *
  * @author Juan Antonio Raygoza Garay
- * 
+ *
  */
 public class DataObject implements NamedAndUnique {
 
@@ -86,6 +86,10 @@ public class DataObject implements NamedAndUnique {
         return infoType == null ? "" : infoType.getName();
     }
 
+    public String getInfoTypeId() {
+        return infoType == null ? "" : infoType.getId();
+    }
+
     public InfoType getInfoType() {
         return infoType;
     }
@@ -96,6 +100,10 @@ public class DataObject implements NamedAndUnique {
 
     public String getDataFormatName() {
         return dataFormat == null ? "" : dataFormat.getName();
+    }
+
+    public String getDataFormatId() {
+        return dataFormat == null ? "" : dataFormat.getGuid();
     }
 
     public DataFormat getDataFormat() {

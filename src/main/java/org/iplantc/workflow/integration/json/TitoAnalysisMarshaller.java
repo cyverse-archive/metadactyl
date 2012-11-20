@@ -1,14 +1,14 @@
 package org.iplantc.workflow.integration.json;
 
-import java.util.Collection;
 import static org.iplantc.workflow.integration.util.JsonUtils.mapToJsonObject;
 import static org.iplantc.workflow.integration.util.JsonUtils.putIfNotNull;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.iplantc.persistence.dto.step.TransformationStep;
 
+import org.iplantc.persistence.dto.step.TransformationStep;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.core.Rating;
 import org.iplantc.workflow.core.TransformationActivity;
@@ -31,15 +31,15 @@ public class TitoAnalysisMarshaller implements TitoMarshaller<TransformationActi
     /**
      * Used to obtain data access objects.
      */
-    private DaoFactory daoFactory;
+    private final DaoFactory daoFactory;
 
     /**
      * True if the JSON produced by this marshaller should use backward references.
      */
-    private boolean useReferences;
+    private final boolean useReferences;
     
-    private TitoIntegrationDatumMashaller integrationDatumMarshaller;
-    private TitoImplementationDataFileMarshaller implementationDataFileMarshaller;
+    private final TitoIntegrationDatumMashaller integrationDatumMarshaller;
+    private final TitoImplementationDataFileMarshaller implementationDataFileMarshaller;
 
     /**
      * Creates an analysis marshaller that does not produce JSON that uses backward references.  A DAO factory is not
@@ -131,7 +131,7 @@ public class TitoAnalysisMarshaller implements TitoMarshaller<TransformationActi
         return output;
     }
     
-    private JSONArray marshalReferences(Collection<TransformationActivityReference> references) {
+    public JSONArray marshalReferences(Collection<TransformationActivityReference> references) {
         JSONArray output = new JSONArray();
         
         if(references != null) {

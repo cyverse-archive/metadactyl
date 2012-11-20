@@ -1,5 +1,6 @@
 package org.iplantc.workflow.integration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.iplantc.workflow.WorkflowException;
@@ -20,7 +21,7 @@ import org.json.JSONObject;
  * names are always in the format &lt;step_name&gt;_&lt;property_name&gt;. This format allows the UI to associate
  * each event with the control that generates it and the set of controls that are affected by it. The format of the
  * JSON object is:
- * 
+ *
  * <pre>
  * <code>
  * {   "id": &lt;notification_set_id&gt;,
@@ -41,7 +42,7 @@ import org.json.JSONObject;
  * }
  * </code>
  * </pre>
- * 
+ *
  * @author Dennis Roberts
  */
 public class NotificationSetImporter implements ObjectImporter {
@@ -63,7 +64,7 @@ public class NotificationSetImporter implements ObjectImporter {
 
     /**
      * Initializes a new instance of this class.
-     * 
+     *
      * @param notificationSetDao the object used to save the notification sets.
      */
     public NotificationSetImporter(NotificationSetDao notificationSetDao) {
@@ -103,7 +104,7 @@ public class NotificationSetImporter implements ObjectImporter {
 
     /**
      * Explicitly sets the update mode.
-     * 
+     *
      * @param updateMode the new update mode.
      */
     @Override
@@ -113,12 +114,13 @@ public class NotificationSetImporter implements ObjectImporter {
 
     /**
      * Imports a notification set using the values from the given JSON object.
-     * 
+     *
      * @param json the JSON object.
+     * @return the notification set ID.
      * @throws JSONException if the JSON object is missing a required attribute or contains an unexpected type.
      */
     @Override
-    public void importObject(JSONObject json) throws JSONException {
+    public String importObject(JSONObject json) throws JSONException {
         TitoNotificationSetUnmarshaller unmarshaller = new TitoNotificationSetUnmarshaller(registry);
         NotificationSet notificationSet = unmarshaller.fromJson(json);
         List<NotificationSet> existingNotificationSets = findExistingNotificationSets(notificationSet);
@@ -132,11 +134,12 @@ public class NotificationSetImporter implements ObjectImporter {
         else if (updateMode == UpdateMode.THROW) {
             throw new WorkflowException("a duplicate notification set was found and replacement isn't enabled");
         }
+        return notificationSet.getId();
     }
 
     /**
      * Finds the list of notification sets that are associated with the same analysis as the given notification set.
-     * 
+     *
      * @param notificationSet the new notification set.
      * @return the list of notification sets associated with the same analysis.
      */
@@ -146,15 +149,18 @@ public class NotificationSetImporter implements ObjectImporter {
 
     /**
      * Imports a list of notification sets using the values from the given JSON array.
-     * 
+     *
      * @param array the JSON array.
+     * @return the list of notification set IDs.
      * @throws JSONException if any object in the JSON array is missing a required attribute or contains an unexpected
      *         type.
      */
     @Override
-    public void importObjectList(JSONArray array) throws JSONException {
+    public List<String> importObjectList(JSONArray array) throws JSONException {
+        List<String> result = new ArrayList<String>();
         for (int i = 0; i < array.length(); i++) {
             importObject(array.getJSONObject(i));
         }
+        return result;
     }
 }

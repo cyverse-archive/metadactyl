@@ -1,5 +1,6 @@
 package org.iplantc.workflow.integration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -26,7 +27,7 @@ import org.json.JSONObject;
  * the case of command-line tools, properties generally correspond to command-line options. Each property group contains
  * a list of properties that may optionally contain a validator, which in turn contains a list of validation rules. The
  * format of the input is:
- * 
+ *
  * <pre>
  * <code>
  * {   "id": &lt;template_identifier&gt;,
@@ -90,7 +91,7 @@ import org.json.JSONObject;
  * }
  * </code>
  * </pre>
- * 
+ *
  * @author Dennis Roberts
  */
 public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> {
@@ -172,7 +173,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
 
     /**
      * Explicitly sets the update mode.
-     * 
+     *
      * @param updateMode the new update mode.
      */
     @Override
@@ -200,12 +201,12 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
 
     /**
      * Used to check if a Template has been vetted.
-     * 
+     *
      * @param username
      *  The fully qualified username.
      * @param template
      *  Template to check to see if it's vetted.
-     * @return 
+     * @return
      *  True if the Template is vetted.
      */
     @Override
@@ -226,7 +227,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
     /**
      * Gets the username of the integrator who is importing the template.  If the username is specified in the
      * JSON then that username is used.  Otherwise, the e-mail address of the analysis integrator is used.
-     * 
+     *
      * @param username the username that was specified in the JSON.
      * @param analysis the analysis.
      * @return the username.
@@ -237,12 +238,13 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
 
     /**
      * Imports a template using values from the given JSON object.
-     * 
+     *
      * @param json the JSON object that defines the template to import.
+     * @return the template ID.
      * @throws JSONException if the JSON object is invalid.
      */
     @Override
-    public void importObject(JSONObject json) throws JSONException {
+    public String importObject(JSONObject json) throws JSONException {
         Template template = unmarshallTemplate(json);
         templateValidator.validate(template, registry);
         validateTemplate(template);
@@ -262,11 +264,12 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
             throw new WorkflowException("a duplicate template was found and replacement is not enabled");
         }
         registry.add(Template.class, template.getName(), template);
+        return template.getId();
     }
 
     /**
      * Finds an existing template by ID or name.
-     * 
+     *
      * @param template the template to find the duplicate of.
      * @return the existing template or null if a match isn't found.
      */
@@ -283,7 +286,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
 
     /**
      * Validates a template.
-     * 
+     *
      * @param template the template to validate.
      */
     private void validateTemplate(Template template) {
@@ -292,7 +295,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
 
     /**
      * Validates a component identifier in a template.
-     * 
+     *
      * @param template the template to validate.
      */
     private void validateComponentId(Template template) {
@@ -307,7 +310,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
 
     /**
      * Determines whether or not the component with the given identifier is in the database.
-     * 
+     *
      * @param componentId the component identifier to search for.
      * @return true if the component is found in the database.
      */
@@ -317,7 +320,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
 
     /**
      * Determines whether or not the component with the given identifier is in the registry.
-     * 
+     *
      * @param componentId the component identifier to search for.
      * @return true if the component is found in the registry.
      */
@@ -334,7 +337,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
 
     /**
      * Saves a new template.
-     * 
+     *
      * @param template the template to save.
      * @param json the JSON object representing the template.
      */
@@ -344,7 +347,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
 
     /**
      * Replaces an existing template.
-     * 
+     *
      * @param template the new version of the template.
      * @param existingTemplate the existing template.
      * @param json the JSON object representing the template.
@@ -357,7 +360,7 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
 
     /**
      * Unmarshalls a template.
-     * 
+     *
      * @param json the JSON object representing the template.
      * @return the template.
      * @throws JSONException if the JSON object doesn't meet the expectations of the unmarshaller.
@@ -370,21 +373,24 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
 
     /**
      * Imports a list of templates from the given JSON array.
-     * 
+     *
      * @param array the JSON array that defines the list of templates.
+     * @return the list of template IDs.
      * @throws JSONException if the JSON array is invalid.
      */
     @Override
-    public void importObjectList(JSONArray array) throws JSONException {
+    public List<String> importObjectList(JSONArray array) throws JSONException {
+        List<String> result = new ArrayList<String>();
         for (int i = 0; i < array.length(); i++) {
-            importObject(array.getJSONObject(i));
+            result.add(importObject(array.getJSONObject(i)));
         }
+        return result;
     }
 
     /**
      * Used for testing.
-     * 
-     * @param analysisVetter 
+     *
+     * @param analysisVetter
      */
     public void setAnalysisVetter(ObjectVetter<TransformationActivity> analysisVetter) {
         this.analysisVetter = analysisVetter;

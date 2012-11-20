@@ -10,7 +10,6 @@ import org.iplantc.hibernate.util.SessionTask;
 import org.iplantc.hibernate.util.SessionTaskWrapper;
 import org.iplantc.persistence.dao.data.IntegrationDatumDao;
 import org.iplantc.persistence.dto.data.IntegrationDatum;
-import org.iplantc.workflow.client.ZoidbergClient;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.core.TransformationActivityReference;
 import org.iplantc.workflow.dao.DaoFactory;
@@ -30,7 +29,6 @@ public class TemplateGroupService {
     public static final String ANALYSIS_ID_KEY = "analysis_id";
 
     private SessionFactory sessionFactory;
-    private ZoidbergClient zoidbergClient;
     private UserSessionService userSessionService;
 
     public TemplateGroupService() {
@@ -100,8 +98,6 @@ public class TemplateGroupService {
                     group.addTemplate(transformationActivity);
                     templateGroupDao.save(group);
 
-                    String result = zoidbergClient.makePublic(userSessionService.getUser().getUsername(), transformationActivity.getId());
-
                     return "{}";
                 } catch(JSONException jsonException) {
                     throw new RuntimeException(jsonException);
@@ -114,7 +110,7 @@ public class TemplateGroupService {
             	String email = input.getString("email");
             	String integrator = input.getString("integrator");
                 IntegrationDatum integrationDatum = integrationDatumDao.findByNameAndEmail(integrator, email);
-                
+
                 if(integrationDatum == null){
 	                integrationDatum = new IntegrationDatum();
 	                integrationDatum.setIntegratorEmail(input.getString("email"));
@@ -199,14 +195,6 @@ public class TemplateGroupService {
 
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
-    }
-
-    public ZoidbergClient getZoidbergClient() {
-        return zoidbergClient;
-    }
-
-    public void setZoidbergClient(ZoidbergClient zoidbergClient) {
-        this.zoidbergClient = zoidbergClient;
     }
 
     public UserSessionService getUserSessionService() {

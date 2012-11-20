@@ -8,8 +8,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.iplantc.persistence.dto.data.DataSource;
 
+import org.iplantc.persistence.dto.data.DataSource;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.dao.mock.MockDaoFactory;
 import org.iplantc.workflow.data.DataObject;
@@ -146,7 +146,7 @@ public class TitoTemplateMarshallerTest {
         assertEquals("firstpropertytypename", property1.getString("type"));
         assertTrue(property1.getBoolean("isVisible"));
         assertEquals("firstpropertyvalue", property1.getString("value"));
-        assertTrue(property1.getBoolean("omitIfBlank"));
+        assertTrue(property1.getBoolean("omit_if_blank"));
         assertEquals(27, property1.getInt("order"));
 
         JSONObject property2 = properties.getJSONObject(1);
@@ -157,7 +157,7 @@ public class TitoTemplateMarshallerTest {
         assertEquals("secondpropertytypename", property2.getString("type"));
         assertFalse(property2.getBoolean("isVisible"));
         assertEquals("secondpropertyvalue", property2.getString("value"));
-        assertFalse(property2.getBoolean("omitIfBlank"));
+        assertFalse(property2.getBoolean("omit_if_blank"));
         assertEquals(52, property2.getInt("order"));
 
         JSONObject property3 = properties.getJSONObject(2);
@@ -168,7 +168,7 @@ public class TitoTemplateMarshallerTest {
         assertEquals("thirdpropertytypename", property3.getString("type"));
         assertTrue(property3.getBoolean("isVisible"));
         assertEquals("thirdpropertyvalue", property3.getString("value"));
-        assertTrue(property3.getBoolean("omitIfBlank"));
+        assertTrue(property3.getBoolean("omit_if_blank"));
         assertEquals(77, property3.getInt("order"));
 
         JSONObject property4 = properties.getJSONObject(3);
@@ -179,7 +179,7 @@ public class TitoTemplateMarshallerTest {
         assertEquals("Input", property4.getString("type"));
         assertTrue(property4.getBoolean("isVisible"));
         assertEquals("fourthpropertyvalue", property4.getString("value"));
-        assertTrue(property4.getBoolean("omitIfBlank"));
+        assertTrue(property4.getBoolean("omit_if_blank"));
         assertEquals(97, property4.getInt("order"));
 
         JSONObject property5 = properties.getJSONObject(4);
@@ -190,7 +190,7 @@ public class TitoTemplateMarshallerTest {
         assertEquals("Output", property5.getString("type"));
         assertTrue(property5.getBoolean("isVisible"));
         assertEquals("fifthpropertyvalue", property5.getString("value"));
-        assertTrue(property5.getBoolean("omitIfBlank"));
+        assertTrue(property5.getBoolean("omit_if_blank"));
         assertEquals(101, property5.getInt("order"));
 
         JSONObject property6 = properties.getJSONObject(5);
@@ -201,7 +201,7 @@ public class TitoTemplateMarshallerTest {
         assertEquals("Input", property6.getString("type"));
         assertTrue(property6.getBoolean("isVisible"));
         assertEquals("sixthpropertyvalue", property6.getString("value"));
-        assertTrue(property6.getBoolean("omitIfBlank"));
+        assertTrue(property6.getBoolean("omit_if_blank"));
         assertEquals(2112, property6.getInt("order"));
     }
 
@@ -270,7 +270,7 @@ public class TitoTemplateMarshallerTest {
         assertTrue(property2.has("validator"));
 
         JSONObject validator2 = property2.getJSONObject("validator");
-        assertFalse(validator2.has("rules"));
+        assertTrue(validator2.has("rules"));
 
         JSONObject property3 = properties.getJSONObject(2);
         assertTrue(property3.has("validator"));
@@ -278,15 +278,18 @@ public class TitoTemplateMarshallerTest {
         JSONObject validator3 = property3.getJSONObject("validator");
         assertTrue(validator3.has("rules"));
 
-        JSONArray rules = validator3.getJSONArray("rules");
-        assertEquals(2, rules.length());
+        JSONArray rules2 = validator2.getJSONArray("rules");
+        assertEquals(0, rules2.length());
 
-        JSONObject rule1 = rules.getJSONObject(0);
+        JSONArray rules3 = validator3.getJSONArray("rules");
+        assertEquals(2, rules3.length());
+
+        JSONObject rule1 = rules3.getJSONObject(0);
         assertTrue(rule1.has("firstruletypename"));
         JSONArray rule1args = rule1.getJSONArray("firstruletypename");
         assertEquals(0, rule1args.length());
 
-        JSONObject rule2 = rules.getJSONObject(1);
+        JSONObject rule2 = rules3.getJSONObject(1);
         assertTrue(rule2.has("secondruletypename"));
         JSONArray rule2args = rule2.getJSONArray("secondruletypename");
         assertEquals(3, rule2args.length());
@@ -424,7 +427,7 @@ public class TitoTemplateMarshallerTest {
         assertEquals("Input", prop1.getString("type"));
         assertTrue(prop1.getBoolean("isVisible"));
         assertEquals("", prop1.getString("value"));
-        assertTrue(prop1.getBoolean("omitIfBlank"));
+        assertTrue(prop1.getBoolean("omit_if_blank"));
         assertEquals(11, prop1.getInt("order"));
         assertTrue(prop1.has("data_object"));
 
@@ -473,7 +476,7 @@ public class TitoTemplateMarshallerTest {
         assertEquals("Output", prop1.getString("type"));
         assertFalse(prop1.getBoolean("isVisible"));
         assertEquals("", prop1.getString("value"));
-        assertTrue(prop1.getBoolean("omitIfBlank"));
+        assertTrue(prop1.getBoolean("omit_if_blank"));
         assertEquals(12, prop1.getInt("order"));
         assertTrue(prop1.has("data_object"));
 

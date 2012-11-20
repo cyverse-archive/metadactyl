@@ -38,7 +38,7 @@ import org.json.JSONObject;
 
 /**
  * A service used to import workflows.
- * 
+ *
  * @author Dennis Roberts
  */
 public class WorkflowImportService {
@@ -75,7 +75,7 @@ public class WorkflowImportService {
 
     /**
      * Initializes a new workflow import service.
-     * 
+     *
      * @param sessionFactory the database sessionFactory.
      * @param devAnalysisGroupIndex the index of the analysis group used for tool development.
      * @param favoritesAnalysisGroupIndex the index of the analysis group used to store the user's favorites.
@@ -91,7 +91,7 @@ public class WorkflowImportService {
 
     /**
      * Parses the development analysis group index, throwing an exception of the index is not a valid integer.
-     * 
+     *
      * @param devAnalysisGroupIndex the development analysis group index as a string.
      * @param description the analysis description.
      * @return the development analysis group index as an integer.
@@ -108,7 +108,7 @@ public class WorkflowImportService {
 
     /**
      * Creates the object used to import all workflow elements.
-     * 
+     *
      * @param registry the object registry
      * @param session the hibernate session
      * @param updateMode indicates what should happen when an existing object matches one being imported.
@@ -128,7 +128,7 @@ public class WorkflowImportService {
 
     /**
      * Creates the object used to import template groups.
-     * 
+     *
      * @param daoFactory used to obtain data access objects.
      * @return the template group importer.
      */
@@ -138,7 +138,7 @@ public class WorkflowImportService {
 
     /**
      * Creates the object used to import analyses (that is, transformation activities).
-     * 
+     *
      * @param session the database session.
      * @param registry the registry of named objects.
      * @param updateVetted true if we should allow vetted analyses to be updated.
@@ -156,7 +156,7 @@ public class WorkflowImportService {
 
     /**
      * Creates the object used to import templates.
-     * 
+     *
      * @param session the database session.
      * @param registry the registry of named workflow elements.
      * @param updateVetted true if we should allow vetted analyses to be updated.
@@ -172,7 +172,7 @@ public class WorkflowImportService {
 
     /**
      * Creates the object used to import and automatically generate analyses for templates.
-     * 
+     *
      * @param session the database session.
      * @param registry the registry of named workflow elements.
      * @return the template importer.
@@ -189,7 +189,7 @@ public class WorkflowImportService {
 
     /**
      * Creates the object used to import notification sets.
-     * 
+     *
      * @param session the database session.
      * @param registry the registry of named workflow elements.
      * @return the notification set importer.
@@ -203,7 +203,7 @@ public class WorkflowImportService {
 
     /**
      * Creates the object used to import deployed components.
-     * 
+     *
      * @param session the database session.
      * @param registry the registry of named workflow elements.
      * @return the deployed component importer.
@@ -217,7 +217,7 @@ public class WorkflowImportService {
 
     /**
      * Imports a workflow.
-     * 
+     *
      * @param jsonString the string representing the JSON object to import.
      * @throws JSONException if the JSON string is invalid or doesn't meet the expectations of the workflow importer.
      */
@@ -227,7 +227,7 @@ public class WorkflowImportService {
 
     /**
      * Updates a workflow.
-     * 
+     *
      * @param jsonString the string representing the JSON object to update.
      * @throws JSONException if the JSON string is invalid or doesn't meet the expectations of the workflow importer.
      */
@@ -237,7 +237,7 @@ public class WorkflowImportService {
 
     /**
      * Forces the update of a workflow.
-     * 
+     *
      * @param jsonString the string representing the JSON object to update.
      * @param updateModeName the name of the update mode to use.
      * @throws JSONException if the JSON string is invalid or doesn't meet the expectations of the workflow importer.
@@ -248,7 +248,7 @@ public class WorkflowImportService {
 
     /**
      * Determines the update mode for the provided update mode name.
-     * 
+     *
      * @param updateModeName the update mode name.
      * @return the update mode.
      * @throws WorkflowException if the update mode isn't recognized.
@@ -269,7 +269,7 @@ public class WorkflowImportService {
 
     /**
      * Either imports or updates a workflow. These two operations are similar enough to share a single method.
-     * 
+     *
      * @param jsonString the string representing the JSON object to import.
      * @param updateMode indicates what should happen when an existing object matches one being imported.
      * @param updateVetted true if we should allow vetted analyses to be updated.
@@ -287,7 +287,7 @@ public class WorkflowImportService {
 
     /**
      * Either imports or updates a workflow.
-     * 
+     *
      * @param session the Hibernate session.
      * @param jsonString the string representing the JSON object to import.
      * @param updateMode indicates what should happen when an existing object matches one being imported.
@@ -332,22 +332,22 @@ public class WorkflowImportService {
      * 573 curl -v -H 'Expect:' -d @/Users/lenards/Desktop/test.json http://localhost:14445/import-workflow 574 curl -v
      * -H 'Expect:' -d @/Users/lenards/Desktop/test.json http://localhost:14445/import-workflow 575 curl -v -H 'Expect:'
      * -d @/Users/lenards/Desktop/test.json http://localhost:14445/import-workflow 576 curl -v -H 'Expect:' -d
-     * 
+     *
      * @/Users/lenards/Desktop/test.json http://localhost:14445/import-workflow 577 curl -v -H 'Expect:' -d
-     * 
+     *
      * @/Users/lenards/Desktop/test.json http://localhost:14445/import-workflow 578 curl -v -H 'Expect:' -d
-     * 
+     *
      * @/Users/lenards/Desktop/test.json http://localhost:14445/import-workflow 579 curl -v -H 'Expect:' -d
-     * 
+     *
      * @/Users/lenards/Desktop/test.json http://localhost:14445/import-workflow
      */
     /**
      * Persists the DataElements specified in an imported Workflow in the DataElementPerservation table for later use.
-     * 
+     *
      * A DataElement is also known as a DataObject in the model. The general nature of the term caused
-     * 
+     *
      * This method is a temporary "shunt" that funnels all mention of DataElements into a table in the schema.
-     * 
+     *
      * @param registry
      * @param session
      */
@@ -362,48 +362,51 @@ public class WorkflowImportService {
 
     /**
      * Imports a template, generating a single-step analysis for it.
-     * 
+     *
      * @param jsonString the string representing the JSON object to import.
+     * @return the ID of the imported template.
      * @throws JSONException if the JSON string is invalid or doesn't meet the expectations of the importer.
      */
-    public void importTemplate(String jsonString) throws JSONException {
-        importOrUpdateTemplate(jsonString, false);
+    public String importTemplate(String jsonString) throws JSONException {
+        return importOrUpdateTemplate(jsonString, false);
     }
 
     /**
      * Updates a template.
-     * 
+     *
      * @param jsonString the string representing the template to update.
+     * @return the ID of the imported template.
      * @throws JSONException if the JSON string is invalid or doesn't meet the expectations of the importer.
      */
-    public void updateTemplate(String jsonString) throws JSONException {
-        importOrUpdateTemplate(jsonString, true);
+    public String updateTemplate(String jsonString) throws JSONException {
+        return importOrUpdateTemplate(jsonString, true);
     }
 
     /**
      * Either imports or updates a template.
-     * 
+     *
      * @param jsonString the string representing the template to import or update.
      * @param update true if existing analyses should be updated.
+     * @return the ID of the imported template.
      */
-    private void importOrUpdateTemplate(final String jsonString, final boolean update) {
-        new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<Void>() {
+    private String importOrUpdateTemplate(final String jsonString, final boolean update) {
+        return new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<String>() {
             @Override
-            public Void perform(Session session) {
-                importOrUpdateTemplate(session, jsonString, update);
-                return null;
+            public String perform(Session session) {
+                return importOrUpdateTemplate(session, jsonString, update);
             }
         });
     }
 
     /**
      * Either imports or updates a template.
-     * 
+     *
      * @param session the Hibernate session.
      * @param jsonString the string representing the template to import or update.
      * @param update true if existing analyses should be updated.
+     * @return the ID of the imported template.
      */
-    private void importOrUpdateTemplate(Session session, String jsonString, boolean update) {
+    private String importOrUpdateTemplate(Session session, String jsonString, boolean update) {
         try {
             HeterogeneousRegistry registry = new HeterogeneousRegistryImpl();
             JSONObject json = new JSONObject(jsonString);
@@ -411,21 +414,23 @@ public class WorkflowImportService {
             if (update) {
                 importer.enableReplacement();
             }
-            importer.importObject(json);
+            String result = importer.importObject(json);
             perservationDataElements(registry, session);
+            return result;
         }
         catch (JSONException e) {
             throw new WorkflowException(e);
         }
         catch (HibernateException e) {
             logHibernateExceptionCause(e);
+            return null;
         }
     }
 
     /**
      * Provides a way to update only the fields in an analysis (transformation activity) without updating any of the
      * components of the analysis.
-     * 
+     *
      * @param jsonString a JSON object containing information from the fields to update.
      */
     public void updateAnalysisOnly(final String jsonString) {
@@ -440,7 +445,7 @@ public class WorkflowImportService {
 
     /**
      * Logs the cause of a Hibernate exception.
-     * 
+     *
      * @param e the exception.
      */
     private void logHibernateExceptionCause(HibernateException e) throws WorkflowException {

@@ -1,8 +1,10 @@
 package org.iplantc.workflow.integration;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import org.iplantc.workflow.integration.util.ImportUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,7 +12,7 @@ import org.json.JSONObject;
 
 /**
  * A mock object importer used for testing.
- * 
+ *
  * @author Dennis Roberts
  */
 public class MockObjectImporter implements ObjectImporter {
@@ -70,7 +72,7 @@ public class MockObjectImporter implements ObjectImporter {
 
     /**
      * Explicitly sets the update mode.
-     * 
+     *
      * @param updateMode the new update mode.
      */
     @Override
@@ -89,15 +91,21 @@ public class MockObjectImporter implements ObjectImporter {
      * {@inheritDoc}
      */
     @Override
-    public void importObject(JSONObject json) throws JSONException {
+    public String importObject(JSONObject json) throws JSONException {
         importedObjects.add(json);
+        return ImportUtils.generateId();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void importObjectList(JSONArray array) throws JSONException {
+    public List<String> importObjectList(JSONArray array) throws JSONException {
         importedArrays.add(array);
+        List<String> result = new ArrayList<String>();
+        for (int i = 0; i < array.length(); i++) {
+            result.add(ImportUtils.generateId());
+        }
+        return result;
     }
 }
