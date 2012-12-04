@@ -1,9 +1,9 @@
 package org.iplantc.workflow.integration.json;
 
-import java.util.Date;
 import static org.iplantc.workflow.integration.json.TitoMultiplicityNames.titoMultiplicityName;
 import static org.iplantc.workflow.integration.util.JsonUtils.putIfNotNull;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.ListUtils;
@@ -470,7 +470,12 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
                         array.put(new Double(Double.parseDouble(arg.trim())));
                     }
                     catch (NumberFormatException notDouble) {
-                        array.put(arg);
+                        try {
+                            array.put(new JSONObject(arg));
+                        } catch (JSONException notJson) {
+                            // just store the original string
+                            array.put(arg);
+                        }
                     }
                 }
             }
