@@ -64,8 +64,11 @@ public class PropertyValueRetriever {
 	 */
 	public JSONObject getPropertyValues(String jobUuid) {
 		JSONObject experiment = retrieveExperiment(jobUuid);
-		TransformationActivity app = getApp(experiment.getString("analysis_id"));
-		return getPropertyValues(JobConfigUtils.unescapeJsonKeys(experiment.getJSONObject("config")), app);
+        String analysisId = experiment.getString("analysis_id");
+		TransformationActivity app = getApp(analysisId);
+		JSONObject result = getPropertyValues(JobConfigUtils.unescapeJsonKeys(experiment.getJSONObject("config")), app);
+        result.put("analysis_id", analysisId);
+        return result;
 	}
 
 	/**
@@ -91,7 +94,7 @@ public class PropertyValueRetriever {
 
 	/**
 	 * Adds a value for a property.
-	 * 
+	 *
 	 * @param stepName the name of the transformation step.
 	 * @param prop the property.
 	 * @param props the array of property values.
@@ -179,6 +182,17 @@ public class PropertyValueRetriever {
 		return result;
 	}
 
+    /**
+     * Generates the qualified property ID for the given step name and property ID.
+     *
+     * @param stepName the name of the step that the property belongs to.
+     * @param propId the property ID.
+     * @return the qualified property ID.
+     */
+    private String qualifiedPropertyId(String stepName, String propId) {
+        return stepName + "_" + propId;
+    }
+
 	/**
 	 * Formats the value of a property.
 	 *
@@ -190,6 +204,7 @@ public class PropertyValueRetriever {
 	private JSONObject formatPropertyValue(Property prop, String stepName, JSONObject config) {
 		String value = getPropertyValue(config, stepName, prop.getId(), prop.getDefaultValue(), "");
 		JSONObject result = new JSONObject();
+        result.put("full_param_id", qualifiedPropertyId(stepName, prop.getId()));
 		result.put("param_id", prop.getId());
 		result.put("param_name", prop.getLabel());
 		result.put("param_value", value);
@@ -212,7 +227,7 @@ public class PropertyValueRetriever {
 	 * @return the property value.
 	 */
 	private String getPropertyValue(JSONObject config, String stepName, String propId, String... defaultValues) {
-		String key = stepName + "_" + propId;
+		String key = qualifiedPropertyId(stepName, propId);
 		String value = config.optString(key, null);
 		return value == null ? ListUtils.first(new NotNullPredicate<String>(), Arrays.asList(defaultValues)) : value;
 	}
