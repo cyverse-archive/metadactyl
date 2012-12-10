@@ -1,6 +1,7 @@
 package org.iplantc.workflow.service;
 
 import java.util.UUID;
+
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -186,7 +187,7 @@ public class AnalysisEditService {
         String integratorName = analysis.getIntegrationDatum().getIntegratorName();
         String authenticatedName = userDetails.getShortUsername();
         if (!StringUtils.equals(integratorName, authenticatedName)) {
-            throw new AnalysisOwnershipException(integratorName, analysis.getId());
+            throw new AnalysisOwnershipException(authenticatedName, analysis.getId());
         }
     }
 
