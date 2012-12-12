@@ -1,17 +1,22 @@
 package org.iplantc.workflow.integration;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.iplantc.persistence.dto.data.IntegrationDatum;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.core.TransformationActivity;
+import org.iplantc.workflow.core.TransformationActivityReference;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.TransformationActivityDao;
 import org.iplantc.workflow.integration.json.TitoIntegrationDatumUnmarshaller;
 import org.iplantc.workflow.integration.validation.TemplateValidator;
 import org.iplantc.workflow.model.Template;
 import org.iplantc.workflow.service.WorkspaceInitializer;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,11 +34,11 @@ public class AnalysisGeneratingTemplateImporter extends TemplateImporter {
     /**
      * Used to import new template groups.
      */
-    private TemplateGroupImporter templateGroupImporter;
+    private final TemplateGroupImporter templateGroupImporter;
     /**
      * Used to initialize the user's workspace.
      */
-    private WorkspaceInitializer workspaceInitializer;
+    private final WorkspaceInitializer workspaceInitializer;
 
     /**
      * @param daoFactory the factory used to generate data access objects.
@@ -88,6 +93,14 @@ public class AnalysisGeneratingTemplateImporter extends TemplateImporter {
             analysis.setDescription(template.getDescription());
             analysis.setDeleted(false);
 
+            Set<TransformationActivityReference> references = analysis.getReferences();
+            if (references == null) {
+                references = new HashSet<TransformationActivityReference>();
+                analysis.setReferences(references);
+            }
+
+            parseReferences(references, json);
+
             Date date = template.getEditedDate();
             if (date != null) {
                 analysis.setEditedDate(date);
@@ -121,6 +134,31 @@ public class AnalysisGeneratingTemplateImporter extends TemplateImporter {
     }
 
     /**
+     * Replaces the references in the given Set with those parsed from the "references" JSON array in the
+     * given JSON Object.
+     * 
+     * @param references the TransformationActivityReference Set to update.
+     * @param json a JSON Object with the "references" JSON array of strings.
+     */
+    private void parseReferences(Set<TransformationActivityReference> references, JSONObject json) {
+        references.clear();
+
+        if (json.has("references")) {
+            try {
+                JSONArray jsonReferences = json.getJSONArray("references");
+                for (int i = 0; i < jsonReferences.length(); i++) {
+                    TransformationActivityReference ref = new TransformationActivityReference();
+                    ref.setReferenceText(jsonReferences.getString(i));
+
+                    references.add(ref);
+                }
+            } catch (JSONException e) {
+                throw new WorkflowException(e);
+            }
+        }
+    }
+
+    /**
      * Generates and saves a single-step analysis for the given template.
      * 
      * @param template the template.
@@ -128,7 +166,13 @@ public class AnalysisGeneratingTemplateImporter extends TemplateImporter {
      */
     private void generateAnalysis(Template template, JSONObject json) {
         TransformationActivity analysis = new AnalysisGenerator().generateAnalysis(template);
+
+        Set<TransformationActivityReference> references = new HashSet<TransformationActivityReference>();
+        parseReferences(references, json);
+
+        analysis.setReferences(references);
         analysis.setIntegrationDatum(unmarshalIntegrationDatum(json));
+
         String username = getUsername(json, analysis);
         initializeWorkspace(username);
         getDaoFactory().getTransformationActivityDao().save(analysis);
