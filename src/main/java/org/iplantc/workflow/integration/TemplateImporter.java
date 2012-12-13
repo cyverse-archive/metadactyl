@@ -300,10 +300,8 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
      */
     private void validateComponentId(Template template) {
         String componentId = template.getComponent();
-        if (StringUtils.isEmpty(componentId)) {
-            throw new WorkflowException("no component ID provided for template: " + template.getName());
-        }
-        if (!componentInRegistry(componentId) && !componentInDatabase(componentId)) {
+        if (!StringUtils.isEmpty(componentId) && !componentInRegistry(componentId)
+                && !componentInDatabase(componentId)) {
             throw new WorkflowException("component ID " + componentId + " not found");
         }
     }
