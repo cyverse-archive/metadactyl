@@ -15,6 +15,8 @@ import org.iplantc.workflow.core.TransformationActivityReference;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.TemplateGroupDao;
 import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
+import org.iplantc.workflow.integration.validation.TemplateValidator;
+import org.iplantc.workflow.model.Template;
 import org.iplantc.workflow.template.groups.TemplateGroup;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,6 +32,7 @@ public class TemplateGroupService {
 
     private SessionFactory sessionFactory;
     private UserSessionService userSessionService;
+    private TemplateValidator templateValidator;
 
     public TemplateGroupService() {
 
@@ -80,6 +83,8 @@ public class TemplateGroupService {
                     TemplateGroup group = templateGroupDao.findById(BETA_TEMPLATE_GROUP_ID);
                     TransformationActivity transformationActivity = getTransformationActivity(daoFactory, analysisId);
 
+                    validateTemplates(daoFactory, transformationActivity);
+
                     fillIntegrationDatum(daoFactory, transformationActivity);
                     fillReferences(transformationActivity);
                     fillSuggestedGroups(daoFactory, transformationActivity);
@@ -101,6 +106,14 @@ public class TemplateGroupService {
                     return "{}";
                 } catch(JSONException jsonException) {
                     throw new RuntimeException(jsonException);
+                }
+            }
+
+            private void validateTemplates(DaoFactory daoFactory, TransformationActivity analysis) {
+                if (templateValidator != null) {
+                    for (Template template : daoFactory.getTemplateDao().findTemplatesInAnalysis(analysis)) {
+                        templateValidator.validate(template, null);
+                    }
                 }
             }
 
@@ -203,5 +216,9 @@ public class TemplateGroupService {
 
     public void setUserSessionService(UserSessionService userSessionService) {
         this.userSessionService = userSessionService;
+    }
+
+    public void setTemplateValidator(TemplateValidator templateValidator) {
+        this.templateValidator = templateValidator;
     }
 }
