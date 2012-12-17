@@ -148,10 +148,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
      */
     private String getComponentName(String componentId) {
         DeployedComponent component = daoFactory.getDeployedComponentDao().findById(componentId);
-        if (component == null) {
-            throw new WorkflowException("no deployed component with ID, " + componentId + ", found");
-        }
-        return component.getName();
+        return component == null ? "" : component.getName();
     }
 
     /**

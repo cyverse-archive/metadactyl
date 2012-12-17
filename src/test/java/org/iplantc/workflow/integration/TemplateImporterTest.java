@@ -46,7 +46,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for org.iplantc.workflow.create.TemplateImporter.
- * 
+ *
  * @author Dennis Roberts
  */
 public class TemplateImporterTest {
@@ -154,7 +154,7 @@ public class TemplateImporterTest {
 
     /**
      * Creates a data format with the given name.
-     * 
+     *
      * @param name the name of the data format.
      * @return the data format.
      */
@@ -175,7 +175,7 @@ public class TemplateImporterTest {
 
     /**
      * Creates an info type with the given name.
-     * 
+     *
      * @param name the name of the info type.
      * @return the info type.
      */
@@ -229,7 +229,7 @@ public class TemplateImporterTest {
 
     /**
      * Extracts the mock template DAO from the mock DAO factory.
-     * 
+     *
      * @return the mock template DAO.
      */
     private MockTemplateDao getMockTemplateDao() {
@@ -238,7 +238,7 @@ public class TemplateImporterTest {
 
     /**
      * Extracts the mock data format DAO from the mock DAO factory.
-     * 
+     *
      * @return the mock data format DAO.
      */
     private MockDataFormatDao getMockDataFormatDao() {
@@ -247,7 +247,7 @@ public class TemplateImporterTest {
 
     /**
      * Extracts the mock property type DAO from the mock DAO factory.
-     * 
+     *
      * @return the mock property type DAO.
      */
     private MockPropertyTypeDao getMockPropertyTypeDao() {
@@ -344,7 +344,7 @@ public class TemplateImporterTest {
     /**
      * Verifies assumptions about the <code>order</code> key and assigning <code>order</code> given the properties
      * position in the property group list.
-     * 
+     *
      * @throws JSONException
      * @throws IOException
      */
@@ -411,7 +411,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that we can import a fully specified template.
-     * 
+     *
      * @throws JSONException if the JSON object we pass in is invalid.
      */
     @Test
@@ -494,7 +494,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that we can import a minimally specified template.
-     * 
+     *
      * @throws JSONException if the JSON that is given to the importer is invalid.
      * @throws IOException if the file is not present at the specified path.
      */
@@ -514,7 +514,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that a vetted Template cannot be replaced by a new template.
-     * 
+     *
      * @throws JSONException if the JSON that is given to the importer is invalid.
      * @throws IOException if the file is not present at the specified path.
      */
@@ -534,7 +534,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that a unvetted Template can be replaced by a new template.
-     * 
+     *
      * @throws JSONException if the JSON that is given to the importer is invalid.
      * @throws IOException if the file is not present at the specified path.
      */
@@ -553,7 +553,7 @@ public class TemplateImporterTest {
     }
 
     /**
-     * 
+     *
      */
     @Test
     public void testTemplateReplaceWithNoAssociatedAnalyses() throws JSONException, IOException {
@@ -569,19 +569,19 @@ public class TemplateImporterTest {
     /**
      * Verifies that templates are not updated if we've instructed the importer to ignore attempts to replace
      * existing templates.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      * @throws IOException if we try to load the JSON from a non-existent file.
      */
     @Test
     public void templateShouldNotBeUpdatedIfReplacementIgnored() throws JSONException, IOException {
         importer.ignoreReplacement();
-        
+
         JSONObject json1 = getTestJSONObject("minimally_specified_template_with_id");
         importer.importObject(json1);
         assertEquals(1, getMockTemplateDao().getSavedObjects().size());
         assertEquals("", getMockTemplateDao().getSavedObjects().get(0).getName());
-        
+
         JSONObject json2 = getTestJSONObject("minimally_specified_template_with_id_2");
         importer.importObject(json2);
         assertEquals(1, getMockTemplateDao().getSavedObjects().size());
@@ -590,7 +590,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that we can import a minimally specified template with alternative key names.
-     * 
+     *
      * @throws JSONException if the JSON that is given to the importer is invalid.
      * @throws IOException if the file is not present at the specified path.
      */
@@ -667,7 +667,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that we can test a template with no inputs.
-     * 
+     *
      * @throws JSONException if the JSON we pass to the importer is invalid.
      */
     @Test
@@ -683,7 +683,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that we can import a template with no outputs.
-     * 
+     *
      * @throws JSONException if the JSON we pass to the importer is invalid.
      */
     @Test
@@ -698,7 +698,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that we can test a template with no outputs.
-     * 
+     *
      * @throws JSONException if the JSON we pass to the importer is invalid.
      */
     @Test
@@ -713,7 +713,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that a missing list of property groups generates an exception.
-     * 
+     *
      * @throws JSONException if the JSON we pass to the importer is invalid.
      */
     @Test(expected = JSONException.class)
@@ -724,7 +724,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that a missing list of properties generates an exception.
-     * 
+     *
      * @throws JSONException if the JSON we pass to the importer is invalid.
      */
     @Test(expected = JSONException.class)
@@ -735,7 +735,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that we can handle a property with no validator.
-     * 
+     *
      * @throws JSONException if the JSON we pass to the importer is invalid.
      */
     @Test
@@ -767,7 +767,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that the importer can handle a validator with a missing rule list.
-     * 
+     *
      * @throws JSONException if the JSON we pass to the importer is invalid.
      */
     @Test
@@ -793,7 +793,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that a validator with badly formatted rule definition generates an exception.
-     * 
+     *
      * @throws JSONException if the JSON we pass to the importer is invalid.
      */
     @Test(expected = JSONException.class)
@@ -804,10 +804,10 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that a template with no component generates an exception.
-     * 
+     *
      * @throws JSONException if the JSON we pass to the importer is invalid.
      */
-    @Test(expected = JSONException.class)
+    @Test()
     public void testTemplateWithNoComponent() throws JSONException {
         String jsonString = "{   \"type\": \"templatetype\",\n"
                 + "    \"groups\": [\n"
@@ -825,7 +825,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that a template with a missing type generates an exception.
-     * 
+     *
      * @throws JSONException if the JSON we pass to the importer is invalid.
      */
     @Test
@@ -848,7 +848,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that a property group with no type generates an exception.
-     * 
+     *
      * @throws JSONException if the JSON we pass to the importer is invalid.
      */
     @Test(expected = JSONException.class)
@@ -868,7 +868,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that a property with no type generates an exception.
-     * 
+     *
      * @throws JSONException if the JSON we pass to the importer is invalid.
      */
     @Test(expected = JSONException.class)
@@ -886,7 +886,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that the importer can import multiple templates.
-     * 
+     *
      * @throws JSONException if the JSON object we pass to the importer doesn't meet the requirements.
      */
     @Test
@@ -1013,7 +1013,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that we can handle deployed component references.
-     * 
+     *
      * @throws JSONException if the JSON object doesn't meet the expectations of the importer.
      */
     @Test
@@ -1027,7 +1027,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that the importer will register templates if a registry is specified.
-     * 
+     *
      * @throws JSONException if the JSON we pass to the importer doesn't meet the importer's requirements.
      */
     @Test
@@ -1042,7 +1042,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that the importer will register multiple templates.
-     * 
+     *
      * @throws JSONException if the JSON we pass to the importer doesn't meet the requirements.
      */
     @Test
@@ -1058,7 +1058,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that an unknown rule type causes an exception to be thrown.
-     * 
+     *
      * @throws JSONException if the JSON document doesn't meet the requirements of the importer.
      */
     @Test(expected = JSONException.class)
@@ -1069,7 +1069,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that we can import a template with an informational property.
-     * 
+     *
      * @throws JSONException if the JSON is invalid or doesn't meet the expectations of the importer.
      * @throws IOException if the JSON string can't be read from the file.
      */
@@ -1109,7 +1109,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that the validation fails if there are multiple redirections to standard output.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      * @throws IOException if an I/O error occurs.
      */
@@ -1121,7 +1121,7 @@ public class TemplateImporterTest {
 
     /**
      * Verifies that the validation fails if there are multiple redirections to standard error output.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      * @throws IOException if an I/O error occurs.
      */

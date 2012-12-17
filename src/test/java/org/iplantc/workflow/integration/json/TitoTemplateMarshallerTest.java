@@ -386,9 +386,9 @@ public class TitoTemplateMarshallerTest {
     }
 
     /**
-     * Verifies that the marshaller throws an exception if it's supposed to retrieve the component name and can't.
+     * Verifies that failure to find a component does not cause an exception.
      */
-    @Test(expected = WorkflowException.class)
+    @Test()
     public void shouldThrowExceptionIfComponentNotFound() {
         Template template = createBasicTemplate();
         template.setComponent("unknown");

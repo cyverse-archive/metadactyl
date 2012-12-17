@@ -38,7 +38,7 @@ import org.json.JSONObject;
 
 /**
  * Converts JSON object representing templates to templates.
- * 
+ *
  * @author Dennis Roberts
  */
 public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
@@ -94,7 +94,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Converts the given JSON object to a template.
-     * 
+     *
      * @param json the JSON object.
      * @return the template.
      * @throws JSONException if the JSON object is invalid.
@@ -130,7 +130,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
      * The TITO UI needs to retain information about property group containers, however, so property groups are
      * contained within a "groups" attribute of an object that is stored under the "groups" attribute of the template
      * JSON.
-     * 
+     *
      * @param json the JSON object representing the template.
      * @return the list of property groups.
      * @throws JSONException if the JSON object doesn't meet the requirements.
@@ -145,27 +145,22 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
      * Gets the appropriate component ID to use for the template. If the component ID is specified (in the "component"
      * element of the JSON object), use it. Otherwise, use the "component_ref" element as the name of the component to
      * use.
-     * 
+     *
      * @param json the JSON object.
      * @return the component.
      * @throws JSONException if an appropriate component ID can't be found.
      */
     private String getComponentId(JSONObject json) throws JSONException {
-        String componentId = optString(json, null, "component_id", "component");
+        String componentId = StringUtils.defaultIfBlank(optString(json, null, "component_id", "component"), null);
         if (componentId == null && registry != null) {
             componentId = getNamedComponentId(json.optString("component_ref", null));
-        }
-        if (componentId == null) {
-            String msg = "unable to determine the component ID for the template; please verify that the \"component\""
-                    + " or \"component_ref\" element is specified correctly";
-            throw new JSONException(msg);
         }
         return componentId;
     }
 
     /**
      * Gets the identifier of a named deployed component.
-     * 
+     *
      * @param name the name of the deployed component.
      * @return the component identifier.
      */
@@ -176,7 +171,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Converts the given JSON array to a list of property groups.
-     * 
+     *
      * @param array the JSON array.
      * @return the list of property groups.
      * @throws JSONException if the JSON array is invalid.
@@ -191,7 +186,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Converts the given JSON object to a property group.
-     * 
+     *
      * @param json the JSON object.
      * @return the property group.
      * @throws JSONException if the JSON object we get is invalid.
@@ -209,7 +204,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Converts the given JSON array to a list of properties.
-     * 
+     *
      * @param array the JSON array.
      * @return the list of properties.
      * @throws JSONException if the JSON array is invalid.
@@ -224,7 +219,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Converts the given JSON object to a property.
-     * 
+     *
      * @param json the JSON object.
      * @return the property.
      * @throws JSONException if the JSON object is invalid.
@@ -256,7 +251,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Converts the given JSON object to a validator if the JSON object is provided.
-     * 
+     *
      * @param json the JSON object.
      * @return the validator or null if no JSON object is provided.
      * @throws JSONException if the given JSON object is invalid.
@@ -275,7 +270,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Converts the the given JSON array to a list of rules.
-     * 
+     *
      * @param array the JSON array.
      * @return the rule arguments.
      * @throws JSONException if the JSON array is invalid.
@@ -292,7 +287,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Converts the given JSON object to a rule.
-     * 
+     *
      * @param json the JSON object.
      * @return the rule.
      * @throws JSONException if the JSON object is invalid.
@@ -308,7 +303,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Converts the given JSON array to a list of rule arguments.
-     * 
+     *
      * @param array the JSON array.
      * @return the list of arguments.
      * @throws JSONException if the JSON array is invalid.
@@ -324,7 +319,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
     /**
      * Obtains the rule type from the given JSON object. The JSON object is actually the object that defines the rule
      * containing the rule type.
-     * 
+     *
      * @param json the JSON object that describes the rule.
      * @return the rule type.
      * @throws JSONException if the JSON object is invalid.
@@ -344,7 +339,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Gets the property type with the given name.
-     * 
+     *
      * @param name the property type name.
      * @return the property type.
      */
@@ -361,7 +356,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Gets the property type with the given name from the database.
-     * 
+     *
      * @param name the name of the property type.
      * @return the property type or null if it can't be found.
      */
@@ -375,7 +370,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Gets the property type with the given name form our local cache.
-     * 
+     *
      * @param name the name of the property type.
      * @return the property type or null if it can't be found.
      */
@@ -385,7 +380,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Converts the given JSON object to a data object.
-     * 
+     *
      * @param templateId string representing the identifier for the template
      * @param json the JSON representation of a DataObject.
      * @param propertyId the property identifier.
@@ -422,7 +417,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Converts the given JSON object to an output data object.
-     * 
+     *
      * @param templateId string representing the identifier for the template
      * @param json the JSON representation of a DataObject.
      * @param propertyId the property identifier.
@@ -443,7 +438,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Converts the given JSON object to an input data object.
-     * 
+     *
      * @param templateId string representing the identifier for the template
      * @param json the JSON representation of a DataObject.
      * @param propertyId the property identifier.
@@ -463,7 +458,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Finds the data source with the name specified in the JSON.
-     * 
+     *
      * @param name the data source name.
      * @return the data source.
      * @throws UnknownDataSourceException if the data source isn't found.
@@ -479,7 +474,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
     /**
      * Loads the multiplicity setting, allowing for some variation in the name used to describe the multiplicity
      * setting.
-     * 
+     *
      * @param name the selected multiplicity setting name.
      * @return the multiplicity setting.
      */
@@ -494,7 +489,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Converts accepted multiplicity names to the actual names in the database.
-     * 
+     *
      * @param name the selected multiplicity name.
      * @return the standardized multiplicity name.
      */
@@ -510,7 +505,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Determines whether or not the given string array contains the given string, ignoring case.
-     * 
+     *
      * @param array the list of strings.
      * @param string the string to look for.
      * @return true if the array contains the string.
@@ -528,11 +523,11 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Persists a DataObject representing a currently unsupported info-type/data-format.
-     * 
+     *
      * This "preservation" method is meant to be short-lived while the process of
      * collecting info-type/data-formats is going on. Eventually a set of supported
      * info-type/data-formats must be enforced.
-     * 
+     *
      * @param templateId string representing the identifier for the template
      * @param dataObject
      * @param json
@@ -563,7 +558,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Mark the information type as unspecified if it's null.
-     * 
+     *
      * @param dataObject the data object to reclassify.
      */
     private void reclassifyAsInfoTypeUnspecified(DataObject dataObject) {
@@ -574,7 +569,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Mark the data format as unspecified if it's null.
-     * 
+     *
      * @param dataObject the data object to reclassify.
      */
     private void reclassifyAsFileFormatUnspecified(DataObject dataObject) {
@@ -585,7 +580,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Pulls the default value or value stated as the default from the JSON object.
-     * 
+     *
      * @param json the JSON object (collection of keys & values)
      * @return the value for the default value for the property.
      * @throws JSONException
@@ -608,7 +603,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
      * Gets the data format for the input or output object being specified. If the data format name is specified then
      * the data format with the given name is used if it exists. If the data format name is not specified then the
      * "unspecified" data format is used.
-     * 
+     *
      * @param name the data format name.
      * @return the data format.
      */
@@ -618,7 +613,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Gets the data format object with the given name.
-     * 
+     *
      * @param name the name of the data format object.
      * @return the data format.
      * @throws WorkflowException if the data format with the given name is not found.
@@ -640,7 +635,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Finds the information type with the given name.
-     * 
+     *
      * @param name the information type name.
      * @return the information type.
      *         TODO: throw a WorkflowException for an unknown info type when info types are fully supported.
@@ -651,7 +646,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Adds old-style inputs to the list of inputs.
-     * 
+     *
      * @param inputs the list of inputs.
      * @param inputJsonArray the JSON array representing the old-style inputs.
      * @throws JSONException if the input JSON doesn't meet expectations.
@@ -667,7 +662,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
 
     /**
      * Adds old-style outputs to the list of outputs.
-     * 
+     *
      * @param outputs the list of outputs.
      * @param outputJsonArray the JSON array representing the old-style outputs.
      * @throws JSONException if the output JSON doesn't meet expectations.
