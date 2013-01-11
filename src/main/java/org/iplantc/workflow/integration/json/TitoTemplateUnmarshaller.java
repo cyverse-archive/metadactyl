@@ -101,7 +101,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
      */
     @Override
     public Template fromJson(JSONObject json) throws JSONException {
-        templateId = ImportUtils.getId(json, "id", "t");
+        templateId = ImportUtils.getId(json, "id");
         inputs = new LinkedList<DataObject>();
         outputs = new LinkedList<DataObject>();
 
@@ -193,7 +193,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
      */
     private PropertyGroup propertyGroupFromJson(JSONObject json) throws JSONException {
         PropertyGroup propertyGroup = new PropertyGroup();
-        propertyGroup.setId(ImportUtils.getId(json, "id", "g"));
+        propertyGroup.setId(ImportUtils.getId(json, "id"));
         propertyGroup.setName(json.optString("name", ""));
         propertyGroup.setLabel(json.optString("label", ""));
         propertyGroup.setGroupType(json.getString("type"));
@@ -226,7 +226,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
      */
     private Property propertyFromJson(JSONObject json, int listIndex) throws JSONException {
         Property property = new Property();
-        property.setId(ImportUtils.getId(json, "id", "p"));
+        property.setId(ImportUtils.getId(json, "id"));
         property.setPropertyType(getPropertyType(json.getString("type")));
         property.setDefaultValue(extractDefaultValue(json));
         property.setName(json.optString("name", ""));
@@ -260,7 +260,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
         Validator validator = null;
         if (json != null) {
             validator = new Validator();
-            validator.setId(ImportUtils.getId(json, "id", "v"));
+            validator.setId(ImportUtils.getId(json, "id"));
             validator.setName(JsonUtils.optString(json, "", "name", "label"));
             validator.setRequired(json.optBoolean("required", false));
             validator.setRules(ruleListFromJson(json.optJSONArray("rules")));
@@ -295,7 +295,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
     private Rule ruleFromJson(JSONObject json) throws JSONException {
         Rule rule = new Rule();
         RuleType ruleType = ruleTypeFromRuleJson(json);
-        rule.setId(ImportUtils.generateId("r"));
+        rule.setId(ImportUtils.generateId());
         rule.setRuleType(ruleType);
         rule.setArguments(ruleArgumentListFromJson(json.getJSONArray(ruleType.getName())));
         return rule;
@@ -586,7 +586,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
      * @throws JSONException
      */
     private String extractDefaultValue(JSONObject json) throws JSONException {
-        String key = "";
+        String key;
         if (json.has("default_value")) {
             key = json.getString("default_value");
         }

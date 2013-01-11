@@ -6,7 +6,7 @@ import net.sf.json.JsonConfig;
 
 /**
  * Java bean representing a Job.
- * 
+ *
  * @author Kris Healy <healyk@iplantcollaborative.org>
  */
 public class JobDto {
@@ -33,12 +33,12 @@ public class JobDto {
    * Creates a new JobDto.
    */
   public JobDto() {
-    uuid = "j" + UUID.randomUUID().toString();
+    uuid = UUID.randomUUID().toString().toUpperCase();
   }
-  
+
   /**
    * Constructs the job with a given request type and executor type.
-   * 
+   *
    * @param requestType
    *  Request type for this job.
    * @param executionTarget
@@ -46,7 +46,7 @@ public class JobDto {
    */
   public JobDto(String requestType, String executionTarget) {
     this();
-    
+
     this.requestType = requestType;
     this.executionTarget = executionTarget;
   }

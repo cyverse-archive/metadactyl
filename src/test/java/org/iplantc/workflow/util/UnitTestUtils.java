@@ -36,7 +36,7 @@ import org.iplantc.workflow.template.groups.TemplateGroup;
 
 /**
  * Various utility methods to facilitate unit and functional testing.
- * 
+ *
  * @author Dennis Roberts
  */
 public class UnitTestUtils {
@@ -90,7 +90,7 @@ public class UnitTestUtils {
 
     /**
      * Creates a generalized registry to use for testing.
-     * 
+     *
      * @return the registry.
      */
     public static HeterogeneousRegistryImpl createRegistry() {
@@ -103,7 +103,7 @@ public class UnitTestUtils {
 
     /**
      * Adds some deployed components to the generalized registry to use for testing.
-     * 
+     *
      * @param registry the registry.
      */
     private static void addDeployedComponents(HeterogeneousRegistryImpl registry) {
@@ -113,7 +113,7 @@ public class UnitTestUtils {
 
     /**
      * Adds some analyses to the generalized registry to use for testing.
-     * 
+     *
      * @param registry the registry.
      */
     private static void addAnalyses(HeterogeneousRegistryImpl registry) {
@@ -123,23 +123,23 @@ public class UnitTestUtils {
 
     /**
      * Adds some templates to the generalized registry to use for testing.
-     * 
+     *
      * @param registry the registry.
      */
     private static void addTemplates(HeterogeneousRegistryImpl registry) {
         registry.add(Template.class, "foo", createTemplate("foo"));
         registry.add(Template.class, "bar", createTemplate("bar"));
     }
-    
+
     /**
      * Generates a dummy set of References for a TransformationActivity.
-     * 
-     * @return 
+     *
+     * @return
      *  References for a transformation activity.
      */
     private static Set<TransformationActivityReference> createTransformationReferences() {
         Set<TransformationActivityReference> results = new HashSet<TransformationActivityReference>();
-        
+
         TransformationActivityReference ref = new TransformationActivityReference();
         ref.setReferenceText("Nope.");
         results.add(ref);
@@ -147,13 +147,13 @@ public class UnitTestUtils {
         ref = new TransformationActivityReference();
         ref.setReferenceText("Chuck Testa");
         results.add(ref);
-        
+
         return results;
     }
 
     /**
      * Creates an analysis to use for testing.
-     * 
+     *
      * @param name the name of the analysis.
      * @return the analysis.
      */
@@ -171,7 +171,7 @@ public class UnitTestUtils {
 
     /**
      * Creates a template to use for testing.
-     * 
+     *
      * @param name the name of the template.
      * @return the template.
      */
@@ -181,7 +181,7 @@ public class UnitTestUtils {
 
     /**
      * Creates a template to use for testing.
-     * 
+     *
      * @param name the name of the template.
      * @param componentId the deployed component identifier.
      * @return the template.
@@ -196,7 +196,7 @@ public class UnitTestUtils {
 
     /**
      * Creates a deployed component to use for testing.
-     * 
+     *
      * @param name the name of the deployed component.
      * @return the deployed component.
      */
@@ -238,7 +238,7 @@ public class UnitTestUtils {
 
     /**
      * Adds the root template group to the a mock template group DAO.
-     * 
+     *
      * @param templateGroupDao the mock template group DAO.
      */
     public static void addRootTemplateGroup(MockTemplateGroupDao templateGroupDao) {
@@ -250,7 +250,7 @@ public class UnitTestUtils {
 
     /**
      * Generates a mock property type DAO containing a set of standard property types.
-     * 
+     *
      * @return the DAO.
      */
     public static MockPropertyTypeDao createMockPropertyTypeDao() {
@@ -263,13 +263,13 @@ public class UnitTestUtils {
 
     /**
      * Creates a property type with the given name.
-     * 
+     *
      * @param name the name of the property type.
      * @return the property type.
      */
     public static PropertyType createPropertyType(String name) {
         PropertyType propertyType = new PropertyType();
-        propertyType.setId(ImportUtils.generateId("pt"));
+        propertyType.setId(ImportUtils.generateId());
         propertyType.setName(name);
         propertyType.setLabel("label of property type " + name);
         propertyType.setDescription("description of property type " + name);
@@ -278,7 +278,7 @@ public class UnitTestUtils {
 
     /**
      * Generates a mock rule type DAO containing a set of standard rule types.
-     * 
+     *
      * @return the DAO.
      */
     public static MockRuleTypeDao createMockRuleTypeDao() {
@@ -291,13 +291,13 @@ public class UnitTestUtils {
 
     /**
      * Creates a rule type with the given name.
-     * 
+     *
      * @param name the name of the rule type.
      * @return the rule type.
      */
     public static RuleType createRuleType(String name) {
         RuleType ruleType = new RuleType();
-        ruleType.setId(ImportUtils.generateId("rt"));
+        ruleType.setId(ImportUtils.generateId());
         ruleType.setName(name);
         ruleType.setLabel("label of rule type " + name);
         ruleType.setDescription("description of rule type " + name);
@@ -306,7 +306,7 @@ public class UnitTestUtils {
 
     /**
      * Generates a mock info type DAO containing a set of standard info types.
-     * 
+     *
      * @return the DAO.
      */
     public static MockInfoTypeDao createMockInfoTypeDao() {
@@ -319,13 +319,13 @@ public class UnitTestUtils {
 
     /**
      * Creates an info type with the given name.
-     * 
+     *
      * @param name the name of the info type.
      * @return the info type.
      */
     public static InfoType createInfoType(String name) {
         InfoType infoType = new InfoType();
-        infoType.setId(ImportUtils.generateId("it"));
+        infoType.setId(ImportUtils.generateId());
         infoType.setName(name);
         infoType.setLabel("label of info type " + name);
         infoType.setDescription("description of info type " + name);
@@ -334,7 +334,7 @@ public class UnitTestUtils {
 
     /**
      * Generates a mock data format DAO containing a set of standard data formats.
-     * 
+     *
      * @return the DAO.
      */
     public static MockDataFormatDao createMockDataFormatDao() {
@@ -347,13 +347,13 @@ public class UnitTestUtils {
 
     /**
      * Creates a data format with the given name.
-     * 
+     *
      * @param name the data format name.
      * @return the data format.
      */
     public static DataFormat createDataFormat(String name) {
         DataFormat dataFormat = new DataFormat();
-        dataFormat.setGuid(ImportUtils.generateId("df"));
+        dataFormat.setGuid(ImportUtils.generateId());
         dataFormat.setName(name);
         dataFormat.setLabel("label of info type " + name);
 
@@ -362,7 +362,7 @@ public class UnitTestUtils {
 
     /**
      * Generates a mock multiplicity DAO containing a set of standard multiplicities.
-     * 
+     *
      * @return the mock multiplicity DAO.
      */
     public static MockMultiplicityDao createMockMultiplicityDao() {
@@ -373,7 +373,7 @@ public class UnitTestUtils {
 
     /**
      * Adds a set of standard multiplicities to the given multiplicity DAO.
-     * 
+     *
      * @param dao the multiplicity DAO.
      */
     public static void initializeMultiplicityDao(MockMultiplicityDao dao) {
@@ -384,13 +384,13 @@ public class UnitTestUtils {
 
     /**
      * Creates a multiplicity with the given name.
-     * 
+     *
      * @param name the multiplicity name.
      * @return the multiplicity.
      */
     public static Multiplicity createMultiplicity(String name) {
         Multiplicity multiplicity = new Multiplicity();
-        multiplicity.setId(ImportUtils.generateId("m"));
+        multiplicity.setId(ImportUtils.generateId());
         multiplicity.setName(name);
         multiplicity.setLabel("label of multiplicity " + name);
         multiplicity.setDescription("description of multiplicity " + name);
@@ -399,7 +399,7 @@ public class UnitTestUtils {
 
     /**
      * Adds the set of standard data sources to a mock data source DAO.
-     * 
+     *
      * @param dao the mock data source DAO.
      */
     public static void initializeDataSourceDao(MockDataSourceDao dao) {
@@ -410,7 +410,7 @@ public class UnitTestUtils {
 
     /**
      * Creates a data source with the given name.
-     * 
+     *
      * @param name the data source name.
      * @return the data source.
      */
@@ -425,7 +425,7 @@ public class UnitTestUtils {
 
     /**
      * Creates a deployed component with the given name and identifier.
-     * 
+     *
      * @param name the deployed component name.
      * @param id the deployed component identifier.
      * @return the deployed component.
@@ -448,7 +448,7 @@ public class UnitTestUtils {
 
     /**
      * Creates a deployed component with the given identifier, name and location.
-     * 
+     *
      * @param id the deployed component identifier.
      * @param name the deployed component name.
      * @param location the deployed component location.
@@ -470,7 +470,7 @@ public class UnitTestUtils {
 
     /**
      * Creates a tool type with a known name.
-     * 
+     *
      * @param name the name to use.
      * @return the tool type.
      * @throws UnknownToolTypeException if the given name isn't in the list of known tool names.
@@ -486,7 +486,7 @@ public class UnitTestUtils {
 
     /**
      * Initializes a tool type DAO for testing.
-     * 
+     *
      * @param dao the DAO to initialize.
      */
     public static void initToolTypeDao(ToolTypeDao dao) {
@@ -497,7 +497,7 @@ public class UnitTestUtils {
 
     /**
      * Creates a new tool type with the given name.
-     * 
+     *
      * @param name the tool type name.
      * @return the tool type.
      */
@@ -507,7 +507,7 @@ public class UnitTestUtils {
 
     /**
      * Creates a new tool type with the given id and name.
-     * 
+     *
      * @param id the tool type identifier.
      * @param name the tool type name.
      * @return the tool type.
@@ -523,7 +523,7 @@ public class UnitTestUtils {
 
     /**
      * Creates an analysis with one or more transformation steps.
-     * 
+     *
      * @param name the analysis name.
      * @param templateIds the list of template identifiers for the transformation steps.
      * @return the analysis.
@@ -538,7 +538,7 @@ public class UnitTestUtils {
 
     /**
      * Creates a transformation step for the template with the given identifier.
-     * 
+     *
      * @param templateId the template identifier.
      * @return the transformation step.
      */
@@ -551,7 +551,7 @@ public class UnitTestUtils {
 
     /**
      * Creates a transformation for the template with the given identifier.
-     * 
+     *
      * @param templateId the template identifier.
      * @return the transformation.
      */
@@ -560,10 +560,10 @@ public class UnitTestUtils {
         transformation.setTemplate_id(templateId);
         return transformation;
     }
-    
+
     /**
      * Creates a workspace for testing.
-     * 
+     *
      * @param username the username.
      * @param rootAnalysisGroupId the root analysis group identifier.
      * @return the workspace.
@@ -579,7 +579,7 @@ public class UnitTestUtils {
 
     /**
      * Creates a user.
-     * 
+     *
      * @param username the user name.
      * @return the user.
      */
@@ -591,7 +591,7 @@ public class UnitTestUtils {
 
     /**
      * Creates a template group.
-     * 
+     *
      * @param name the template group name.
      * @return the template group.
      */
@@ -604,7 +604,7 @@ public class UnitTestUtils {
 
     /**
      * Generates a long string.
-     * 
+     *
      * @param len the required string length.
      * @return the string.
      */

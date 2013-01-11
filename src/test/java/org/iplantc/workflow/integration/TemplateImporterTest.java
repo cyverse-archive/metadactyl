@@ -365,8 +365,8 @@ public class TemplateImporterTest {
         assertEquals(4, template.getPropertyGroups().size());
         assertEquals(2, template.getOutputs().size());
 
-        PropertyGroup pgrp = null;
-        Property prop = null;
+        PropertyGroup pgrp;
+        Property prop;
 
         pgrp = tmpl.getPropertyGroups().get(0);
         assertEquals("group1", pgrp.getId());
@@ -605,7 +605,7 @@ public class TemplateImporterTest {
         assertEquals(1, getMockTemplateDao().getSavedObjects().size());
 
         Template template = getMockTemplateDao().getSavedObjects().get(0);
-        assertTrue(template.getId().matches("t[0-9a-f]{32}"));
+        assertTrue(template.getId().matches("[-0-9A-F]{36}"));
         assertEquals("", template.getName());
         assertEquals("componentid", template.getComponent());
         assertEquals("templatetype", template.getTemplateType());
@@ -624,7 +624,7 @@ public class TemplateImporterTest {
         assertEquals("", input.getDescription());
 
         PropertyGroup propertyGroup = template.getPropertyGroups().get(0);
-        assertTrue(propertyGroup.getId().matches("g[0-9a-f]{32}"));
+        assertTrue(propertyGroup.getId().matches("[-0-9A-F]{36}"));
         assertEquals("", propertyGroup.getName());
         assertEquals("", propertyGroup.getLabel());
         assertEquals("grouptype", propertyGroup.getGroupType());
@@ -632,7 +632,7 @@ public class TemplateImporterTest {
         assertEquals(3, propertyGroup.getProperties().size());
 
         Property property = propertyGroup.getProperties().get(1);
-        assertTrue(property.getId().matches("p[0-9a-f]{32}"));
+        assertTrue(property.getId().matches("[-0-9A-F]{36}"));
         assertEquals("", property.getName());
         assertSame(getMockPropertyTypeDao().findUniqueInstanceByName("propertytypename"), property.getPropertyType());
         assertEquals("", property.getLabel());
@@ -644,7 +644,7 @@ public class TemplateImporterTest {
         assertNotNull(property.getValidator());
 
         Validator validator = property.getValidator();
-        assertTrue(validator.getId().matches("v[0-9a-f]{32}"));
+        assertTrue(validator.getId().matches("[-0-9A-F]{36}"));
         assertEquals("", validator.getName());
         assertFalse(validator.isRequired());
         assertEquals(1, validator.getRules().size());
@@ -677,7 +677,7 @@ public class TemplateImporterTest {
         assertEquals(1, getMockTemplateDao().getSavedObjects().size());
 
         Template template = getMockTemplateDao().getSavedObjects().get(0);
-        assertTrue(template.getId().matches("t[0-9a-f]{32}"));
+        assertTrue(template.getId().matches("[-0-9A-F]{36}"));
         assertEquals(0, template.getInputs().size());
     }
 
@@ -954,7 +954,7 @@ public class TemplateImporterTest {
         assertEquals(1, template1.getPropertyGroups().size());
 
         Template template2 = getMockTemplateDao().getSavedObjects().get(1);
-        assertTrue(template2.getId().matches("t[0-9a-f]{32}"));
+        assertTrue(template2.getId().matches("[-0-9A-F]{36}"));
         assertEquals("", template2.getName());
         assertEquals("componentid", template2.getComponent());
         assertEquals("templatetype", template2.getTemplateType());
@@ -972,7 +972,7 @@ public class TemplateImporterTest {
         assertEquals(1, template2.getPropertyGroups().size());
 
         PropertyGroup propertyGroup2 = template2.getPropertyGroups().get(0);
-        assertTrue(propertyGroup2.getId().matches("g[0-9a-f]{32}"));
+        assertTrue(propertyGroup2.getId().matches("[-0-9A-F]{36}"));
         assertEquals("", propertyGroup2.getName());
         assertEquals("", propertyGroup2.getLabel());
         assertEquals("grouptype", propertyGroup2.getGroupType());
@@ -980,7 +980,7 @@ public class TemplateImporterTest {
         assertEquals(3, propertyGroup2.getProperties().size());
 
         Property property2 = propertyGroup2.getProperties().get(1);
-        assertTrue(property2.getId().matches("p[0-9a-f]{32}"));
+        assertTrue(property2.getId().matches("[-0-9A-F]{36}"));
         assertEquals("", property2.getName());
         assertSame(getMockPropertyTypeDao().findUniqueInstanceByName("propertytypename"), property2.getPropertyType());
         assertEquals("", property2.getLabel());
@@ -990,7 +990,7 @@ public class TemplateImporterTest {
         assertNotNull(property2.getValidator());
 
         Validator validator2 = property2.getValidator();
-        assertTrue(validator2.getId().matches("v[0-9a-f]{32}"));
+        assertTrue(validator2.getId().matches("[-0-9A-F]{36}"));
         assertEquals("validatorname", validator2.getName());
         assertFalse(validator2.isRequired());
         assertEquals(1, validator2.getRules().size());

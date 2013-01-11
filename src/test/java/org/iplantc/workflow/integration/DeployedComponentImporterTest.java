@@ -20,7 +20,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for org.iplantc.workflow.create.DeployedComponentImporter.
- * 
+ *
  * @author Dennis Roberts
  */
 public class DeployedComponentImporterTest {
@@ -47,7 +47,7 @@ public class DeployedComponentImporterTest {
 
     /**
      * Verifies that we can import a fully specified component.
-     * 
+     *
      * @throws JSONException if we try to use an invalid attribute name.
      */
     @Test
@@ -67,7 +67,7 @@ public class DeployedComponentImporterTest {
 
     /**
      * Verifies that we can import a minimally specified component.
-     * 
+     *
      * @throws JSONException if we try to use an invalid attribute name.
      */
     @Test
@@ -76,7 +76,7 @@ public class DeployedComponentImporterTest {
         deployedComponentImporter.importObject(json);
         assertEquals(1, daoFactory.getMockDeployedComponentDao().getSavedObjects().size());
         DeployedComponent component = daoFactory.getMockDeployedComponentDao().getSavedObjects().get(0);
-        assertTrue(component.getId().matches("c[0-9a-f]{32}"));
+        assertTrue(component.getId().matches("[-0-9A-F]{36}"));
         assertEquals("name", component.getName());
         assertEquals("location", component.getLocation());
         assertEquals("executable", component.getType());
@@ -87,7 +87,7 @@ public class DeployedComponentImporterTest {
 
     /**
      * Verifies that the importer will match an existing component on name and location.
-     * 
+     *
      * @throws JSONException if we try to use an invalid attribute name.
      */
     @Test
@@ -106,7 +106,7 @@ public class DeployedComponentImporterTest {
 
     /**
      * Verifies that the importer will not match an existing component on name alone.
-     * 
+     *
      * @throws JSONException if we try to use an invalid attribute name.
      */
     @Test
@@ -121,7 +121,7 @@ public class DeployedComponentImporterTest {
 
     /**
      * Verifies that the importer will not match an existing component on location alone.
-     * 
+     *
      * @throws JSONException if we try to use an invalid attribute name.
      */
     @Test
@@ -137,7 +137,7 @@ public class DeployedComponentImporterTest {
     /**
      * Verifies that the importer will always match an existing component by identifier, even if the name, location
      * or both change.
-     * 
+     *
      * @throws JSONException if we try to use an invalid attribute name.
      */
     @Test
@@ -152,7 +152,7 @@ public class DeployedComponentImporterTest {
 
     /**
      * Verifies that a missing name generates an exception.
-     * 
+     *
      * @throws JSONException if the JSON we try to submit is invalid.
      */
     @Test(expected = JSONException.class)
@@ -163,7 +163,7 @@ public class DeployedComponentImporterTest {
 
     /**
      * Verifies that a missing location generates an exception.
-     * 
+     *
      * @throws JSONException if the JSON we try to submit is invalid.
      */
     @Test(expected = JSONException.class)
@@ -174,7 +174,7 @@ public class DeployedComponentImporterTest {
 
     /**
      * Verifies that a missing type generates an exception.
-     * 
+     *
      * @throws JSONException if the JSON we try to submit is invalid.
      */
     @Test(expected = JSONException.class)
@@ -185,7 +185,7 @@ public class DeployedComponentImporterTest {
 
     /**
      * Verifies that an unknown deployed component type generates an exception.
-     * 
+     *
      * @throws UnknownToolTypeException if the tool type isn't found (expected result).
      * @throws JSONException if a JSON error occurs.
      */
@@ -197,7 +197,7 @@ public class DeployedComponentImporterTest {
 
     /**
      * Verifies that we can import multiple components at once.
-     * 
+     *
      * @throws JSONException if we try to use an invalid attribute name.
      */
     @Test
@@ -216,7 +216,7 @@ public class DeployedComponentImporterTest {
         assertEquals("blarg", component1.getDescription());
         assertEquals("glarb", component1.getVersion());
         assertEquals("quux", component1.getAttribution());
-        assertTrue(component2.getId().matches("c[0-9a-f]{32}"));
+        assertTrue(component2.getId().matches("[-0-9A-F]{36}"));
         assertEquals("name", component2.getName());
         assertEquals("location", component2.getLocation());
         assertEquals("fAPI", component2.getType());
@@ -227,7 +227,7 @@ public class DeployedComponentImporterTest {
 
     /**
      * Verifies that the importer will register deployed components if a registry is specified.
-     * 
+     *
      * @throws JSONException if we try to use an invalid attribute name.
      */
     @Test
@@ -241,7 +241,7 @@ public class DeployedComponentImporterTest {
 
     /**
      * Verifies that the importer will register deployed components when a list of deployed components is being created.
-     * 
+     *
      * @throws JSONException if we try to use an invalid attribute name.
      */
     @Test
@@ -260,7 +260,7 @@ public class DeployedComponentImporterTest {
     /**
      * Verifies that the importer silently ignore attempts to replace an existing deployed component if replacement is
      * disabled.
-     * 
+     *
      * @throws JSONException if we try to use an invalid attribute name.
      */
     @Test
@@ -276,7 +276,7 @@ public class DeployedComponentImporterTest {
     /**
      * Verifies that the importer still registers a duplicate deployed component in the registry, even if no update is
      * performed.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      */
     @Test
@@ -294,7 +294,7 @@ public class DeployedComponentImporterTest {
     /**
      * Verifies that the importer silently ignore attempts to replace an existing deployed component if replacement is
      * disabled.
-     * 
+     *
      * @throws JSONException if we try to use an invalid attribute name.
      */
     @Test
@@ -311,7 +311,7 @@ public class DeployedComponentImporterTest {
     /**
      * Verifies that the importer still registers a duplicate deployed component in the registry, even if no update is
      * performed.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      */
     @Test
@@ -328,7 +328,7 @@ public class DeployedComponentImporterTest {
 
     /**
      * Verifies that the importer will replace an existing deployed component if it's configured to do so.
-     * 
+     *
      * @throws JSONException if we try to use an invalid attribute name.
      */
     @Test
@@ -344,7 +344,7 @@ public class DeployedComponentImporterTest {
 
     /**
      * Verifies that the importer will add an existing deployed component to the registry if it's updated.
-     * 
+     *
      * @throws JSONException if we try to use an invalid attribute name.
      */
     @Test
@@ -361,7 +361,7 @@ public class DeployedComponentImporterTest {
 
     /**
      * Generates the JSON object to pass to the import service.
-     * 
+     *
      * @param id the component identifier.
      * @param name the component name.
      * @param location the component location.
@@ -395,7 +395,7 @@ public class DeployedComponentImporterTest {
 
     /**
      * Adds a value to a JSON object if the value is not null.
-     * 
+     *
      * @param json the JSON object.
      * @param name the name of the value.
      * @param value the actual value.

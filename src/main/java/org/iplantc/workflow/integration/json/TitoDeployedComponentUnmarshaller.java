@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 /**
  * Used to convert JSON documents describing deployed components to Deployed Components.
- * 
+ *
  * @author Dennis Roberts
  */
 public class TitoDeployedComponentUnmarshaller extends AbstractTitoDataFileUnmarshaller<DeployedComponentDataFile>
@@ -31,7 +31,7 @@ public class TitoDeployedComponentUnmarshaller extends AbstractTitoDataFileUnmar
 
     /**
      * Creates a new deployed component from the given JSON object.
-     * 
+     *
      * @param json the JSON object describing the deployed component.
      * @return the deployed component.
      * @throws JSONException if the JSON object is missing a required attribute.
@@ -39,7 +39,7 @@ public class TitoDeployedComponentUnmarshaller extends AbstractTitoDataFileUnmar
     @Override
     public DeployedComponent fromJson(JSONObject json) throws JSONException {
         DeployedComponent deployedComponent = new DeployedComponent();
-        deployedComponent.setId(ImportUtils.getId(json, "id", "c"));
+        deployedComponent.setId(ImportUtils.getId(json, "id"));
         deployedComponent.setName(json.getString("name"));
         deployedComponent.setToolType(getToolType(json.getString("type")));
         deployedComponent.setLocation(json.getString("location"));
@@ -55,7 +55,7 @@ public class TitoDeployedComponentUnmarshaller extends AbstractTitoDataFileUnmar
 
     /**
      * Gets the selected tool type for the deployed component.
-     * 
+     *
      * @param name the tool type name.
      * @return the tool type.
      * @throws UnknownToolTypeException if a matching tool type isn't found.
@@ -71,7 +71,7 @@ public class TitoDeployedComponentUnmarshaller extends AbstractTitoDataFileUnmar
     /**
 	 * Gets the integration datum for the deployed component.  If a matching integration datum already exists then that
 	 * one will be used.  Otherwise, a new integration datum will be created.
-	 * 
+	 *
 	 * @param json the JSON object representing the deployed component.
 	 * @return the integration datum.
 	 * @throws JSONException if a JSON error occurs.
