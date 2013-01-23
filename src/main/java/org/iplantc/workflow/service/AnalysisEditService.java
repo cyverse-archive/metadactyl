@@ -301,6 +301,7 @@ public class AnalysisEditService {
             analysis.put("name", "Copy of " + analysis.getString("name"));
             analysis.put("implementation", marshaller.toJson(createIntegrationDatum(userDetails)));
             analysis.put("user", userDetails.getShortUsername());
+            analysis.put("full_username", userDetails.getUsername());
         }
         catch (JSONException e) {
             throw new WorkflowException("unable to convert analysis", e);
