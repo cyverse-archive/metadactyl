@@ -18,7 +18,7 @@
         <property name="wikiurl" column="wikiurl" />
         <property name="integrationDate" column="integration_date" not-null="false" />
         <property name="editedDate" column="edited_date" not-null="false" />
-        
+
 		<list name="mappings" table="transformation_activity_mappings"
 			cascade="all-delete-orphan">
 			<key column="transformation_activity_id" />
@@ -32,29 +32,29 @@
 			<list-index column="hid" />
 			<many-to-many class="org.iplantc.persistence.dto.step.TransformationStep" column="transformation_step_id" />
 		</list>
-        
-        <many-to-one name="integrationDatum" 
+
+        <many-to-one name="integrationDatum"
                      column="integration_data_id"
                      cascade="save-update"
-                     class="org.iplantc.persistence.dto.data.IntegrationDatum" 
+                     class="org.iplantc.persistence.dto.data.IntegrationDatum"
                      not-null="true" />
-                     
+
          <set name="ratings" table="ratings" cascade="all-delete-orphan">
              <key column="transformation_activity_id" not-null="true" />
              <one-to-many class="Rating" />
          </set>
-         
+
          <set name="references" table="tranformation_activity_references" cascade="all-delete-orphan">
              <key column="transformation_activity_id" not-null='true' />
              <one-to-many class='TransformationActivityReference' />
          </set>
-         
+
          <set name='suggestedGroups' table='suggested_groups' cascade='all'>
              <key column='transformation_activity_id' not-null='true' />
              <many-to-many class='org.iplantc.workflow.template.groups.TemplateGroup' unique="true" column="template_group_id" />
          </set>
 
-         <set name="jobTypeNames" table="analysis_job_types" cascade="none">
+         <set name="jobTypeNames" table="analysis_job_types" inverse="true">
              <key column="analysis_id" not-null="true" />
              <element column="job_type" type="string" />
          </set>
