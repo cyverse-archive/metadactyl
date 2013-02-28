@@ -161,24 +161,24 @@ public class UiAnalysisMarshaler {
     }
 
     private boolean outputPropertyVisible(TransformationActivity analysis, TransformationStep step, Property prop) {
-        return !propertyVisible(analysis, step, prop) ? false
-                : step.getTransformation().containsProperty(prop.getDataObject().getId()) ? false
-                : analysis.isSourceInMapping(step.getName(), prop.getDataObject().getId()) ? false
-                : prop.getDataObject().isImplicit() ? false
-                : true;
+        return !propertyVisible(analysis, step, prop)                                   ? false
+             : step.getTransformation().containsProperty(prop.getDataObject().getId())  ? false
+             : analysis.isSourceInMapping(step.getName(), prop.getDataObject().getId()) ? false
+             : prop.getDataObject().isImplicit()                                        ? false
+             :                                                                            true;
     }
 
     private boolean inputPropertyVisible(TransformationActivity analysis, TransformationStep step, Property prop) {
-        return !propertyVisible(analysis, step, prop) ? false
-                : step.getTransformation().containsProperty(prop.getDataObject().getId()) ? false
-                : analysis.isTargetInMapping(step.getName(), prop.getDataObject().getId()) ? false
-                : true;
+        return !propertyVisible(analysis, step, prop)                                   ? false
+             : step.getTransformation().containsProperty(prop.getDataObject().getId())  ? false
+             : analysis.isTargetInMapping(step.getName(), prop.getDataObject().getId()) ? false
+             :                                                                            true;
     }
 
     private boolean propertyVisible(TransformationActivity analysis, TransformationStep step, Property prop) {
         return step.getTransformation().containsProperty(prop.getId()) ? false
-                : !prop.getIsVisible() ? false
-                : true;
+             : !prop.getIsVisible()                                    ? false
+             :                                                           true;
     }
 
     private JSONObject marshalValidator(String stepName, Validator validator) throws JSONException {
