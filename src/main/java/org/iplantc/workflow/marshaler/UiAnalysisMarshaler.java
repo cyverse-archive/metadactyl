@@ -163,7 +163,7 @@ public class UiAnalysisMarshaler {
     private boolean outputPropertyVisible(TransformationActivity analysis, TransformationStep step, Property prop) {
         return !propertyVisible(analysis, step, prop)                                   ? false
              : step.getTransformation().containsProperty(prop.getDataObject().getId())  ? false
-             : analysis.isSourceInMapping(step.getName(), prop.getDataObject().getId()) ? false
+             : analysis.isTargetInMapping(step.getName(), prop.getDataObject().getId()) ? false
              : prop.getDataObject().isImplicit()                                        ? false
              :                                                                            true;
     }
