@@ -1,4 +1,4 @@
-package org.iplantc.workflow.marshaller;
+package org.iplantc.workflow.marshaler;
 
 import java.util.LinkedList;
 import org.iplantc.workflow.data.DataObject;
@@ -7,7 +7,7 @@ import org.iplantc.workflow.model.Validator;
 
 /**
  * Utility methods for marshaling the JSON that is sent to the UI.
- * 
+ *
  * @author Dennis Roberts
  */
 public class UiMarshalingUtils {
@@ -20,7 +20,7 @@ public class UiMarshalingUtils {
 
     /**
      * Generates the validator for a data object.
-     * 
+     *
      * @param dataObject the data object.
      * @return the validator.
      */

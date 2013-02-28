@@ -5,13 +5,13 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.workflow.WorkflowException;
-import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
+import org.iplantc.workflow.marshaler.BaseTemplateMarshaller;
 import org.iplantc.workflow.model.WorkflowElement;
 import org.springframework.util.ObjectUtils;
 
 /**
  * Represents an input to or an output from a tool.
- * 
+ *
  * @author Dennis Roberts
  */
 public class ToolInputOutput extends WorkflowElement {
@@ -45,7 +45,7 @@ public class ToolInputOutput extends WorkflowElement {
 
     /**
      * Creates an input/output place holder with the given id, name, label and description
-     * 
+     *
      * @param id the place holder identifier.
      * @param name the place holder name.
      * @param label the place holder label.
@@ -114,7 +114,7 @@ public class ToolInputOutput extends WorkflowElement {
 
     /**
      * Adds a new data object to the list of supported data objects.
-     * 
+     *
      * @param dataObject
      */
     public void addSupportedDataObject(DataObject dataObject) {

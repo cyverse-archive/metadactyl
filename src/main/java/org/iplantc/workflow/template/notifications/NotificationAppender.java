@@ -4,8 +4,8 @@ import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
 import org.iplantc.hibernate.util.HibernateAccessor;
-import org.iplantc.workflow.marshaller.NotificationMarshaller;
-import org.iplantc.workflow.marshaller.TemplateMarshaller;
+import org.iplantc.workflow.marshaler.NotificationMarshaller;
+import org.iplantc.workflow.marshaler.TemplateMarshaller;
 import org.iplantc.workflow.model.Template;
 
 public class NotificationAppender extends HibernateAccessor {
@@ -24,7 +24,7 @@ public class NotificationAppender extends HibernateAccessor {
 		retriever.setSessionFactory(getSessionFactory());
 
 		NotificationSet set = retriever.retrieveNotificationSetByTemplateId(template.getId());
-		
+
 		if(set!=null){
 			NotificationMarshaller marshaller2 = new NotificationMarshaller();
 

@@ -5,7 +5,7 @@ import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistry;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistryImpl;
-import org.iplantc.workflow.marshaller.UiAnalysisMarshaller;
+import org.iplantc.workflow.marshaler.UiAnalysisMarshaler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +13,7 @@ import org.json.JSONObject;
 /**
  * Used to convert JSON documents in the format consumed by the analysis import service to documents in the format
  * required by the DE.
- * 
+ *
  * @author Dennis Roberts
  */
 public class WorkflowPreviewer {
@@ -61,7 +61,7 @@ public class WorkflowPreviewer {
     /**
      * Used to generate the outgoing JSON.
      */
-    private UiAnalysisMarshaller marshaller;
+    private UiAnalysisMarshaler marshaller;
 
     /**
      * @param daoFactory the factory used to create data access objects.
@@ -77,9 +77,8 @@ public class WorkflowPreviewer {
      * Initializes the object used to generate the outgoing JSON.
      */
     private void initializeMarshaller() {
-        marshaller = new UiAnalysisMarshaller(daoFactory);
+        marshaller = new UiAnalysisMarshaler(daoFactory);
         marshaller.setRegistry(idRegistry);
-        marshaller.includeNotificationSet();
     }
 
     /**
@@ -132,7 +131,7 @@ public class WorkflowPreviewer {
 
     /**
      * Adds the registries to the given object loader.
-     * 
+     *
      * @param loader the loader to add the registries to.
      */
     private void addRegistries(ObjectLoader loader) {
@@ -150,7 +149,7 @@ public class WorkflowPreviewer {
 
     /**
      * Performs the JSON object conversion.
-     * 
+     *
      * @param json the original JSON object.
      * @return the the updated JSON object.
      * @throws JSONException if the original JSON object doesn't meet the requirements.
@@ -163,7 +162,7 @@ public class WorkflowPreviewer {
     /**
      * Previews an individual template. A single-step analysis will be generated for the template that is being
      * previewed.
-     * 
+     *
      * @param json the original JSON object.
      * @return the updated JSON object.
      * @throws JSONException if the original JSON object doesn't meet the requirements.
@@ -175,7 +174,7 @@ public class WorkflowPreviewer {
 
     /**
      * Loads the objects from the incoming JSON object.
-     * 
+     *
      * @param json the incoming JSON object.
      * @throws JSONException if the original JSON doesn't meet the requirements.
      */
@@ -188,7 +187,7 @@ public class WorkflowPreviewer {
 
     /**
      * Marshalls the analyses that have been loaded.
-     * 
+     *
      * @return the marshalled analyses.
      * @throws WorkflowException if the analysis can't be marshalled.
      */
@@ -197,7 +196,7 @@ public class WorkflowPreviewer {
         JSONArray array = new JSONArray();
         try {
             for (TransformationActivity analysis : nameRegistry.getRegisteredObjects(TransformationActivity.class)) {
-                array.put(marshaller.marshall(analysis));
+                array.put(marshaller.marshal(analysis));
             }
             json.put("analyses", array);
         }

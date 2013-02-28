@@ -1,4 +1,4 @@
-package org.iplantc.workflow.marshaller;
+package org.iplantc.workflow.marshaler;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,14 +24,14 @@ import net.sf.json.JSONObject;
  * way to unmarshall workflows in various formats because unmarshalling a workflow is something that we shouldn't
  * have to do very often, and we should only have to unmarshall workflows in one format. If this changes at some
  * point in the future, then this class will have to be generalized in some way.
- * 
+ *
  * @author Dennis Roberts
  */
 public class TemplateUnmarshaller {
 
     /**
      * Unmarshalls a rule type from a JSON string.
-     * 
+     *
      * @param jsonString the JSON string representing the rule type.
      * @return the rule type.
      * @throws WorkflowException if the JSON is invalid.
@@ -47,7 +47,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Unmarshalls a rule type from a JSON object.
-     * 
+     *
      * @param json the JSON object representing the rule type.
      * @return the rule type.
      * @throws WorkflowException if the JSON is invalid.
@@ -65,7 +65,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Unmarshalls a rule from a JSON string.
-     * 
+     *
      * @param jsonString the JSON string representing the rule.
      * @return the rule.
      * @throws WorkflowException if the JSON is invalid.
@@ -81,7 +81,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Unmarshalls a rule from a JSON object.
-     * 
+     *
      * @param json the JSON object representing the rule.
      * @return the rule.
      * @throws WorkflowException if the JSON is invalid.
@@ -105,7 +105,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Converts a JSON array representing a list of strings to a list of strings.
-     * 
+     *
      * @param jsonArray the JSON array to convert.
      * @return the list of strings represented by the JSON array.
      */
@@ -119,7 +119,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Unmarshalls a validator from a JSON string.
-     * 
+     *
      * @param jsonString the string representing the validator.
      * @return the validator.
      * @throws WorkflowException if the JSON is invalid.
@@ -135,7 +135,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Unmarshalls a validator from a JSON object.
-     * 
+     *
      * @param json the JSON object representing the validator.
      * @return the validator.
      * @throws WorkflowException if the JSON is invalid.
@@ -156,7 +156,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Converts a JSON array to a list of rules.
-     * 
+     *
      * @param jsonArray the JSON array representing the list of rules.
      * @return the list of rules.
      */
@@ -170,7 +170,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Unmarshalls a property type from a JSON string.
-     * 
+     *
      * @param jsonString the JSON string representing the property type.
      * @return the property type.
      * @throws WorkflowException if the JSON is invalid.
@@ -186,7 +186,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Unmarshalls a property type from a JSON object.
-     * 
+     *
      * @param json the JSON object representing the property type.
      * @return the property type.
      * @throws WorkflowException if the JSON is invalid.
@@ -204,7 +204,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Unmarshalls a property from a JSON string.
-     * 
+     *
      * @param jsonString the JSON string representing the property.
      * @return the property.
      * @throws WorkflowException if the JSON is invalid.
@@ -220,7 +220,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Unmarshalls a property from a JSON object.
-     * 
+     *
      * @param json the JSON object representing the property.
      * @return the property.
      * @throws WorkflowException if the JSON is invalid.
@@ -250,7 +250,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Unmarshalls a contract type from a JSON string.
-     * 
+     *
      * @param jsonString the JSON string representing the contract type.
      * @return the contract type.
      * @throws WorkflowException if the JSON is invalid.
@@ -266,7 +266,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Unmarshalls a contract type from a JSON object.
-     * 
+     *
      * @param json the JSON object representing the contract type.
      * @return the contract type.
      * @throws WorkflowException if the JSON is invalid.
@@ -284,7 +284,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Converts a JSON object representing a list of properties to a list of properties.
-     * 
+     *
      * @param jsonArray the JSON array representing the list of properties.
      * @return the list of properties.
      */
@@ -298,7 +298,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Unmarshalls a property group from a JSON string.
-     * 
+     *
      * @param jsonString the JSON string representing the property group.
      * @return the property group.
      * @throws WorkflowException if the JSON is invalid.
@@ -314,7 +314,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Unmarshalls a property group from a JSON object.
-     * 
+     *
      * @param json the JSON object representing the property group.
      * @return the property group.
      * @throws WorkflowException if the JSON is invalid.
@@ -336,7 +336,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Unmarshalls a template from a JSON string.
-     * 
+     *
      * @param jsonString the string representing the template.
      * @return the template.
      * @throws WorkflowException if the JSON is invalid.
@@ -352,7 +352,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Unmarshalls a template from a JSON object.
-     * 
+     *
      * @param json the JSON object representing the template.
      * @return the template.
      * @throws WorkflowException if the JSON is invalid.
@@ -373,7 +373,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Converts a JSON array representing a list of templates to a list of templates.
-     * 
+     *
      * @param jsonArray the JSON array to convert.
      * @return the list of templates.
      */
@@ -387,7 +387,7 @@ public class TemplateUnmarshaller {
 
     /**
      * Converts a JSON array representing a list of property groups to a list of property groups.
-     * 
+     *
      * @param jsonArray the JSON array to convert.
      * @return the list of property groups.
      */
@@ -434,7 +434,7 @@ public class TemplateUnmarshaller {
      * </tbody>
      * </table>
      * </p>
-     * 
+     *
      * @param workflowElement the workflow element to populate.
      * @param json the JSON object to extract the attributes from.
      */

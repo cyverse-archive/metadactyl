@@ -1,5 +1,6 @@
 package org.iplantc.workflow.marshaller;
 
+import org.iplantc.workflow.marshaler.TemplateUnmarshaller;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -21,7 +22,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for org.iplantc.workflow.marshaller.WorkflowUnmarshaller.
- * 
+ *
  * @author Dennis Roberts
  */
 public class WorkflowUnmarshallerTest {
@@ -581,7 +582,7 @@ public class WorkflowUnmarshallerTest {
 
     /**
      * Creates a JSON object representing any type of workflow element.
-     * 
+     *
      * @param id the rule type identifier.
      * @param name name of the rule type.
      * @param label the label to display in the UI.
@@ -599,7 +600,7 @@ public class WorkflowUnmarshallerTest {
 
     /**
      * Adds a value to a JSON object only if that value is not null.
-     * 
+     *
      * @param json the JSON object to put the value in.
      * @param key the key used to identify the value.
      * @param value the value to put in the JSON object.

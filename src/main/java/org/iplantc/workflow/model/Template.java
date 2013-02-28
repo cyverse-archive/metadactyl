@@ -13,7 +13,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.data.DataObject;
-import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
+import org.iplantc.workflow.marshaler.BaseTemplateMarshaller;
 
 /**
  * A template used to describe the information necessary to submit a workflow to the discovery environment. A
@@ -21,7 +21,7 @@ import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
  * more jobs in the workflow and whose values may be (but are not necessarily) supplied by the user. Templates
  * may also be nested within each other in order to create complex hierarchical relationships and to provide
  * useful features such as property inheritance.
- * 
+ *
  * @author Dennis Roberts
  */
 public class Template extends WorkflowElement {
@@ -49,7 +49,7 @@ public class Template extends WorkflowElement {
 
     /**
      * Adds a property group to the list of property groups.
-     * 
+     *
      * @param propertyGroup the property group to add.
      */
     public void addPropertyGroup(PropertyGroup propertyGroup) {
@@ -67,7 +67,7 @@ public class Template extends WorkflowElement {
 
     /**
      * Sets the list of property groups. Hibernate requires a setter.
-     * 
+     *
      * @param propertyGroups the new list of property groups.
      */
     public void setPropertyGroups(List<PropertyGroup> propertyGroups) {
@@ -76,7 +76,7 @@ public class Template extends WorkflowElement {
 
     /**
      * Gets the list of property groups.
-     * 
+     *
      * @return the list of property groups.
      */
     public List<PropertyGroup> getPropertyGroups() {
@@ -85,8 +85,8 @@ public class Template extends WorkflowElement {
 
     /**
      * Sets the type of this template
-     * 
-     * 
+     *
+     *
      * @param template_type the new type of this template
      */
     public void setTemplateType(String template_type) {
@@ -103,7 +103,7 @@ public class Template extends WorkflowElement {
 
     /**
      * Sets the type of this template
-     * 
+     *
      * @param ttype the type of the template
      */
     public void setType(String ttype) {
@@ -136,7 +136,7 @@ public class Template extends WorkflowElement {
 
     /**
      * Creates a new template with the given ID, name, label and description.
-     * 
+     *
      * @param id the template identifier.
      * @param name the template name.
      * @param label the template label.
@@ -235,7 +235,7 @@ public class Template extends WorkflowElement {
     /**
      * Returns true if the property with the specified name is an input
      * DataObject
-     * 
+     *
      * @param name the property to test for
      * @return true if the property is an input dataobject, false otherwise.
      */

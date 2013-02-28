@@ -24,7 +24,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for org.iplantc.workflow.integration.AnalysisExporter.
- * 
+ *
  * @author Dennis Roberts
  */
 public class AnalysisExporterTest {
@@ -61,7 +61,7 @@ public class AnalysisExporterTest {
 
     /**
      * Saves the test notification sets to the notification set DAO.
-     * 
+     *
      * @param notificationSetDao the notification set DAO.
      */
     private void saveNotificationSets(NotificationSetDao notificationSetDao) {
@@ -70,7 +70,7 @@ public class AnalysisExporterTest {
 
     /**
      * Creates a notification set to use for testing.
-     * 
+     *
      * @return the notification set.
      */
     private NotificationSet createTestNotificationSet() {
@@ -84,7 +84,7 @@ public class AnalysisExporterTest {
 
     /**
      * Creates a notification for testing.
-     * 
+     *
      * @return the notification.
      */
     private Notification createTestNotification() {
@@ -97,7 +97,7 @@ public class AnalysisExporterTest {
 
     /**
      * Saves the test analyses to the analysis DAO.
-     * 
+     *
      * @param analysisDao the analysis DAO.
      */
     private void saveAnalyses(TransformationActivityDao analysisDao) {
@@ -107,7 +107,7 @@ public class AnalysisExporterTest {
 
     /**
      * Saves the test templates to the template DAO.
-     * 
+     *
      * @param templateDao the template DAO.
      */
     private void saveTemplates(TemplateDao templateDao) {
@@ -117,7 +117,7 @@ public class AnalysisExporterTest {
 
     /**
      * Saves the test deployed components to the deployed component DAO.
-     * 
+     *
      * @param deployedComponentDao the deployed component DAO.
      */
     private void saveDeployedComponents(DeployedComponentDao deployedComponentDao) {
@@ -127,7 +127,7 @@ public class AnalysisExporterTest {
 
     /**
      * Verifies that the exporter successfully exports a single step analysis.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      */
     @Test
@@ -153,7 +153,7 @@ public class AnalysisExporterTest {
 
     /**
      * Verifies that the exporter successfully exports a multistep analysis.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      */
     @Test
@@ -212,24 +212,8 @@ public class AnalysisExporterTest {
     }
 
     /**
-     * Verifies that we can get the list of analysis identifiers.
-     * 
-     * @throws JSONException if a JSON error occurs.
-     */
-    @Test
-    public void shouldGetAllAnalysisIds() throws JSONException {
-        JSONObject json = exporter.getAllAnalysisIds();
-        assertTrue(json.has("analysis_ids"));
-
-        JSONArray ids = json.getJSONArray("analysis_ids");
-        assertEquals(2, ids.length());
-        assertEquals("singlestepid", ids.getString(0));
-        assertEquals("multistepid", ids.getString(1));
-    }
-
-    /**
      * Verifies that the given JSON array contains a JSON object with a specific field value.
-     * 
+     *
      * @param array the JSON array.
      * @param key the key representing the field to check.
      * @param value the field value to search for.

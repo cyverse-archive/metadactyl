@@ -1,4 +1,4 @@
-package org.iplantc.workflow.marshaller;
+package org.iplantc.workflow.marshaler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import org.iplantc.workflow.util.ListUtils;
 
 /**
  * Generates input properties for reference genomes, sequences and annotations.
- * 
+ *
  * @author Dennis Roberts
  */
 public class ReferenceGenomeUiInputPropertyGenerator extends UiInputPropertyGenerator {
@@ -53,7 +53,7 @@ public class ReferenceGenomeUiInputPropertyGenerator extends UiInputPropertyGene
 
     /**
      * Creates the validation rule for reference genomes.
-     * 
+     *
      * @return the validation rule.
      */
     private Rule createReferenceGenomeValidationRule() {
@@ -69,7 +69,7 @@ public class ReferenceGenomeUiInputPropertyGenerator extends UiInputPropertyGene
 
     /**
      * Builds the argument list for the reference genome property.
-     * 
+     *
      * @return the argument list.
      */
     private List<String> buildValidationRuleArgumentList() {
@@ -88,7 +88,7 @@ public class ReferenceGenomeUiInputPropertyGenerator extends UiInputPropertyGene
 
     /**
      * Gets the rule type with the given name.
-     * 
+     *
      * @param name the name of the rule type.
      * @return the rule type.
      */

@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.iplantc.workflow.WorkflowException;
-import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
+import org.iplantc.workflow.marshaler.BaseTemplateMarshaller;
 
 /**
  * Used to validate property values that have been entered by the user.
- * 
+ *
  * @author Dennis Roberts
  */
 public class Validator extends WorkflowElement {
@@ -26,7 +26,7 @@ public class Validator extends WorkflowElement {
 
     /**
      * Sets the required flag for this validator.
-     * 
+     *
      * @param required true if the property must be populated.
      */
     public void setRequired(Boolean required) {
@@ -35,7 +35,7 @@ public class Validator extends WorkflowElement {
 
     /**
      * Indicates whether or not the property being validated is required.
-     * 
+     *
      * @return true if the property being validated must be populated.
      */
     public boolean isRequired() {
@@ -44,7 +44,7 @@ public class Validator extends WorkflowElement {
 
     /**
      * Adds a rule to the list of rules for this validator.
-     * 
+     *
      * @param rule the rule to add.
      */
     public void addRule(Rule rule) {
@@ -53,7 +53,7 @@ public class Validator extends WorkflowElement {
 
     /**
      * Sets the list of rules for this validator. Hibernate requires a setter.
-     * 
+     *
      * @param rules the new list of rules.
      */
     public void setRules(List<Rule> rules) {
@@ -62,7 +62,7 @@ public class Validator extends WorkflowElement {
 
     /**
      * Returns the list of rules.
-     * 
+     *
      * @return an unmodifiable copy of the list of rules.
      */
     public List<Rule> getRules() {
@@ -78,7 +78,7 @@ public class Validator extends WorkflowElement {
 
     /**
      * Creates a validator with the given ID, name, label, description.
-     * 
+     *
      * @param id the validator identifier.
      * @param name the validator name.
      * @param label the validator label.

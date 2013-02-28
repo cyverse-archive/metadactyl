@@ -1,12 +1,12 @@
 package org.iplantc.workflow.data;
 
 import org.iplantc.workflow.WorkflowException;
-import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
+import org.iplantc.workflow.marshaler.BaseTemplateMarshaller;
 import org.iplantc.workflow.model.WorkflowElement;
 
 /**
  * Represents the type of information contained in a data object. Some common examples are tree data and trait data.
- * 
+ *
  * @author Dennis Roberts
  */
 public class InfoType extends WorkflowElement {
@@ -58,7 +58,7 @@ public class InfoType extends WorkflowElement {
 
     /**
      * Creates a new information type object with the given ID, name, label, and description.
-     * 
+     *
      * @param id the information type identifier.
      * @param name the information type name.
      * @param label the information type label.

@@ -1,4 +1,4 @@
-package org.iplantc.workflow.marshaller;
+package org.iplantc.workflow.marshaler;
 
 import java.util.Stack;
 
@@ -18,7 +18,7 @@ public class BaseMarshaller {
 	 */
 	protected Stack<JSONObject> jsonStack = new Stack<JSONObject>();
 
-	
+
 
 	public String getMarshalledWorkflow() throws WorkflowException {
 		if (cumulativeJson == null) {
@@ -37,7 +37,7 @@ public class BaseMarshaller {
 	/**
 	 * Adds the JSON object that is currently being created an array property in the parent object if the parent
 	 * exists.
-	 * 
+	 *
 	 * @param propertyName the name of the property to use.
 	 * @param json the JSON object to to append to the parent property.
 	 * @throws JSONException if we can't append to the property.
@@ -47,10 +47,10 @@ public class BaseMarshaller {
 			jsonStack.peek().append(propertyName, json);
 		}
 	}
-	
+
 	/**
 	 * Adds the JSON object that is currently being created to the parent object if the parent exists.
-	 * 
+	 *
 	 * @param propertyName the name of the property to use.
 	 * @param json the JSON object to add to the parent.
 	 * @throws JSONException if the property can't be set.
@@ -61,11 +61,11 @@ public class BaseMarshaller {
 		}
 	}
 
-	
+
 	/**
 	 * Creates a JSON object to use in marshalling a workflow. The first JSON object that is created is treated
 	 * as the overall JSON object that we're creating.
-	 * 
+	 *
 	 * @return the JSON object
 	 */
 	protected JSONObject createJsonObject() {
@@ -75,10 +75,10 @@ public class BaseMarshaller {
 		}
 		return json;
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 }

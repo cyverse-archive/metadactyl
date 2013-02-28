@@ -1,4 +1,4 @@
-package org.iplantc.workflow.marshaller;
+package org.iplantc.workflow.marshaler;
 
 import java.util.List;
 import java.util.Stack;
@@ -22,7 +22,7 @@ import org.json.JSONObject;
 
 /**
  * Marshalls a workflow for the user interface.
- * 
+ *
  * @author Dennis Roberts
  */
 public class TemplateMarshaller implements BaseTemplateMarshaller {
@@ -255,7 +255,7 @@ public class TemplateMarshaller implements BaseTemplateMarshaller {
      * MustContain rules are given, where each rule is just a display string and the values are stored as
      * CSV fields in the property name, then the property name is cleared and the rules are reformatted
      * appropriately.
-     * 
+     *
      * @param jsonMustContain A JSONObject with a "MustContain" array of Strings.
      * @throws JSONException
      */
@@ -391,7 +391,7 @@ public class TemplateMarshaller implements BaseTemplateMarshaller {
     /**
      * Adds the JSON object that is currently being created an array property in the parent object if the parent
      * exists.
-     * 
+     *
      * @param propertyName the name of the property to use.
      * @param json the JSON object to to append to the parent property.
      * @throws JSONException if we can't append to the property.
@@ -404,7 +404,7 @@ public class TemplateMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Adds the JSON object that is currently being created to the parent object if the parent exists.
-     * 
+     *
      * @param propertyName the name of the property to use.
      * @param json the JSON object to add to the parent.
      * @throws JSONException if the property can't be set.
@@ -417,7 +417,7 @@ public class TemplateMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Adds the properties that are common to all workflow elements to the given JSON object.
-     * 
+     *
      * @param json the JSON object to add the properties to.
      * @param workflowElement the workflow elements to get the property values from.
      * @throws JSONException if one of the properties can't be set.
@@ -438,7 +438,7 @@ public class TemplateMarshaller implements BaseTemplateMarshaller {
     /**
      * Creates a JSON object to use in marshalling a workflow. The first JSON object that is created is treated
      * as the overall JSON object that we're creating.
-     * 
+     *
      * @return the JSON object
      */
     private JSONObject createJsonObject() {

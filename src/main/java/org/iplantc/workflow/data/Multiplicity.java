@@ -1,12 +1,12 @@
 package org.iplantc.workflow.data;
 
 import org.iplantc.workflow.WorkflowException;
-import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
+import org.iplantc.workflow.marshaler.BaseTemplateMarshaller;
 import org.iplantc.workflow.model.WorkflowElement;
 
 /**
- * Indicates the number and packaging of input or output files. 
- * 
+ * Indicates the number and packaging of input or output files.
+ *
  * @author Dennis Roberts
  */
 public class Multiplicity extends WorkflowElement {
@@ -18,7 +18,7 @@ public class Multiplicity extends WorkflowElement {
 
     /**
      * Sets the type of widget used to allow users to select values for input fields with this multiplicity.
-     * 
+     *
      * @param typeName the new widget type.
      */
     public void setTypeName(String typeName) {
@@ -27,7 +27,7 @@ public class Multiplicity extends WorkflowElement {
 
     /**
      * Gets the type of widget used to allow users to select values for input fields with this multiplicity.
-     * 
+     *
      * @return the widget type.
      */
     public String getTypeName() {

@@ -1,4 +1,4 @@
-package org.iplantc.workflow.marshaller;
+package org.iplantc.workflow.marshaler;
 
 import org.iplantc.persistence.dto.step.TransformationStep;
 import org.iplantc.workflow.WorkflowException;
@@ -21,7 +21,7 @@ public class WorkflowMarshaller extends BaseMarshaller {
 			throw new WorkflowException(ex);
 		}
 	}
-	
+
 	public void leave(TransformationActivity workflow) throws WorkflowException {
 		jsonStack.pop();
 	}
@@ -29,20 +29,20 @@ public class WorkflowMarshaller extends BaseMarshaller {
 	public void visit(TransformationStep step) throws WorkflowException{
         try {
 			JSONObject json = new JSONObject();
-			
+
 			json.put("id", step.getId());
 			json.put("name", step.getName());
 			json.put("description", step.getDescription());
-			
+
 			appendToParentProperty("steps", json);
-			
+
 			jsonStack.push(json);
-			
+
 		} catch(Exception e) {
 			throw new WorkflowException(e);
 		}
 	}
-	
+
 	public void leave(TransformationStep step) throws WorkflowException {
 		jsonStack.pop();
 	}

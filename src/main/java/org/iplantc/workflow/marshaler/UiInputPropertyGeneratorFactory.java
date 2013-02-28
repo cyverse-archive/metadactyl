@@ -1,4 +1,4 @@
-package org.iplantc.workflow.marshaller;
+package org.iplantc.workflow.marshaler;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -9,7 +9,7 @@ import org.iplantc.workflow.dao.DaoFactory;
 
 /**
  * Used to get property generators for specific types of data objects.
- * 
+ *
  * @author Dennis Roberts
  */
 public class UiInputPropertyGeneratorFactory {
@@ -42,7 +42,7 @@ public class UiInputPropertyGeneratorFactory {
 
     /**
      * Gets the UI input property generator for the given info type name.
-     * 
+     *
      * @param infoTypeName the info type name.
      * @return the UI input property generator.
      */
@@ -57,7 +57,7 @@ public class UiInputPropertyGeneratorFactory {
 
     /**
      * Creates the new generator.
-     * 
+     *
      * @param constructor the constructor used to create the generator.
      * @return the generator.
      */
@@ -78,7 +78,7 @@ public class UiInputPropertyGeneratorFactory {
 
     /**
      * Gets the constructor to call for the given class.
-     * 
+     *
      * @param clazz the class.
      * @return the constructor.
      */

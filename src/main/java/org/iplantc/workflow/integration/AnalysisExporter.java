@@ -26,7 +26,7 @@ import org.json.JSONObject;
 
 /**
  * Used to export existing analyses in the database to JSON.
- * 
+ *
  * @author Dennis Roberts
  */
 public class AnalysisExporter {
@@ -76,7 +76,7 @@ public class AnalysisExporter {
 
     /**
      * Exports the analysis with the given identifier.
-     * 
+     *
      * @param analysisId the analysis identifier.
      * @return a JSON object representing the analysis and all external elements used by it.
      */
@@ -91,29 +91,8 @@ public class AnalysisExporter {
     }
 
     /**
-     * Gets the identifiers of all analyses in the database.
-     * 
-     * @return a JSON object containing a list of analysis identifiers.
-     */
-    public JSONObject getAllAnalysisIds() {
-        try {
-            JSONObject result = new JSONObject();
-            result.put("analysis_ids", ListUtils.map(new Lambda<TransformationActivity, String>() {
-                @Override
-                public String call(TransformationActivity arg) {
-                    return arg.getId();
-                }
-            }, daoFactory.getTransformationActivityDao().getOnlyAnalysesReferencingValidDeployedComponents()));
-            return result;
-        }
-        catch (JSONException e) {
-            throw new WorkflowException("error producing JSON object", e);
-        }
-    }
-
-    /**
      * Loads the analysis with the given identifier.
-     * 
+     *
      * @param analysisId the analysis identifier.
      * @return the analysis.
      * @throws WorkflowException if the analysis isn't found.
@@ -128,7 +107,7 @@ public class AnalysisExporter {
 
     /**
      * Exports an analysis.
-     * 
+     *
      * @param analysis the analysis to export.
      * @return a JSON object representing the analysis and all external elements used by it.
      * @throws JSONException if a JSON error occurs.
@@ -148,7 +127,7 @@ public class AnalysisExporter {
 
     /**
      * Marshals a collection of workflow elements.
-     * 
+     *
      * @param <T> the type of workflow element being marshaled.
      * @param marshaller the marshaller used to marshal the elements.
      * @param elements the collection of elements.
@@ -167,7 +146,7 @@ public class AnalysisExporter {
 
     /**
      * Loads the notification sets for the given analysis.
-     * 
+     *
      * @param analysis the analysis.
      * @return the list of notification sets.
      */
@@ -177,7 +156,7 @@ public class AnalysisExporter {
 
     /**
      * Loads the deployed components with the given identifiers.
-     * 
+     *
      * @param componentIds the set of deployed component identifiers.
      * @return the set of deployed components.
      */
@@ -191,7 +170,7 @@ public class AnalysisExporter {
 
     /**
      * Loads the component with the given identifier.
-     * 
+     *
      * @param componentId the component identifier.
      * @return the component identifier.
      * @throws WorkflowException if the component can't be found.
@@ -207,7 +186,7 @@ public class AnalysisExporter {
     /**
      * Extracts the set of component identifiers used by the given set of templates. Any duplicates will be removed
      * by virtue of the fact that a set is being returned.
-     * 
+     *
      * @param templates the set of templates.
      * @return the set of component identifiers.
      */
@@ -221,7 +200,7 @@ public class AnalysisExporter {
 
     /**
      * Loads the templates in the given analysis.
-     * 
+     *
      * @param analysis the analysis.
      * @return the set of templates.
      */
@@ -235,7 +214,7 @@ public class AnalysisExporter {
 
     /**
      * Loads the template with the given identifier.
-     * 
+     *
      * @param templateId the template identifier.
      * @return the template.
      * @throws WorkflowException if the template can't be loaded.

@@ -1,4 +1,4 @@
-package org.iplantc.workflow.marshaller;
+package org.iplantc.workflow.marshaler;
 
 import org.iplantc.workflow.core.TransformationActivity;
 
@@ -37,7 +37,7 @@ public class WorkflowUnmarshaller extends BaseMarshaller {
 
 		step.setName(jstep.getString("name"));
 		step.setDescription(jstep.optString("description"));
-		
+
 
 		return step;
 

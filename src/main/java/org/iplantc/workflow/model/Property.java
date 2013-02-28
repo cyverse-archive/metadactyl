@@ -6,7 +6,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.data.DataObject;
-import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
+import org.iplantc.workflow.marshaler.BaseTemplateMarshaller;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,7 +14,7 @@ import org.json.JSONObject;
  * Represents a single property, which is a value that may change and is typically specified by the user, in a
  * workflow. The most common use of a property is to allow the user to specify a value of an argument to be passed to
  * one of the jobs in the workflow.
- * 
+ *
  * @author Dennis Roberts
  */
 public class Property extends WorkflowElement {
@@ -53,7 +53,7 @@ public class Property extends WorkflowElement {
 
     /**
      * Sets the type of the property.
-     * 
+     *
      * @param propertyType the new property type.
      */
     public void setPropertyType(PropertyType propertyType) {
@@ -62,7 +62,7 @@ public class Property extends WorkflowElement {
 
     /**
      * Gets the type of the property.
-     * 
+     *
      * @return the property type.
      */
     public PropertyType getPropertyType() {
@@ -78,7 +78,7 @@ public class Property extends WorkflowElement {
 
     /**
      * Sets the validator to use when validating objects.
-     * 
+     *
      * @param validator the new validator.
      */
     public void setValidator(Validator validator) {
@@ -87,7 +87,7 @@ public class Property extends WorkflowElement {
 
     /**
      * Gets the validator to use when validating property values.
-     * 
+     *
      * @return the validator.
      */
     public Validator getValidator() {
@@ -96,7 +96,7 @@ public class Property extends WorkflowElement {
 
     /**
      * Sets the visibility flag for this property.
-     * 
+     *
      * @param isVisible the new visibility flag.
      */
     public void setIsVisible(boolean isVisible) {
@@ -105,7 +105,7 @@ public class Property extends WorkflowElement {
 
     /**
      * Gets the visibility flag for this property.
-     * 
+     *
      * @return the visibility flag.
      */
     public boolean getIsVisible() {
@@ -114,7 +114,7 @@ public class Property extends WorkflowElement {
 
     /**
      * Sets the property value.
-     * 
+     *
      * @param value the new property value.
      */
     public void setDefaultValue(String value) {
@@ -124,7 +124,7 @@ public class Property extends WorkflowElement {
 
     /**
      * Gets the property value.
-     * 
+     *
      * @return the property value.
      */
     public String getDefaultValue() {
@@ -147,7 +147,7 @@ public class Property extends WorkflowElement {
 
     /**
      * Sets the input/output DataObject.
-     * 
+     *
      * @param dataObject the new DataObject.
      */
     public void setDataObject(DataObject dataObject) {
@@ -156,7 +156,7 @@ public class Property extends WorkflowElement {
 
     /**
      * Gets the input/output DataObject.
-     * 
+     *
      * @return the input/output DataObject.
      */
     public DataObject getDataObject() {
@@ -172,7 +172,7 @@ public class Property extends WorkflowElement {
 
     /**
      * Creates a new property with the given ID, name, label and description.
-     * 
+     *
      * @param id the property identifier.
      * @param name the property name.
      * @param label the property label.
@@ -275,7 +275,7 @@ public class Property extends WorkflowElement {
 
     /**
      * Creates a copy of an existing property.
-     * 
+     *
      * @param orig the original property.
      * @return the copy.
      */

@@ -5,7 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.NamedAndUnique;
 import org.iplantc.persistence.RepresentableAsJson;
 import org.iplantc.workflow.WorkflowException;
-import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
+import org.iplantc.workflow.marshaler.BaseTemplateMarshaller;
 import org.json.JSONException;
 import org.json.JSONObject;
 

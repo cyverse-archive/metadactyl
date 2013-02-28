@@ -1,4 +1,4 @@
-package org.iplantc.workflow.marshaller;
+package org.iplantc.workflow.marshaler;
 
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.data.DataObject;
@@ -6,7 +6,7 @@ import org.iplantc.workflow.model.PropertyType;
 
 /**
  * Generates input properties for general files.
- * 
+ *
  * @author Dennis Roberts
  */
 public class FileUiInputPropertyGenerator extends UiInputPropertyGenerator {

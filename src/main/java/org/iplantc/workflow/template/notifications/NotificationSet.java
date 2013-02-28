@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.iplantc.persistence.NamedAndUnique;
-import org.iplantc.workflow.marshaller.NotificationMarshaller;
+import org.iplantc.workflow.marshaler.NotificationMarshaller;
 
 public class NotificationSet implements NamedAndUnique {
 

@@ -1,11 +1,11 @@
 package org.iplantc.workflow.model;
 
 import org.iplantc.workflow.WorkflowException;
-import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
+import org.iplantc.workflow.marshaler.BaseTemplateMarshaller;
 
 /**
  * Represents a type of dependency between two property groups.
- * 
+ *
  * @author Dennis Roberts
  */
 public class ContractType extends WorkflowElement {
@@ -19,7 +19,7 @@ public class ContractType extends WorkflowElement {
 
     /**
      * Creates a new contract type with the given ID, name, label and description.
-     * 
+     *
      * @param id the contract type identifier.
      * @param name the contract type name.
      * @param label the contract type label.

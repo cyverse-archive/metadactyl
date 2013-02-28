@@ -1,4 +1,4 @@
-package org.iplantc.workflow.marshaller;
+package org.iplantc.workflow.marshaler;
 
 import java.util.List;
 
@@ -17,21 +17,21 @@ import org.json.JSONObject;
 
 /**
  * Marshalls a workflow.
- * 
+ *
  * @author Dennis Roberts
  */
 public interface BaseTemplateMarshaller {
 
     /**
      * Gets the marshalled workflow.
-     * 
+     *
      * @throws WorkflowException if an error occurs.
      */
     public String getMarshalledWorkflow() throws WorkflowException;
 
     /**
      * Returns the cumulative JSON object after marshalling.
-     * 
+     *
      * @return the cumulative JSON object.
      * @throws WorkflowException if nothing has been marshalled yet.
      */
@@ -39,7 +39,7 @@ public interface BaseTemplateMarshaller {
 
     /**
      * Begins marshalling a template.
-     * 
+     *
      * @param template the template to marshall.
      * @throws WorkflowException if an error occurs.
      */
@@ -47,7 +47,7 @@ public interface BaseTemplateMarshaller {
 
     /**
      * Called to indicate that we've finished marshalling a template.
-     * 
+     *
      * @param template the template being marshalled.
      * @throws WorkflowException if an error occurs.
      */
@@ -55,7 +55,7 @@ public interface BaseTemplateMarshaller {
 
     /**
      * Begins marshalling a property group.
-     * 
+     *
      * @param propertyGroup the property group to marshall.
      * @throws WorkflowException if an error occurs.
      */
@@ -63,7 +63,7 @@ public interface BaseTemplateMarshaller {
 
     /**
      * Called to indicate that we've finished marshalling a property group.
-     * 
+     *
      * @param propertyGroup the property group being marshalled.
      * @throws WorkflowException if an error occurs.
      */
@@ -71,7 +71,7 @@ public interface BaseTemplateMarshaller {
 
     /**
      * Begins marshalling a property.
-     * 
+     *
      * @param property the property to marshall.
      * @throws WorkflowException if an error occurs.
      */
@@ -79,7 +79,7 @@ public interface BaseTemplateMarshaller {
 
     /**
      * Called to indicate that we've finished marshalling a property.
-     * 
+     *
      * @param property the property being marshalled.
      * @throws WorkflowException if an error occurs.
      */
@@ -87,7 +87,7 @@ public interface BaseTemplateMarshaller {
 
     /**
      * Begins marshalling a contract type.
-     * 
+     *
      * @param contractType the contract type to marshall.
      * @throws WorkflowException if an error occurs.
      */
@@ -95,7 +95,7 @@ public interface BaseTemplateMarshaller {
 
     /**
      * Called to indicate when we've finished marshalling a contract type.
-     * 
+     *
      * @param contractType the contract type being marshalled.
      * @throws WorkflowException if an error occurs.
      */
@@ -103,7 +103,7 @@ public interface BaseTemplateMarshaller {
 
     /**
      * Begins marshalling a property type.
-     * 
+     *
      * @param propertyType the property type to marshall.
      * @throws WorkflowException if an error occurs.
      */
@@ -111,7 +111,7 @@ public interface BaseTemplateMarshaller {
 
     /**
      * Called to indicate that we've finished marshalling a property type.
-     * 
+     *
      * @param propertyType the property type being marshalled.
      * @throws WorkflowException if an error occurs.
      */
@@ -119,7 +119,7 @@ public interface BaseTemplateMarshaller {
 
     /**
      * Begins marshalling a validator.
-     * 
+     *
      * @param validator the validator to marshall.
      * @throws WorkflowException if an error occurs.
      */
@@ -127,7 +127,7 @@ public interface BaseTemplateMarshaller {
 
     /**
      * Called to indicate that we've finished marshalling a validator.
-     * 
+     *
      * @param validator the validator being marshalled.
      * @throws WorkflowException if an error occurs.
      */
@@ -135,7 +135,7 @@ public interface BaseTemplateMarshaller {
 
     /**
      * Begins marshalling a rule.
-     * 
+     *
      * @param rule the rule to marshall.
      * @throws WorkflowException if an error occurs.
      */
@@ -143,7 +143,7 @@ public interface BaseTemplateMarshaller {
 
     /**
      * Called to indicate that we've finished marshalling a rule.
-     * 
+     *
      * @param rule the rule being marshalled.
      * @throws WorkflowException if an error occurs.
      */
@@ -151,7 +151,7 @@ public interface BaseTemplateMarshaller {
 
     /**
      * Begins marshalling a rule type.
-     * 
+     *
      * @param ruleType the rule type to marshall.
      * @throws WorkflowException if an error occurs.
      */
@@ -163,7 +163,7 @@ public interface BaseTemplateMarshaller {
 
     /**
      * Called to indicate that we've finished marshalling a rule type.
-     * 
+     *
      * @param ruleType the rule type being marshalled.
      * @throws WorkflowException if an error occurs.
      */

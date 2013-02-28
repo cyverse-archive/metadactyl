@@ -1,4 +1,4 @@
-package org.iplantc.workflow.marshaller;
+package org.iplantc.workflow.marshaler;
 
 import java.util.List;
 
@@ -13,11 +13,11 @@ public class NotificationMarshaller extends BaseMarshaller{
         JSONObject json = createJsonObject();
         jsonStack.push(json);
 	}
-	
+
 	public void leave(NotificationSet set){
 		jsonStack.pop();
 	}
-	
+
 	public void visit(Notification notification) throws JSONException {
         JSONObject json =createJsonObject();
 
@@ -38,7 +38,7 @@ public class NotificationMarshaller extends BaseMarshaller{
 
         jsonStack.push(json);
 	}
-	
+
 	public void leave(Notification notification){
 		jsonStack.pop();
 	}

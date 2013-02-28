@@ -13,7 +13,7 @@ import org.iplantc.workflow.dao.TransformationActivityDao;
 
 /**
  * Used to access persistent transformation activities in the database.
- * 
+ *
  * @author Dennis Roberts
  */
 public class HibernateTransformationActivityDao extends HibernateGenericObjectDao<TransformationActivity> implements
@@ -35,7 +35,7 @@ public class HibernateTransformationActivityDao extends HibernateGenericObjectDa
 
     /**
      * Deletes the notification sets associated with the given analysis.
-     * 
+     *
      * @param analysis the analysis.
      */
     private void deleteNotificationSetsForAnalysis(TransformationActivity analysis) {
@@ -84,25 +84,5 @@ public class HibernateTransformationActivityDao extends HibernateGenericObjectDa
             throw new WorkflowException("multiple analyses found with name: " + name);
         }
         return analyses.isEmpty() ? null : analyses.get(0);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<TransformationActivity> getOnlyAnalysesReferencingValidDeployedComponents() {
-        String queryString = "from TransformationActivity a "
-            + "inner join fetch a.steps s "
-            + "inner join fetch s.transformation t "
-            + "where not exists ("
-            + "    from Template template"
-            + "    where template.id = t.template_id"
-            + "    and not exists ("
-            + "        from DeployedComponent dc"
-            + "        where dc.id = template.component"
-            + "    )"
-            + ")";
-        Query query = getSession().createQuery(queryString);
-        return query.list();
     }
 }

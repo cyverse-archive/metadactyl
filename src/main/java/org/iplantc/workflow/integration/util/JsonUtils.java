@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 /**
  * Utility methods for dealing with JSON objects.
- * 
+ *
  * @author Dennis Roberts
  */
 public class JsonUtils {
@@ -18,7 +18,7 @@ public class JsonUtils {
     /**
      * Gets an optional string field value from a JSON object using multiple possible keys. The first key that exists
      * in the JSON object is used.
-     * 
+     *
      * @param json the JSON object.
      * @param defaultValue the default value for the property.
      * @param keys the list of possible keys.
@@ -39,7 +39,7 @@ public class JsonUtils {
     /**
      * Gets an optional string field from a JSON object using multiple possible keys. The first key that exists and
      * has a non-empty value in the JSON object is used.
-     * 
+     *
      * @param json the JSON object.
      * @param defaultValue the default value for the property.
      * @param keys the list of possible keys.
@@ -62,7 +62,7 @@ public class JsonUtils {
     /**
      * Gets an optional boolean field value from a JSON object using multiple possible keys. The first key that exists
      * in the JSON object is used.
-     * 
+     *
      * @param json the JSON object.
      * @param defaultValue the default value for the property.
      * @param keys the list of possible keys.
@@ -82,9 +82,9 @@ public class JsonUtils {
 
     /**
      * Puts a value in a JSON object if the value is not null.
-     * 
+     *
      * @param <T> the type of value being placed in the JSON object.
-     * 
+     *
      * @param json the JSON object.
      * @param key the key to associate with the value.
      * @param value the value to place in the JSON object.
@@ -98,7 +98,7 @@ public class JsonUtils {
 
     /**
      * Puts a value in a JSON array if the value is not null.
-     * 
+     *
      * @param <T> the type of value being placed in the JSON array.
      * @param array the JSON array.
      * @param value the value to place in the JSON array.
@@ -111,8 +111,22 @@ public class JsonUtils {
     }
 
     /**
+     * Puts a JSON array in a JSON object if the array is not null or empty.
+     *
+     * @param json the JSON object.
+     * @param key the key to associate with the array.
+     * @param value the JSON array.
+     * @throws JSONException if a JSON error occurs.
+     */
+    public static void putIfNotEmpty(JSONObject json, String key, JSONArray value) throws JSONException {
+        if (value != null && value.length() != 0) {
+            json.put(key, value);
+        }
+    }
+
+    /**
      * Converts a map to a JSON object.
-     * 
+     *
      * @param <T> the type of the values contained in the map.
      * @param map the map.
      * @return the JSON object.
@@ -130,7 +144,7 @@ public class JsonUtils {
 
     /**
      * Converts a collection to a JSON array.
-     * 
+     *
      * @param <T> the type of the elements contained in the collection.
      * @param collection the collection.
      * @return the JSON array.
@@ -148,7 +162,7 @@ public class JsonUtils {
 
     /**
      * Converts an instance of org.json.JSONObject to an instance of net.sf.json.JSONObject.
-     * 
+     *
      * @param json the original JSON object.
      * @return the converted JSON object.
      */
