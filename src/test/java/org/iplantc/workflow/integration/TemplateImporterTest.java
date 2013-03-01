@@ -11,7 +11,6 @@ import static org.iplantc.workflow.util.JsonTestDataImporter.getTestJSONArray;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.iplantc.persistence.dto.data.DataFormat;
@@ -22,10 +21,8 @@ import org.iplantc.workflow.dao.mock.MockInfoTypeDao;
 import org.iplantc.workflow.dao.mock.MockPropertyTypeDao;
 import org.iplantc.workflow.dao.mock.MockRuleTypeDao;
 import org.iplantc.workflow.dao.mock.MockTemplateDao;
-import org.iplantc.workflow.data.DataElementPreservation;
 import org.iplantc.workflow.data.DataObject;
 import org.iplantc.workflow.data.InfoType;
-import org.iplantc.workflow.integration.util.HeterogeneousRegistry;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistryImpl;
 import org.iplantc.workflow.integration.validation.TooManyOutputRedirectionsException;
 import org.iplantc.workflow.mock.MockWorkspaceInitializer;
@@ -1077,34 +1074,6 @@ public class TemplateImporterTest {
     public void testInfoParameter() throws JSONException, IOException {
         JSONObject json = getTestJSONObject("template_with_info_parameter");
         importer.importObject(json);
-    }
-
-    // DEVN => {guilty-party: alenards, date: 2011/05/21}
-    // This test is not valid until we start enforcing "supported info-type/data-format"
-    // /**
-    // * Verifies that an exception is thrown if an unknown data format is specified.
-    // *
-    // * @throws JSONException if the JSON document doesn't meet the requirements of the importer.
-    // */
-    // @Test(expected = WorkflowException.class)
-    // public void testUnknownDataFormatShouldCauseException() throws JSONException, IOException {
-    // InputStream in = getClass().getResourceAsStream("/json/unknown_data_format_should_cause_exception.json");
-    // String jsonString = IOUtils.toString(in);
-    // JSONObject json = new JSONObject(jsonString);
-    // importer.importObject(json);
-    // }
-    @Test
-    public void testRetrievalForTemplateDataElementInformation() throws JSONException, IOException {
-        HeterogeneousRegistry registry = new HeterogeneousRegistryImpl();
-        importer.setRegistry(registry);
-
-        JSONObject json = getTestJSONObject("data_element_preservation");
-        importer.importObject(json);
-
-        Collection<DataElementPreservation> registeredObjects = registry.getRegisteredObjects(
-                DataElementPreservation.class);
-        assertNotNull(registeredObjects);
-        assertFalse(registeredObjects.isEmpty());
     }
 
     /**
