@@ -13,6 +13,8 @@ public class JobDto {
   private String uuid;
 
   private String name;
+  private String displayName;
+
   private String description;
   /** @todo Should this be an enum? */
   private String requestType;
@@ -73,6 +75,14 @@ public class JobDto {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public String getDisplayName() {
+      return displayName;
+  }
+
+  public void setDisplayName(String displayName) {
+      this.displayName = displayName;
   }
 
   public boolean isNotify() {

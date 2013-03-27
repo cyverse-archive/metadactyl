@@ -741,6 +741,7 @@ public class FapiJobRequestFormatterTest {
         JSONObject experiment = createEmptyExperiment("analysis_with_one_empty_step");
         JSONObject submission = createFormatter(experiment).formatJobRequest();
         assertEquals("empty-1", submission.getString("name"));
+        assertEquals("empty", submission.get("display_name"));
     }
 
     /**

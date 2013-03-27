@@ -21,13 +21,13 @@ public class TimestampJobNameUniquenessEnsurer extends JobNameUniquenessEnsurer 
      */
     @Override
     public String ensureUniqueJobName(String username, String jobName) {
-        return jobName + formatTimestamp();
+        return jobName.replaceAll(" ", "_") + formatTimestamp();
     }
-    
+
     /**
      * We're relying on the timestamp to ensure that the job name is unique, so it's not necessary to check existing
      * job names.
-     * 
+     *
      * @param username the username.
      * @param jobName the job name.
      * @return an empty list of strings.
@@ -39,7 +39,7 @@ public class TimestampJobNameUniquenessEnsurer extends JobNameUniquenessEnsurer 
 
     /**
      * Formats the current timestamp.
-     * 
+     *
      * @return the formatted timestamp.
      */
     private String formatTimestamp() {
