@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for org.iplantc.workflow.experiment.FapiJobRequestFormatter.
- * 
+ *
  * @author Dennis Roberts
  */
 public class FapiJobRequestFormatterTest {
@@ -65,7 +65,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Gets the short username (that is, the username without the domain name of the identity provider).
-     * 
+     *
      * @return the username.
      */
     private String getShortUsername() {
@@ -92,7 +92,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates the second template to use in our multistep analysis tests.
-     * 
+     *
      * @return the template.
      */
     private Template createMultistepAnalysisTemplate2() {
@@ -107,7 +107,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates the first template to use in our multistep analysis tests.
-     * 
+     *
      * @return the template.
      */
     private Template createMultistepAnalysisTemplate1() {
@@ -122,7 +122,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates a template with some inputs.
-     * 
+     *
      * @return the template.
      */
     private Template createTemplateWithInputs() {
@@ -138,7 +138,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates a data object.
-     * 
+     *
      * @param id the data object identifier.
      * @param order the order specifier.
      * @param option the command-line option.
@@ -151,7 +151,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates a data object.
-     * 
+     *
      * @param id the data object identifier.
      * @param name the data object name.
      * @param order the order specifier.
@@ -172,7 +172,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates a multiplicity object with the given name.
-     * 
+     *
      * @param name the multiplicity name.
      * @return the multiplicity object.
      */
@@ -184,7 +184,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates a template with some properties.
-     * 
+     *
      * @return the template.
      */
     private Template createTemplateWithProperties() {
@@ -198,7 +198,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates the second property group to go in a template with properties.
-     * 
+     *
      * @return the property group.
      */
     private PropertyGroup createSecondPropertyGroup() {
@@ -212,7 +212,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates the first property group to go in a template with properties.
-     * 
+     *
      * @return the property group.
      */
     private PropertyGroup createFirstPropertyGroup() {
@@ -224,7 +224,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates a Boolean property with the given name.
-     * 
+     *
      * @param name the property name.
      * @param order the command-line order.
      * @return the property.
@@ -238,7 +238,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates a hidden property with the given name.
-     * 
+     *
      * @param name the property name.
      * @param order the command-line order.
      * @return the property.
@@ -251,7 +251,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates a property with the given name.
-     * 
+     *
      * @param name the property name.
      * @param order the command-line order.
      * @return the property.
@@ -269,7 +269,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates an empty template for testing.
-     * 
+     *
      * @return
      */
     private Template createEmptyTemplate() {
@@ -281,7 +281,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates a fake deployed component for testing.
-     * 
+     *
      * @return the deployed component.
      */
     private DeployedComponent createDeployedComponent() {
@@ -296,7 +296,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates the analysis to use in our multistep analysis tests.
-     * 
+     *
      * @return the analysis.
      */
     private TransformationActivity createMultistepAnalysis() {
@@ -314,7 +314,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates the input/output mapping for our multistep analysis.
-     * 
+     *
      * @return
      */
     private InputOutputMap createMultistepInputOutputMap(TransformationStep source, TransformationStep target) {
@@ -329,7 +329,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates the first transformation step in our multistep analysis.
-     * 
+     *
      * @return the transformation step.
      */
     private TransformationStep createMultistepAnalysisStep1() {
@@ -343,7 +343,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates the first transformation in our multistep analysis.
-     * 
+     *
      * @return the transformation.
      */
     private Transformation createMultistepAnalysisTransformation1() {
@@ -357,7 +357,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates the second transformation step in our multistep analysis.
-     * 
+     *
      * @return the transformation step.
      */
     private TransformationStep createMultistepAnalysisStep2() {
@@ -371,7 +371,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates the second transformation in our multistep analysis.
-     * 
+     *
      * @return the transformation.
      */
     private Transformation createMultistepAnalysisTransformation2() {
@@ -384,7 +384,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates an analysis with some inputs.
-     * 
+     *
      * @return the analysis.
      */
     private TransformationActivity createAnalysisWithInputs() {
@@ -398,7 +398,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates a transformation step with some inputs.
-     * 
+     *
      * @return the transformation step.
      */
     private TransformationStep createTransformationStepWithInputs() {
@@ -412,7 +412,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates a transformation with some inputs.
-     * 
+     *
      * @return the transformation.
      */
     private Transformation createTransformationWithInputs() {
@@ -426,7 +426,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates an analysis containing one transformation with properties.
-     * 
+     *
      * @return the analysis.
      */
     private TransformationActivity createAnalysisContainingOneTransformationWithProperties() {
@@ -440,7 +440,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates a transformation step containing one transformation with properties.
-     * 
+     *
      * @return the transformation.
      */
     private TransformationStep createTransformationStepWithProperties() {
@@ -454,7 +454,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates a transformation with properties.
-     * 
+     *
      * @return the transformation.
      */
     private Transformation createTransformationWithProperties() {
@@ -467,7 +467,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates an analysis with one empty transformation step.
-     * 
+     *
      * @return the analysis.
      */
     private TransformationActivity createAnalysisWithOneEmptyStep() {
@@ -481,7 +481,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates an empty transformation step.
-     * 
+     *
      * @return the transformation step.
      */
     private TransformationStep createEmptyTransformationStep() {
@@ -495,7 +495,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates an empty transformation.
-     * 
+     *
      * @return the transformation.
      */
     private Transformation createEmptyTransformation() {
@@ -508,7 +508,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates an empty analysis for testing.
-     * 
+     *
      * @return the empty analysis.
      */
     private TransformationActivity createEmptyAnalysis() {
@@ -541,7 +541,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates an empty experiment.
-     * 
+     *
      * @return the experiment.
      */
     private JSONObject createEmptyExperiment(String analysisId) {
@@ -741,6 +741,7 @@ public class FapiJobRequestFormatterTest {
         JSONObject experiment = createEmptyExperiment("analysis_with_one_empty_step");
         JSONObject submission = createFormatter(experiment).formatJobRequest();
         assertEquals("empty-1", submission.getString("name"));
+        assertEquals("empty", submission.get("display_name"));
     }
 
     /**
@@ -775,7 +776,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates an experiment with a configuration.
-     * 
+     *
      * @param analysisId the analysis identifier.
      * @return the experiment.
      */
@@ -785,7 +786,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates an experiment with a configuration.
-     * 
+     *
      * @param analysisId the analysis identifier.
      * @param debug true if debugging should be enabled.
      * @return the experiment.
@@ -804,7 +805,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates a configuration for the experiment with a configuration.
-     * 
+     *
      * @return the configuration.
      */
     private JSONObject createExperimentConfiguration() {
@@ -824,7 +825,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Creates a job request formatter for the given experiment.
-     * 
+     *
      * @param experiment the experiment.
      * @return the new job request formatter.
      */
@@ -834,7 +835,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Validates a single parameter.
-     * 
+     *
      * @param order the order specifier.
      * @param name the parameter name.
      * @param value the parameter value.
@@ -850,7 +851,7 @@ public class FapiJobRequestFormatterTest {
 
     /**
      * Validates a single parameter with a multiplicity.
-     * 
+     *
      * @param order the order specifier.
      * @param name the parameter name.
      * @param value the parameter value.

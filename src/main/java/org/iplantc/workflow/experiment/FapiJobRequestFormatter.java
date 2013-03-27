@@ -18,7 +18,7 @@ import org.iplantc.workflow.user.UserDetails;
 
 /**
  * A job request formatter used to submit jobs to the foundational API.
- * 
+ *
  * @author Dennis Roberts
  */
 public class FapiJobRequestFormatter implements JobRequestFormatter {
@@ -97,12 +97,13 @@ public class FapiJobRequestFormatter implements JobRequestFormatter {
         if (!StringUtils.equals(originalName, uniqueName)) {
             experiment.remove("name");
             experiment.put("name", uniqueName);
+            experiment.put("display_name", originalName);
         }
     }
 
     /**
      * Formats the steps in the given analysis.
-     * 
+     *
      * @param analysis the analysis.
      * @return the formatted list of steps.
      */
@@ -119,7 +120,7 @@ public class FapiJobRequestFormatter implements JobRequestFormatter {
 
     /**
      * Logs a JSON object if debugging is enabled.
-     * 
+     *
      * @param description a brief description of the JSON object to log.
      * @param json the JSON object to log.
      */
@@ -131,7 +132,7 @@ public class FapiJobRequestFormatter implements JobRequestFormatter {
 
     /**
      * Begins the creation of the JSON object that will be used to submit the job.
-     * 
+     *
      * @param analysis the analysis representing the job that will be submitted.
      * @return the new JSON object.
      */
@@ -145,7 +146,7 @@ public class FapiJobRequestFormatter implements JobRequestFormatter {
 
     /**
      * Loads the analysis with the given identifier.
-     * 
+     *
      * @param analysisId the analysis identifier.
      * @return the analysis.
      * @throws WorkflowException if the analysis can't be found.
