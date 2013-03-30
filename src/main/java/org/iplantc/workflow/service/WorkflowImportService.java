@@ -217,8 +217,8 @@ public class WorkflowImportService {
      * @param jsonString the string representing the JSON object to import.
      * @throws JSONException if the JSON string is invalid or doesn't meet the expectations of the workflow importer.
      */
-    public void importWorkflow(String jsonString) throws JSONException {
-        importOrUpdateWorkflow(jsonString, UpdateMode.THROW, false);
+    public String importWorkflow(String jsonString) throws JSONException {
+        return importOrUpdateWorkflow(jsonString, UpdateMode.THROW, false);
     }
 
     /**
@@ -227,8 +227,8 @@ public class WorkflowImportService {
      * @param jsonString the string representing the JSON object to update.
      * @throws JSONException if the JSON string is invalid or doesn't meet the expectations of the workflow importer.
      */
-    public void updateWorkflow(String jsonString) throws JSONException {
-        importOrUpdateWorkflow(jsonString, UpdateMode.REPLACE, false);
+    public String updateWorkflow(String jsonString) throws JSONException {
+        return importOrUpdateWorkflow(jsonString, UpdateMode.REPLACE, false);
     }
 
     /**
@@ -238,8 +238,8 @@ public class WorkflowImportService {
      * @param updateModeName the name of the update mode to use.
      * @throws JSONException if the JSON string is invalid or doesn't meet the expectations of the workflow importer.
      */
-    public void forceUpdateWorkflow(String jsonString, String updateModeName) throws JSONException {
-        importOrUpdateWorkflow(jsonString, getUpdateMode(updateModeName), true);
+    public String forceUpdateWorkflow(String jsonString, String updateModeName) throws JSONException {
+        return importOrUpdateWorkflow(jsonString, getUpdateMode(updateModeName), true);
     }
 
     /**
@@ -270,32 +270,32 @@ public class WorkflowImportService {
      * @param updateMode indicates what should happen when an existing object matches one being imported.
      * @param updateVetted true if we should allow vetted analyses to be updated.
      */
-    private void importOrUpdateWorkflow(final String jsonString, final UpdateMode updateMode,
+    private String importOrUpdateWorkflow(final String jsonString, final UpdateMode updateMode,
             final boolean updateVetted) {
-        new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<Void>() {
+        return new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<String>() {
             @Override
-            public Void perform(Session session) {
-                importOrUpdateWorkflow(session, jsonString, updateMode, updateVetted);
-                return null;
+            public String perform(Session session) {
+                return importOrUpdateWorkflow(session, jsonString, updateMode, updateVetted);
             }
         });
     }
 
     /**
      * Either imports or updates a workflow.
-     *
+     * 
      * @param session the Hibernate session.
      * @param jsonString the string representing the JSON object to import.
      * @param updateMode indicates what should happen when an existing object matches one being imported.
      * @param updateVetted true if we should allow vetted analyses and templates to be updated.
+     * @return
      */
-    private void importOrUpdateWorkflow(Session session, String jsonString, UpdateMode updateMode,
+    private String importOrUpdateWorkflow(Session session, String jsonString, UpdateMode updateMode,
             boolean updateVetted) {
         try {
             HeterogeneousRegistry registry = new HeterogeneousRegistryImpl();
             JSONObject json = new JSONObject(jsonString);
             WorkflowImporter importer = createWorkflowImporter(registry, session, updateMode, updateVetted);
-            importer.importWorkflow(json);
+            return importer.importWorkflow(json);
         }
         catch (JSONException e) {
             throw new WorkflowException(e);
