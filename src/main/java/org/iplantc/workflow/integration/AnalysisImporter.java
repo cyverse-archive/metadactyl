@@ -1,17 +1,19 @@
 package org.iplantc.workflow.integration;
 
-import java.util.ArrayList;
-import java.util.List;
 import static org.iplantc.workflow.integration.util.AnalysisImportUtils.findExistingAnalysis;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Session;
 import org.iplantc.persistence.dto.user.User;
 import org.iplantc.persistence.dto.workspace.Workspace;
-
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.TransformationActivityDao;
+import org.iplantc.workflow.data.InputOutputMap;
 import org.iplantc.workflow.integration.json.TitoAnalysisUnmarshaller;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistry;
 import org.iplantc.workflow.integration.util.JsonUtils;
@@ -69,19 +71,24 @@ import org.json.JSONObject;
 public class AnalysisImporter implements ObjectImporter, ObjectVetter<TransformationActivity> {
 
     /**
+     * Used to flush Analysis saves to prevent transient relation exceptions.
+     */
+    private Session session;
+
+    /**
      * Used to create data access objects.
      */
-    private DaoFactory daoFactory;
+    private final DaoFactory daoFactory;
 
     /**
      * Used to retrieve or import a template group.
      */
-    private TemplateGroupImporter templateGroupImporter;
+    private final TemplateGroupImporter templateGroupImporter;
 
     /**
      * Used to implement a user's workspace.
      */
-    private WorkspaceInitializer workspaceInitializer;
+    private final WorkspaceInitializer workspaceInitializer;
 
     /**
      * The registry of named objects.
@@ -96,7 +103,7 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
     /**
      * True if we should allow vetted analyses to be updated.
      */
-    private boolean updateVetted;
+    private final boolean updateVetted;
 
     /**
      * Enables replacement of existing analyses with the same name.
@@ -170,6 +177,15 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
     }
 
     /**
+     * Sets the current session.
+     * 
+     * @param session
+     */
+    public void setSession(Session session) {
+        this.session = session;
+    }
+
+    /**
      * Determines if an Analysis has been vetted.
      *
      * @param username
@@ -212,13 +228,30 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
 
         if (existingAnalysis == null) {
             initializeWorkspace(username);
-            analysisDao.save(analysis);
+            saveAnalysis(analysisDao, analysis);
             templateGroupImporter.addAnalysisToWorkspace(username, analysis);
         }
         else if (updateMode == UpdateMode.REPLACE) {
             if (updateVetted || !isObjectVetted(username, existingAnalysis)) {
-                existingAnalysis.copy(analysis);
+                // An InputOutputMap can't be deleted in the same "flush" as its associated
+                // TransformationSteps.
+                // Delete old mappings first.
+                existingAnalysis.getMappings().clear();
                 analysisDao.save(existingAnalysis);
+                if (session != null) {
+                    session.flush();
+                }
+
+                // Delete old steps next.
+                existingAnalysis.getSteps().clear();
+                analysisDao.save(existingAnalysis);
+                if (session != null) {
+                    session.flush();
+                }
+
+                // Copy and save analysis.
+                existingAnalysis.copy(analysis);
+                saveAnalysis(analysisDao, existingAnalysis);
                 analysis = existingAnalysis;
             }
             else {
@@ -230,6 +263,22 @@ public class AnalysisImporter implements ObjectImporter, ObjectVetter<Transforma
         }
         registry.add(TransformationActivity.class, analysis.getName(), analysis);
         return analysis.getId();
+    }
+
+    private void saveAnalysis(TransformationActivityDao analysisDao, TransformationActivity analysis) {
+        // A new InputOutputMap can't be saved in the same "flush" as its associated TransformationSteps.
+        List<InputOutputMap> mappings = new ArrayList<InputOutputMap>(analysis.getMappings());
+
+        // Save analysis without new mappings first, so that new steps are not transient.
+        analysis.getMappings().clear();
+        analysisDao.save(analysis);
+        if (session != null) {
+            session.flush();
+        }
+
+        // Now save analysis with new mappings.
+        analysis.getMappings().addAll(mappings);
+        analysisDao.save(analysis);
     }
 
     /**

@@ -1,8 +1,8 @@
 package org.iplantc.workflow.service;
 
 import java.sql.SQLException;
-import org.apache.commons.lang.StringUtils;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -46,22 +46,22 @@ public class WorkflowImportService {
     /**
      * The database session factory.
      */
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
 
     /**
      * The index of the development analysis group.
      */
-    private int devAnalysisGroupIndex;
+    private final int devAnalysisGroupIndex;
 
     /**
      * The index of the favorites analysis group.
      */
-    private int favoritesAnalysisGroupIndex;
+    private final int favoritesAnalysisGroupIndex;
 
     /**
      * Used to initialize the user's workspace if necessary.
      */
-    private WorkspaceInitializer workspaceInitializer;
+    private final WorkspaceInitializer workspaceInitializer;
 
     /**
      * Used to validate templates that are being imported.
@@ -146,6 +146,7 @@ public class WorkflowImportService {
         AnalysisImporter analysisImporter =
                 new AnalysisImporter(daoFactory, templateGroupImporter, workspaceInitializer, updateVetted);
         analysisImporter.setRegistry(registry);
+        analysisImporter.setSession(session);
         return analysisImporter;
     }
 

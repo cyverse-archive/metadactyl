@@ -65,8 +65,8 @@
 			<generator class="increment"></generator>
 		</id>
 
-		<many-to-one name="source" class="org.iplantc.persistence.dto.step.TransformationStep" not-null="true" />
-		<many-to-one name="target" class="org.iplantc.persistence.dto.step.TransformationStep" not-null="true" />
+		<many-to-one name="source" class="org.iplantc.persistence.dto.step.TransformationStep" not-null="true" cascade="none" />
+		<many-to-one name="target" class="org.iplantc.persistence.dto.step.TransformationStep" not-null="true" cascade="none" />
 
 		<map name="input_output_relation" table="dataobject_mapping">
 			<key column="mapping_id" not-null="true" />
