@@ -125,7 +125,7 @@ public class WorkflowPreviewer {
      * Creates the object used to load deployed components from JSON.
      */
     private void createDeployedComponentLoader() {
-        deployedComponentLoader = new DeployedComponentLoader();
+        deployedComponentLoader = new DeployedComponentLoader(daoFactory);
         addRegistries(deployedComponentLoader);
     }
 
