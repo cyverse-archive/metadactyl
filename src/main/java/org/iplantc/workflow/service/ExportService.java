@@ -51,7 +51,7 @@ public class ExportService {
                             for (Property property : propertyGroup.getProperties()) {
                                 if(property.getPropertyType().getValueType() == null) {
                                     result.put("can-export", false);
-                                    result.put("cause", "Application contains Properties that cannot be copied into Tito.");
+                                    result.put("cause", "Application contains Properties that cannot be copied or modified at this time.");
                                 }
                             }
                         }
