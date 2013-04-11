@@ -1,6 +1,7 @@
 package org.iplantc.workflow.service;
 
 import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.iplantc.hibernate.util.SessionTask;
@@ -40,10 +41,7 @@ public class ExportService {
                     JSONObject result = new JSONObject();
                     result.put("can-export", true);
                 
-                    if(templates.size() > 1) {
-                        result.put("can-export", false);
-                        result.put("cause", "Multi-step applications cannot be copied or modified at this time.");
-                    } else if(templates.isEmpty()) {
+                    if (templates.isEmpty()) {
                         result.put("can-export", false);
                         result.put("cause", "Application contains no steps and cannot be copied or modified.");
                     }
