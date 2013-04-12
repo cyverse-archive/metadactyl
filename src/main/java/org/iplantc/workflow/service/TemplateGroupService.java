@@ -120,8 +120,8 @@ public class TemplateGroupService {
             private void fillIntegrationDatum(DaoFactory daoFactory, TransformationActivity transformationActivity) throws JSONException {
                 // Fill in the transformation activity information
             	IntegrationDatumDao integrationDatumDao = daoFactory.getIntegrationDatumDao();
-            	String email = input.getString("email");
-            	String integrator = input.getString("integrator");
+            	String email = userSessionService.getUser().getEmail();
+            	String integrator = userSessionService.getUser().getShortUsername();
                 IntegrationDatum integrationDatum = integrationDatumDao.findByNameAndEmail(integrator, email);
 
                 if(integrationDatum == null){
