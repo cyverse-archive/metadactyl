@@ -10,6 +10,7 @@ import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.integration.json.TitoTemplateUnmarshaller;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistry;
+import org.iplantc.workflow.integration.util.ImportUtils;
 import org.iplantc.workflow.integration.util.NullHeterogeneousRegistry;
 import org.iplantc.workflow.integration.validation.TemplateValidator;
 import org.iplantc.workflow.integration.validation.TemplateValidatorFactory;
@@ -248,7 +249,13 @@ public class TemplateImporter implements ObjectImporter, ObjectVetter<Template> 
         Template template = unmarshallTemplate(json);
         templateValidator.validate(template, registry);
         validateTemplate(template);
-        Template existingTemplate = findExistingTemplate(template);
+        Template existingTemplate = null;
+        if ("auto-gen".equals(template.getId())) {
+            template.setId(ImportUtils.generateId());
+        }
+        else {
+            existingTemplate = findExistingTemplate(template);
+        }
         if (existingTemplate == null) {
             saveNewTemplate(template, json);
         }
