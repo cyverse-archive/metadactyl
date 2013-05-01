@@ -194,7 +194,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
         propertyGroup.setId(ImportUtils.getId(json, "id"));
         propertyGroup.setName(json.optString("name", ""));
         propertyGroup.setLabel(json.optString("label", ""));
-        propertyGroup.setGroupType(json.getString("type"));
+        propertyGroup.setGroupType(json.optString("type", ""));
         propertyGroup.setVisible(optBoolean(json, true, "visible", "isVisible"));
         propertyGroup.setProperties(propertyListFromJson(json.getJSONArray("properties")));
         return propertyGroup;

@@ -848,7 +848,7 @@ public class TemplateImporterTest {
      *
      * @throws JSONException if the JSON we pass to the importer is invalid.
      */
-    @Test(expected = JSONException.class)
+    @Test
     public void testPropertyGroupWithNoType() throws JSONException {
         String jsonString = "{   \"component\": \"componentid\",\n"
                 + "    \"groups\": [\n"
@@ -861,6 +861,7 @@ public class TemplateImporterTest {
                 + "}\n";
         JSONObject json = new JSONObject(jsonString);
         importer.importObject(json);
+        assertEquals("", getMockTemplateDao().getSavedObjects().get(0).getPropertyGroups().get(0).getGroupType());
     }
 
     /**
