@@ -13,7 +13,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for org.iplantc.workflow.integration.AnalysisGenerator.
- * 
+ *
  * @author Dennis Roberts
  */
 public class AnalysisGeneratorTest {
@@ -49,7 +49,7 @@ public class AnalysisGeneratorTest {
         assertNotNull(analysis.getSteps().get(0));
 
         TransformationStep step = analysis.getSteps().get(0);
-        assertTrue(step.getGuid().matches("s[0-9a-f]{32}"));
+        assertTrue(step.getGuid().matches("[-0-9A-F]{36}"));
         assertEquals(template.getName(), step.getName());
         assertEquals(template.getDescription(), step.getDescription());
         assertNotNull(step.getTransformation());

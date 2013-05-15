@@ -11,7 +11,6 @@ import static org.iplantc.workflow.util.JsonTestDataImporter.getTestJSONArray;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.iplantc.persistence.dto.data.DataFormat;
@@ -22,10 +21,8 @@ import org.iplantc.workflow.dao.mock.MockInfoTypeDao;
 import org.iplantc.workflow.dao.mock.MockPropertyTypeDao;
 import org.iplantc.workflow.dao.mock.MockRuleTypeDao;
 import org.iplantc.workflow.dao.mock.MockTemplateDao;
-import org.iplantc.workflow.data.DataElementPreservation;
 import org.iplantc.workflow.data.DataObject;
 import org.iplantc.workflow.data.InfoType;
-import org.iplantc.workflow.integration.util.HeterogeneousRegistry;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistryImpl;
 import org.iplantc.workflow.integration.validation.TooManyOutputRedirectionsException;
 import org.iplantc.workflow.mock.MockWorkspaceInitializer;
@@ -365,8 +362,8 @@ public class TemplateImporterTest {
         assertEquals(4, template.getPropertyGroups().size());
         assertEquals(2, template.getOutputs().size());
 
-        PropertyGroup pgrp = null;
-        Property prop = null;
+        PropertyGroup pgrp;
+        Property prop;
 
         pgrp = tmpl.getPropertyGroups().get(0);
         assertEquals("group1", pgrp.getId());
@@ -605,7 +602,7 @@ public class TemplateImporterTest {
         assertEquals(1, getMockTemplateDao().getSavedObjects().size());
 
         Template template = getMockTemplateDao().getSavedObjects().get(0);
-        assertTrue(template.getId().matches("t[0-9a-f]{32}"));
+        assertTrue(template.getId().matches("[-0-9A-F]{36}"));
         assertEquals("", template.getName());
         assertEquals("componentid", template.getComponent());
         assertEquals("templatetype", template.getTemplateType());
@@ -624,7 +621,7 @@ public class TemplateImporterTest {
         assertEquals("", input.getDescription());
 
         PropertyGroup propertyGroup = template.getPropertyGroups().get(0);
-        assertTrue(propertyGroup.getId().matches("g[0-9a-f]{32}"));
+        assertTrue(propertyGroup.getId().matches("[-0-9A-F]{36}"));
         assertEquals("", propertyGroup.getName());
         assertEquals("", propertyGroup.getLabel());
         assertEquals("grouptype", propertyGroup.getGroupType());
@@ -632,7 +629,7 @@ public class TemplateImporterTest {
         assertEquals(3, propertyGroup.getProperties().size());
 
         Property property = propertyGroup.getProperties().get(1);
-        assertTrue(property.getId().matches("p[0-9a-f]{32}"));
+        assertTrue(property.getId().matches("[-0-9A-F]{36}"));
         assertEquals("", property.getName());
         assertSame(getMockPropertyTypeDao().findUniqueInstanceByName("propertytypename"), property.getPropertyType());
         assertEquals("", property.getLabel());
@@ -644,7 +641,7 @@ public class TemplateImporterTest {
         assertNotNull(property.getValidator());
 
         Validator validator = property.getValidator();
-        assertTrue(validator.getId().matches("v[0-9a-f]{32}"));
+        assertTrue(validator.getId().matches("[-0-9A-F]{36}"));
         assertEquals("", validator.getName());
         assertFalse(validator.isRequired());
         assertEquals(1, validator.getRules().size());
@@ -677,7 +674,7 @@ public class TemplateImporterTest {
         assertEquals(1, getMockTemplateDao().getSavedObjects().size());
 
         Template template = getMockTemplateDao().getSavedObjects().get(0);
-        assertTrue(template.getId().matches("t[0-9a-f]{32}"));
+        assertTrue(template.getId().matches("[-0-9A-F]{36}"));
         assertEquals(0, template.getInputs().size());
     }
 
@@ -851,7 +848,7 @@ public class TemplateImporterTest {
      *
      * @throws JSONException if the JSON we pass to the importer is invalid.
      */
-    @Test(expected = JSONException.class)
+    @Test
     public void testPropertyGroupWithNoType() throws JSONException {
         String jsonString = "{   \"component\": \"componentid\",\n"
                 + "    \"groups\": [\n"
@@ -864,6 +861,7 @@ public class TemplateImporterTest {
                 + "}\n";
         JSONObject json = new JSONObject(jsonString);
         importer.importObject(json);
+        assertEquals("", getMockTemplateDao().getSavedObjects().get(0).getPropertyGroups().get(0).getGroupType());
     }
 
     /**
@@ -954,7 +952,7 @@ public class TemplateImporterTest {
         assertEquals(1, template1.getPropertyGroups().size());
 
         Template template2 = getMockTemplateDao().getSavedObjects().get(1);
-        assertTrue(template2.getId().matches("t[0-9a-f]{32}"));
+        assertTrue(template2.getId().matches("[-0-9A-F]{36}"));
         assertEquals("", template2.getName());
         assertEquals("componentid", template2.getComponent());
         assertEquals("templatetype", template2.getTemplateType());
@@ -972,7 +970,7 @@ public class TemplateImporterTest {
         assertEquals(1, template2.getPropertyGroups().size());
 
         PropertyGroup propertyGroup2 = template2.getPropertyGroups().get(0);
-        assertTrue(propertyGroup2.getId().matches("g[0-9a-f]{32}"));
+        assertTrue(propertyGroup2.getId().matches("[-0-9A-F]{36}"));
         assertEquals("", propertyGroup2.getName());
         assertEquals("", propertyGroup2.getLabel());
         assertEquals("grouptype", propertyGroup2.getGroupType());
@@ -980,7 +978,7 @@ public class TemplateImporterTest {
         assertEquals(3, propertyGroup2.getProperties().size());
 
         Property property2 = propertyGroup2.getProperties().get(1);
-        assertTrue(property2.getId().matches("p[0-9a-f]{32}"));
+        assertTrue(property2.getId().matches("[-0-9A-F]{36}"));
         assertEquals("", property2.getName());
         assertSame(getMockPropertyTypeDao().findUniqueInstanceByName("propertytypename"), property2.getPropertyType());
         assertEquals("", property2.getLabel());
@@ -990,7 +988,7 @@ public class TemplateImporterTest {
         assertNotNull(property2.getValidator());
 
         Validator validator2 = property2.getValidator();
-        assertTrue(validator2.getId().matches("v[0-9a-f]{32}"));
+        assertTrue(validator2.getId().matches("[-0-9A-F]{36}"));
         assertEquals("validatorname", validator2.getName());
         assertFalse(validator2.isRequired());
         assertEquals(1, validator2.getRules().size());
@@ -1077,34 +1075,6 @@ public class TemplateImporterTest {
     public void testInfoParameter() throws JSONException, IOException {
         JSONObject json = getTestJSONObject("template_with_info_parameter");
         importer.importObject(json);
-    }
-
-    // DEVN => {guilty-party: alenards, date: 2011/05/21}
-    // This test is not valid until we start enforcing "supported info-type/data-format"
-    // /**
-    // * Verifies that an exception is thrown if an unknown data format is specified.
-    // *
-    // * @throws JSONException if the JSON document doesn't meet the requirements of the importer.
-    // */
-    // @Test(expected = WorkflowException.class)
-    // public void testUnknownDataFormatShouldCauseException() throws JSONException, IOException {
-    // InputStream in = getClass().getResourceAsStream("/json/unknown_data_format_should_cause_exception.json");
-    // String jsonString = IOUtils.toString(in);
-    // JSONObject json = new JSONObject(jsonString);
-    // importer.importObject(json);
-    // }
-    @Test
-    public void testRetrievalForTemplateDataElementInformation() throws JSONException, IOException {
-        HeterogeneousRegistry registry = new HeterogeneousRegistryImpl();
-        importer.setRegistry(registry);
-
-        JSONObject json = getTestJSONObject("data_element_preservation");
-        importer.importObject(json);
-
-        Collection<DataElementPreservation> registeredObjects = registry.getRegisteredObjects(
-                DataElementPreservation.class);
-        assertNotNull(registeredObjects);
-        assertFalse(registeredObjects.isEmpty());
     }
 
     /**

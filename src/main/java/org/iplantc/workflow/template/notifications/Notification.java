@@ -5,19 +5,19 @@ import static org.iplantc.workflow.util.ValidationUtils.validateFieldLength;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.iplantc.workflow.marshaller.NotificationMarshaller;
+import org.iplantc.workflow.marshaler.NotificationMarshaller;
 
 public class Notification {
 
 	long hid;
-	
+
 	String idc;
 	String name;
 	String sender;
 	String type;
 	List<String> receivers = new LinkedList<String>();
-	
-	
+
+
 	public String getIdc() {
 		return idc;
 	}
@@ -55,27 +55,27 @@ public class Notification {
         }
 		this.receivers = receivers;
 	}
-	
+
 	public void addreceiver(String receiver){
 		receivers.add(receiver);
 	}
-	
-	
+
+
 	public void accept(NotificationMarshaller marshaller) throws Exception{
 		marshaller.visit(this);
 		marshaller.leave(this);
-		
+
 	}
-	
-		
+
+
 	public long getHid() {
 		return hid;
 	}
 	public void setHid(long hid) {
 		this.hid = hid;
 	}
-	
-	
-	
-	
+
+
+
+
 }

@@ -535,7 +535,7 @@ public class FapiJobRequestFormatterTest {
         assertEquals("false", submission.getString("notify"));
         assertEquals("submit", submission.getString("request_type"));
         assertEquals("someuser", submission.getString("username"));
-        assertTrue(submission.getString("uuid").matches("j[-0-9a-f]{36}"));
+        assertTrue(submission.getString("uuid").matches("[-0-9A-F]{36}"));
         assertEquals("1", submission.getString("workspace_id"));
     }
 

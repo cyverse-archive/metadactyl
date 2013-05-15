@@ -12,7 +12,7 @@ import org.iplantc.workflow.integration.TemplateExporter;
 
 /**
  * A service that can be used to export analyses or templates.
- * 
+ *
  * @author Dennis Roberts
  */
 public class WorkflowExportService {
@@ -31,7 +31,7 @@ public class WorkflowExportService {
 
     /**
      * Exports a template.
-     * 
+     *
      * @param templateId the template identifier.
      * @return a JSON string representing the template.
      */
@@ -46,7 +46,7 @@ public class WorkflowExportService {
 
     /**
      * Gets a template from the database.
-     * 
+     *
      * @param daoFactory used to obtain data access objects.
      * @param templateId the template identifier.
      * @return a JSON string representing the template.
@@ -57,7 +57,7 @@ public class WorkflowExportService {
 
     /**
      * Exports an analysis.
-     * 
+     *
      * @param analysisId the analysis identifier.
      * @return a JSON string representing the analysis,
      */
@@ -72,27 +72,13 @@ public class WorkflowExportService {
 
     /**
      * Gets an analysis from the database.
-     * 
+     *
      * @param daoFactory used to obtain data access objects.
      * @param analysisId the analysis identifier.
      * @return a JSON string representing the analysis.
      */
     public String getAnalysis(DaoFactory daoFactory, String analysisId) {
         return new AnalysisExporter(daoFactory).exportAnalysis(analysisId).toString();
-    }
-
-    /**
-     * Gets the list of all analysis identifiers.
-     * 
-     * @return a JSON object containing the list of analysis identifiers.
-     */
-    public String getAnalysisIds() {
-        return new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<String>() {
-            @Override
-            public String perform(Session session) {
-                return new AnalysisExporter(new HibernateDaoFactory(session)).getAllAnalysisIds().toString();
-            }
-        });
     }
 
     /**

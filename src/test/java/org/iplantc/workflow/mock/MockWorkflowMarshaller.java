@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.data.DataObject;
-import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
+import org.iplantc.workflow.marshaler.BaseTemplateMarshaller;
 import org.iplantc.workflow.model.ContractType;
 import org.iplantc.workflow.model.Property;
 import org.iplantc.workflow.model.PropertyGroup;
@@ -18,7 +18,7 @@ import org.json.JSONObject;
 
 /**
  * A mock workflow marshaller to be used for testing the accept() methods in each of the workflow elements.
- * 
+ *
  * @author Dennis Roberts
  */
 public class MockWorkflowMarshaller implements BaseTemplateMarshaller {
@@ -105,7 +105,7 @@ public class MockWorkflowMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Gets the number of times this marshaller has visited a template.
-     * 
+     *
      * @return the number of template visits.
      */
     public int getTemplateVisits() {
@@ -114,7 +114,7 @@ public class MockWorkflowMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Gets the number of times this marshaller has left a template.
-     * 
+     *
      * @return the number of template leaves.
      */
     public int getTemplateLeaves() {
@@ -123,7 +123,7 @@ public class MockWorkflowMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Gets the number of times this marshaller has visited a property group.
-     * 
+     *
      * @return the number of property group visits.
      */
     public int getPropertyGroupVisits() {
@@ -132,7 +132,7 @@ public class MockWorkflowMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Gets the number of times this marshaller has left a property group.
-     * 
+     *
      * @return the number of property group leaves.
      */
     public int getPropertyGroupLeaves() {
@@ -141,7 +141,7 @@ public class MockWorkflowMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Gets the number of times this marshaller has visited a property.
-     * 
+     *
      * @return the number of property visits.
      */
     public int getPropertyVisits() {
@@ -150,7 +150,7 @@ public class MockWorkflowMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Gets the number of times this marshaller has left a property.
-     * 
+     *
      * @return the number of property leaves.
      */
     public int getPropertyLeaves() {
@@ -159,7 +159,7 @@ public class MockWorkflowMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Gets the number of times this marshaller has visited a property type.
-     * 
+     *
      * @return the number of property type visits.
      */
     public int getPropertyTypeVisits() {
@@ -168,7 +168,7 @@ public class MockWorkflowMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Gets the number of times this marshaller has left a property type.
-     * 
+     *
      * @return the number of property type leaves.
      */
     public int getPropertyTypeLeaves() {
@@ -177,7 +177,7 @@ public class MockWorkflowMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Gets the number of times this marshaller has visited a contract type.
-     * 
+     *
      * @return the number of contract type visits.
      */
     public int getContractTypeVisits() {
@@ -186,7 +186,7 @@ public class MockWorkflowMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Gets the number of times this marshaller has left a contract type.
-     * 
+     *
      * @return the number of contract type leaves.
      */
     public int getContractTypeLeaves() {
@@ -195,7 +195,7 @@ public class MockWorkflowMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Gets the number of times this marshaller has visited a validator.
-     * 
+     *
      * @return the number of validator visits.
      */
     public int getValidatorVisits() {
@@ -204,7 +204,7 @@ public class MockWorkflowMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Gets the number of times this marshaller has left a validator.
-     * 
+     *
      * @return the number of validator leaves.
      */
     public int getValidatorLeaves() {
@@ -213,7 +213,7 @@ public class MockWorkflowMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Gets the number of times this marshaller has visited a rule.
-     * 
+     *
      * @return the number of rule visits.
      */
     public int getRuleVisits() {
@@ -222,7 +222,7 @@ public class MockWorkflowMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Gets the number of times this marshaller has left a rule.
-     * 
+     *
      * @return the number of rule leaves.
      */
     public int getRuleLeaves() {
@@ -231,7 +231,7 @@ public class MockWorkflowMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Gets the number of times this marshaller has visited a rule type.
-     * 
+     *
      * @return the number of rule type visits.
      */
     public int getRuleTypeVisits() {
@@ -240,7 +240,7 @@ public class MockWorkflowMarshaller implements BaseTemplateMarshaller {
 
     /**
      * Gets the number of times this marshaller has left a rule type.
-     * 
+     *
      * @return the number of rule type leaves.
      */
     public int getRuleTypeLeaves() {

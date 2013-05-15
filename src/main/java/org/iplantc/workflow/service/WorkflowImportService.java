@@ -1,10 +1,8 @@
 package org.iplantc.workflow.service;
 
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import org.apache.commons.lang.StringUtils;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -13,13 +11,10 @@ import org.iplantc.hibernate.util.SessionTask;
 import org.iplantc.hibernate.util.SessionTaskWrapper;
 import org.iplantc.workflow.UnknownUpdateModeException;
 import org.iplantc.workflow.WorkflowException;
-import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.NotificationSetDao;
 import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
 import org.iplantc.workflow.dao.hibernate.HibernateNotificationSetDao;
-import org.iplantc.workflow.data.DataElementPreservation;
-import org.iplantc.workflow.data.ImportedWorkflow;
 import org.iplantc.workflow.integration.AnalysisGeneratingTemplateImporter;
 import org.iplantc.workflow.integration.AnalysisImporter;
 import org.iplantc.workflow.integration.AnalysisUpdater;
@@ -51,22 +46,22 @@ public class WorkflowImportService {
     /**
      * The database session factory.
      */
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
 
     /**
      * The index of the development analysis group.
      */
-    private int devAnalysisGroupIndex;
+    private final int devAnalysisGroupIndex;
 
     /**
      * The index of the favorites analysis group.
      */
-    private int favoritesAnalysisGroupIndex;
+    private final int favoritesAnalysisGroupIndex;
 
     /**
      * Used to initialize the user's workspace if necessary.
      */
-    private WorkspaceInitializer workspaceInitializer;
+    private final WorkspaceInitializer workspaceInitializer;
 
     /**
      * Used to validate templates that are being imported.
@@ -151,6 +146,7 @@ public class WorkflowImportService {
         AnalysisImporter analysisImporter =
                 new AnalysisImporter(daoFactory, templateGroupImporter, workspaceInitializer, updateVetted);
         analysisImporter.setRegistry(registry);
+        analysisImporter.setSession(session);
         return analysisImporter;
     }
 
@@ -221,8 +217,8 @@ public class WorkflowImportService {
      * @param jsonString the string representing the JSON object to import.
      * @throws JSONException if the JSON string is invalid or doesn't meet the expectations of the workflow importer.
      */
-    public void importWorkflow(String jsonString) throws JSONException {
-        importOrUpdateWorkflow(jsonString, UpdateMode.THROW, false);
+    public String importWorkflow(String jsonString) throws JSONException {
+        return importOrUpdateWorkflow(jsonString, UpdateMode.THROW, false);
     }
 
     /**
@@ -231,8 +227,8 @@ public class WorkflowImportService {
      * @param jsonString the string representing the JSON object to update.
      * @throws JSONException if the JSON string is invalid or doesn't meet the expectations of the workflow importer.
      */
-    public void updateWorkflow(String jsonString) throws JSONException {
-        importOrUpdateWorkflow(jsonString, UpdateMode.REPLACE, false);
+    public String updateWorkflow(String jsonString) throws JSONException {
+        return importOrUpdateWorkflow(jsonString, UpdateMode.REPLACE, false);
     }
 
     /**
@@ -242,8 +238,8 @@ public class WorkflowImportService {
      * @param updateModeName the name of the update mode to use.
      * @throws JSONException if the JSON string is invalid or doesn't meet the expectations of the workflow importer.
      */
-    public void forceUpdateWorkflow(String jsonString, String updateModeName) throws JSONException {
-        importOrUpdateWorkflow(jsonString, getUpdateMode(updateModeName), true);
+    public String forceUpdateWorkflow(String jsonString, String updateModeName) throws JSONException {
+        return importOrUpdateWorkflow(jsonString, getUpdateMode(updateModeName), true);
     }
 
     /**
@@ -274,34 +270,32 @@ public class WorkflowImportService {
      * @param updateMode indicates what should happen when an existing object matches one being imported.
      * @param updateVetted true if we should allow vetted analyses to be updated.
      */
-    private void importOrUpdateWorkflow(final String jsonString, final UpdateMode updateMode,
+    private String importOrUpdateWorkflow(final String jsonString, final UpdateMode updateMode,
             final boolean updateVetted) {
-        new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<Void>() {
+        return new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<String>() {
             @Override
-            public Void perform(Session session) {
-                importOrUpdateWorkflow(session, jsonString, updateMode, updateVetted);
-                return null;
+            public String perform(Session session) {
+                return importOrUpdateWorkflow(session, jsonString, updateMode, updateVetted);
             }
         });
     }
 
     /**
      * Either imports or updates a workflow.
-     *
+     * 
      * @param session the Hibernate session.
      * @param jsonString the string representing the JSON object to import.
      * @param updateMode indicates what should happen when an existing object matches one being imported.
      * @param updateVetted true if we should allow vetted analyses and templates to be updated.
+     * @return
      */
-    private void importOrUpdateWorkflow(Session session, String jsonString, UpdateMode updateMode,
+    private String importOrUpdateWorkflow(Session session, String jsonString, UpdateMode updateMode,
             boolean updateVetted) {
         try {
             HeterogeneousRegistry registry = new HeterogeneousRegistryImpl();
             JSONObject json = new JSONObject(jsonString);
             WorkflowImporter importer = createWorkflowImporter(registry, session, updateMode, updateVetted);
-            importer.importWorkflow(json);
-            perservationDataElements(registry, session);
-            captureImportJson(jsonString, registry, session);
+            return importer.importWorkflow(json);
         }
         catch (JSONException e) {
             throw new WorkflowException(e);
@@ -310,54 +304,6 @@ public class WorkflowImportService {
             logHibernateExceptionCause(e);
             throw e;
         }
-    }
-
-    private void captureImportJson(String jsonString, HeterogeneousRegistry registry, Session session) {
-        Collection<TransformationActivity> registeredObjects = registry.getRegisteredObjects(
-                TransformationActivity.class);
-        StringBuilder ids = new StringBuilder();
-        for (TransformationActivity activity : registeredObjects) {
-            ids.append(activity.getId()).append("|");
-        }
-
-        ImportedWorkflow imp = new ImportedWorkflow();
-        imp.setImportedJson(jsonString);
-        imp.setDateCreated(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date()));
-        imp.setAnalysisIds(ids.toString());
-
-        session.save(imp);
-    }
-
-    /*
-     * 573 curl -v -H 'Expect:' -d @/Users/lenards/Desktop/test.json http://localhost:14445/import-workflow 574 curl -v
-     * -H 'Expect:' -d @/Users/lenards/Desktop/test.json http://localhost:14445/import-workflow 575 curl -v -H 'Expect:'
-     * -d @/Users/lenards/Desktop/test.json http://localhost:14445/import-workflow 576 curl -v -H 'Expect:' -d
-     *
-     * @/Users/lenards/Desktop/test.json http://localhost:14445/import-workflow 577 curl -v -H 'Expect:' -d
-     *
-     * @/Users/lenards/Desktop/test.json http://localhost:14445/import-workflow 578 curl -v -H 'Expect:' -d
-     *
-     * @/Users/lenards/Desktop/test.json http://localhost:14445/import-workflow 579 curl -v -H 'Expect:' -d
-     *
-     * @/Users/lenards/Desktop/test.json http://localhost:14445/import-workflow
-     */
-    /**
-     * Persists the DataElements specified in an imported Workflow in the DataElementPerservation table for later use.
-     *
-     * A DataElement is also known as a DataObject in the model. The general nature of the term caused
-     *
-     * This method is a temporary "shunt" that funnels all mention of DataElements into a table in the schema.
-     *
-     * @param registry
-     * @param session
-     */
-    private void perservationDataElements(HeterogeneousRegistry registry, Session session) {
-        Collection<DataElementPreservation> registeredObjects = registry.getRegisteredObjects(
-                DataElementPreservation.class);
-        for (DataElementPreservation dataEl : registeredObjects) {
-            session.save(dataEl);
-        }
-
     }
 
     /**
@@ -415,7 +361,6 @@ public class WorkflowImportService {
                 importer.enableReplacement();
             }
             String result = importer.importObject(json);
-            perservationDataElements(registry, session);
             return result;
         }
         catch (JSONException e) {

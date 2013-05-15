@@ -15,7 +15,7 @@ import org.iplantc.persistence.dto.transformation.Transformation;
 
 /**
  * Used to access persistent transformation activities.
- * 
+ *
  * @author Dennis Roberts
  */
 public class MockTransformationActivityDao extends MockObjectDao<TransformationActivity> implements
@@ -64,16 +64,5 @@ public class MockTransformationActivityDao extends MockObjectDao<TransformationA
             throw new WorkflowException("multiple analyses found with name: " + name);
         }
         return analyses.isEmpty() ? null : analyses.get(0);
-    }
-
-    /**
-     * Gets only the list of analyses that are associated with valid deployed components.  There's no good way to
-     * mock this method right now, so it just returns the list of all analyses.
-     * 
-     * @return the list of analyses.
-     */
-    @Override
-    public List<TransformationActivity> getOnlyAnalysesReferencingValidDeployedComponents() {
-        return new ArrayList<TransformationActivity>(savedObjects);
     }
 }

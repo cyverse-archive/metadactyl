@@ -7,11 +7,11 @@ import java.util.List;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.iplantc.workflow.WorkflowException;
-import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
+import org.iplantc.workflow.marshaler.BaseTemplateMarshaller;
 
 /**
  * Represents a validation rule.
- * 
+ *
  * @author Dennis Roberts
  */
 public class Rule extends WorkflowElement {
@@ -28,7 +28,7 @@ public class Rule extends WorkflowElement {
 
     /**
      * Sets the rule type.
-     * 
+     *
      * @param ruleType the new rule type.
      */
     public void setRuleType(RuleType ruleType) {
@@ -37,7 +37,7 @@ public class Rule extends WorkflowElement {
 
     /**
      * Gets the rule type.
-     * 
+     *
      * @return the rule type.
      */
     public RuleType getRuleType() {
@@ -46,7 +46,7 @@ public class Rule extends WorkflowElement {
 
     /**
      * Adds an argument to the list of arguments.
-     * 
+     *
      * @param argument the argument to add.
      */
     public void addArgument(String argument) {
@@ -55,7 +55,7 @@ public class Rule extends WorkflowElement {
 
     /**
      * Sets the list of arguments. Hibernate requires a setter.
-     * 
+     *
      * @param arguments the new list of arguments.
      */
     public void setArguments(List<String> arguments) {
@@ -64,7 +64,7 @@ public class Rule extends WorkflowElement {
 
     /**
      * Gets the list of arguments for this rule.
-     * 
+     *
      * @return an unmodifiable copy of the list of arguments.
      */
     public List<String> getArguments() {
@@ -80,7 +80,7 @@ public class Rule extends WorkflowElement {
 
     /**
      * Creates a new rule with the given ID, name, label and description.
-     * 
+     *
      * @param id the rule identifier.
      * @param name the rule name.
      * @param label the rule label.

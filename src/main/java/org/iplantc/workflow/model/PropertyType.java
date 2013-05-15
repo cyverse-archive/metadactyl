@@ -1,7 +1,7 @@
 package org.iplantc.workflow.model;
 
 import org.iplantc.workflow.WorkflowException;
-import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
+import org.iplantc.workflow.marshaler.BaseTemplateMarshaller;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,11 +12,11 @@ import org.json.JSONObject;
  * are <code>text</code> and <code>boolean</code>. A <code>text</code> property would normally be represented by a
  * textbox in a form and could contain any arbitrary text. A <code>boolean<code> property, on the other hand, would
  * normally be represented by a checkbox in a form and may contain only true and false values.
- * 
+ *
  * @author Dennis Roberts
  */
 public class PropertyType extends WorkflowElement {
-    
+
     /**
      * True if this property type has been deprecated.
      */
@@ -83,7 +83,7 @@ public class PropertyType extends WorkflowElement {
 
     /**
      * Creates a new property type with the given ID, name, label, and description.
-     * 
+     *
      * @param id the property type identifier.
      * @param name the property type name.
      * @param label the property type label.

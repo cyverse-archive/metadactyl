@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 /**
  * A service that can be used to retrieve a list of known deployed components.
- * 
+ *
  * @author Dennis Roberts
  */
 public class DeployedComponentRetrievalService extends BaseWorkflowElementRetrievalService {
@@ -24,7 +24,7 @@ public class DeployedComponentRetrievalService extends BaseWorkflowElementRetrie
 
     /**
      * Initializes the superclass with the appropriate query and sets the session factory.
-     * 
+     *
      * @param sessionFactory the session factory.
      */
     public DeployedComponentRetrievalService(SessionFactory sessionFactory) {
@@ -70,13 +70,14 @@ public class DeployedComponentRetrievalService extends BaseWorkflowElementRetrie
      * @return the list of filtered deployed components.
      */
     private List<RepresentableAsJson> filterComponents(Session session, String searchTerm) {
-        String searchClause = "lower(%1$s) like '%%' || lower(:search) || '%%'";
+        String searchClause = "lower(%1$s) like '%%' || lower(:search) || '%%' escape '\\'";
 
+        String escapedSearchTerm = searchTerm.replaceAll("([\\\\%_])", "\\\\$1");
         String filter = String.format("where %1$s OR %2$s",
                                       String.format(searchClause, "name"),
                                       String.format(searchClause, "description"));
 
-        Query query = session.createQuery(queryString + " " + filter).setParameter("search", searchTerm);
+        Query query = session.createQuery(queryString + " " + filter).setParameter("search", escapedSearchTerm);
 
         return (List<RepresentableAsJson>)query.list();
     }

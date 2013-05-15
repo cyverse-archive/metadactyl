@@ -7,14 +7,14 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.workflow.WorkflowException;
-import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
+import org.iplantc.workflow.marshaler.BaseTemplateMarshaller;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * Represents a type of validation rule that can be performed.
- * 
+ *
  * @author Dennis Roberts
  */
 public class RuleType extends WorkflowElement {
@@ -131,7 +131,7 @@ public class RuleType extends WorkflowElement {
 
     /**
      * Creates a new rule type with the given ID, name, label and description.
-     * 
+     *
      * @param id the rule type identifier.
      * @param name the rule type name.
      * @param label the rule type label.

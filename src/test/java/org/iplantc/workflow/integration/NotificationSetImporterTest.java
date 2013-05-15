@@ -18,7 +18,7 @@ import org.junit.Test;
 
 /**
  * Unit tests for org.iplantc.workflow.create.NotificationSetImporter.
- * 
+ *
  * @author Dennis Roberts
  */
 public class NotificationSetImporterTest {
@@ -44,7 +44,7 @@ public class NotificationSetImporterTest {
 
     /**
      * Verifies that we can import a fully specified notification set.
-     * 
+     *
      * @throws JSONException if the JSON object we're importing is invalid.
      */
     @Test
@@ -83,7 +83,7 @@ public class NotificationSetImporterTest {
 
     /**
      * Verifies that we can import a minimally specified notification set.
-     * 
+     *
      * @throws JSONException if the JSON object we're importing is invalid.
      */
     @Test
@@ -103,11 +103,11 @@ public class NotificationSetImporterTest {
         importer.importObject(json);
         assertEquals(1, notificationSetDao.getSavedObjects().size());
         NotificationSet notificationSet = notificationSetDao.getSavedObjects().get(0);
-        assertTrue(notificationSet.getIdc().matches("n[0-9a-f]{32}"));
+        assertTrue(notificationSet.getIdc().matches("[-0-9A-F]{36}"));
         assertEquals("name", notificationSet.getName());
         assertEquals(1, notificationSet.getNotifications().size());
         Notification notification = notificationSet.getNotifications().get(0);
-        assertTrue(notification.getIdc().matches("o[0-9a-f]{32}"));
+        assertTrue(notification.getIdc().matches("[-0-9A-F]{36}"));
         assertNull(notification.getName());
         assertEquals(1, notification.getReceivers().size());
         assertEquals("baz_blrfl", notification.getReceivers().get(0));
@@ -115,7 +115,7 @@ public class NotificationSetImporterTest {
 
     /**
      * Verifies that a missing name generates an exception.
-     * 
+     *
      * @throws JSONException if the JSON document that we pass in is invalid.
      */
     @Test(expected = JSONException.class)
@@ -136,7 +136,7 @@ public class NotificationSetImporterTest {
 
     /**
      * Verifies that a missing analysis ID generates an exception.
-     * 
+     *
      * @throws JSONException if the JSON document that we pass in is invalid.
      */
     @Test(expected = JSONException.class)
@@ -157,7 +157,7 @@ public class NotificationSetImporterTest {
 
     /**
      * Verifies that a missing notification sender generates an exception.
-     * 
+     *
      * @throws JSONException if the JSON document that we pass in is invalid.
      */
     @Test(expected = JSONException.class)
@@ -178,7 +178,7 @@ public class NotificationSetImporterTest {
 
     /**
      * Verifies that a missing notification type generates an exception.
-     * 
+     *
      * @throws JSONException if the JSON document we pass in is invalid.
      */
     @Test(expected = JSONException.class)
@@ -199,7 +199,7 @@ public class NotificationSetImporterTest {
 
     /**
      * Verifies that a missing receiver list generates an exception.
-     * 
+     *
      * @throws JSONException if the JSON document we pass in is invalid.
      */
     @Test(expected = JSONException.class)
@@ -218,7 +218,7 @@ public class NotificationSetImporterTest {
 
     /**
      * Verifies that we can import multiple notification sets at once.
-     * 
+     *
      * @throws JSONException if the JSON array that we're importing is invalid.
      */
     @Test
@@ -266,11 +266,11 @@ public class NotificationSetImporterTest {
         assertEquals("baz_blrfl", notification1.getReceivers().get(0));
         assertEquals("glarb_quux", notification1.getReceivers().get(1));
         NotificationSet notificationSet2 = notificationSetDao.getSavedObjects().get(1);
-        assertTrue(notificationSet2.getIdc().matches("n[0-9a-f]{32}"));
+        assertTrue(notificationSet2.getIdc().matches("[-0-9A-F]{36}"));
         assertEquals("name", notificationSet2.getName());
         assertEquals(1, notificationSet2.getNotifications().size());
         Notification notification2 = notificationSet2.getNotifications().get(0);
-        assertTrue(notification2.getIdc().matches("o[0-9a-f]{32}"));
+        assertTrue(notification2.getIdc().matches("[-0-9A-F]{36}"));
         assertNull(notification2.getName());
         assertEquals(1, notification2.getReceivers().size());
         assertEquals("baz_blrfl", notification2.getReceivers().get(0));
@@ -278,7 +278,7 @@ public class NotificationSetImporterTest {
 
     /**
      * Verifies that the importer can handle a reference to a named analysis.
-     * 
+     *
      * @throws JSONException if the JSON object doesn't satisfy the importer's requirements.
      */
     @Test
@@ -304,7 +304,7 @@ public class NotificationSetImporterTest {
 
     /**
      * Verifies that the importer can reference more than one named analysis.
-     * 
+     *
      * @throws JSONException if the JSON object doesn't satisfy the importer's requirements.
      */
     @Test
@@ -346,7 +346,7 @@ public class NotificationSetImporterTest {
 
     /**
      * Verifies that an unknown analysis name causes an exception.
-     * 
+     *
      * @throws JSONException if the JSON object doesn't meet the requirements of the importer.
      */
     @Test(expected = JSONException.class)
@@ -369,7 +369,7 @@ public class NotificationSetImporterTest {
 
     /**
      * Verifies that JSON object with no analysis name or ID causes an exception.
-     * 
+     *
      * @throws JSONException if the JSON object doesn't meet the requirements of the importer.
      */
     @Test(expected = JSONException.class)
@@ -391,7 +391,7 @@ public class NotificationSetImporterTest {
 
     /**
      * Verifies that notification sets are replaced if replacement is enabled.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      */
     @Test
@@ -406,7 +406,7 @@ public class NotificationSetImporterTest {
     /**
      * Verifies that an exception is thrown if notification set replacement is disabled and someone attempts to replace
      * a notification set.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      */
     @Test(expected = WorkflowException.class)
@@ -418,7 +418,7 @@ public class NotificationSetImporterTest {
 
     /**
      * Verifies that notification sets are not replaced if replacement is ignored.
-     * 
+     *
      * @throws JSONException if a JSON error occurs.
      */
     @Test
@@ -432,7 +432,7 @@ public class NotificationSetImporterTest {
 
     /**
      * Creates a minimal notification set JSON object for testing.
-     * 
+     *
      * @param analysisId the analysis identifier to use in the unit test.
      * @param type the type of notification to include in the notification set.
      * @return the JSON object.

@@ -9,12 +9,12 @@ import java.util.List;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.workflow.WorkflowException;
-import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
+import org.iplantc.workflow.marshaler.BaseTemplateMarshaller;
 
 /**
  * Represents a group of properties in a workflow. Each property group typically gets its own pane in the user
  * interface.
- * 
+ *
  * @author Dennis Roberts
  */
 public class PropertyGroup extends WorkflowElement implements Iterable<Property> {
@@ -30,7 +30,7 @@ public class PropertyGroup extends WorkflowElement implements Iterable<Property>
     private String groupType;
 
     private boolean visible=true;
-    
+
     /**
      * Creates a new property group.
      */
@@ -40,7 +40,7 @@ public class PropertyGroup extends WorkflowElement implements Iterable<Property>
 
     /**
      * Creates a new property group with the given ID, name, label and description.
-     * 
+     *
      * @param id the property group identifier.
      * @param name the property group name.
      * @param label the property group label.
@@ -52,7 +52,7 @@ public class PropertyGroup extends WorkflowElement implements Iterable<Property>
 
     /**
      * Adds a property to this property group.
-     * 
+     *
      * @param property the property to add.
      */
     public void addProperty(Property property) {
@@ -61,7 +61,7 @@ public class PropertyGroup extends WorkflowElement implements Iterable<Property>
 
     /**
      * Gets an iterator for the properties in this property group.
-     * 
+     *
      * @return the iterator.
      */
     @Override
@@ -71,7 +71,7 @@ public class PropertyGroup extends WorkflowElement implements Iterable<Property>
 
     /**
      * Sets the list of properties. Hibernate requires a setter.
-     * 
+     *
      * @param properties the new list of properties.
      */
     public void setProperties(List<Property> properties) {
@@ -80,7 +80,7 @@ public class PropertyGroup extends WorkflowElement implements Iterable<Property>
 
     /**
      * Gets the type of property group
-     * 
+     *
      * @return the type of this property group.
      */
     public String getGroupType() {
@@ -89,7 +89,7 @@ public class PropertyGroup extends WorkflowElement implements Iterable<Property>
 
     /**
      * Sets the type of this property groups
-     * 
+     *
      * @param pgtype the name of the property group type.
      */
     public void setGroupType(String pgtype) {
@@ -99,7 +99,7 @@ public class PropertyGroup extends WorkflowElement implements Iterable<Property>
 
     /**
      * Gets the list of properties.
-     * 
+     *
      * @return an unmodifiable copy of the list of properties.
      */
     public List<Property> getProperties() {

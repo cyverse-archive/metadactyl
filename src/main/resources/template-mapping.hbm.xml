@@ -203,7 +203,7 @@
     <id name="hid" column="hid">
       <generator class="increment" />
     </id>
-    
+
     <property name="id" column="id" />
     <property name="name" column="name" />
     <property name="label" column="label" />
@@ -215,7 +215,7 @@
     <id name="hid" column="hid">
       <generator class="increment" />
     </id>
-    
+
     <property name="id" column="id" />
     <property name="name" column="name" />
     <property name="label" column="label" />
@@ -247,35 +247,5 @@
       <many-to-many column="template_id" class="org.iplantc.workflow.core.TransformationActivity" />
     </set>
   </class>
-  
-  <!-- 
-  	This is a table meant to capture and preserve information about analyses added to the system 
-  	who have InfoType/FileFormat combinations that are not yet supported.  Currently, we only 
-  	support generic types for input/output (type=File).  We need to make this more robust, but do 
-  	not have the time required to do this cleanly and robustly.  This table is a "stop-gap" to 
-  	help avoid painful retrofitting at a later date. 
-  	 
-	guilty-party: alenards (2011/05/13)  
-   -->
-  <class name="org.iplantc.workflow.data.DataElementPreservation" table="dataelementpreservation">
-  	<id name="hid" column="hid">
-      <generator class="increment" />
-    </id>
-        
-    <property name="templateId" column="templateuuid" />
-    <property name="infoTypeName" column="infotypename" />
-    <property name="fileFormatName" column="fileformatname" />
-    <property name="dateCreated" column="datecreated" />    
-  </class>
-  
-  <class name="org.iplantc.workflow.data.ImportedWorkflow" table="importedworkflow">
-  	<id name="hid" column="hid">
-      <generator class="increment" />
-    </id>
-    
-	<property name="importedJson" column="importJson" />        
-    <property name="analysisIds" column="analysisuuid" />
-    <property name="dateCreated" column="datecreated" />    
-  </class>
-  
+
 </hibernate-mapping>

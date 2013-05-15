@@ -9,14 +9,14 @@ import org.iplantc.persistence.dto.transformation.Transformation;
 
 /**
  * Used to generate analyses for individual templates.
- * 
+ *
  * @author Dennis Roberts
  */
 public class AnalysisGenerator {
 
     /**
      * Generates an analysis for the given template.
-     * 
+     *
      * @param template the template.
      * @return the generated analysis.
      */
@@ -34,7 +34,7 @@ public class AnalysisGenerator {
     /**
      * Gets a description to use for the analysis. If the template description is present, it's copied to the
      * analysis. Otherwise, it uses a canned description.
-     * 
+     *
      * @param templateDescription the description of the original template.
      * @return the description to use for the analysis.
      */
@@ -44,13 +44,13 @@ public class AnalysisGenerator {
 
     /**
      * Generates a transformation step for the given template.
-     * 
+     *
      * @param template the template.
      * @return the generated transformation step.
      */
     private TransformationStep stepForTemplate(Template template) {
         TransformationStep step = new TransformationStep();
-        step.setGuid(ImportUtils.generateId("s"));
+        step.setGuid(ImportUtils.generateId());
         step.setName(StringUtils.trimToEmpty(template.getName()));
         step.setDescription(StringUtils.trimToEmpty(template.getDescription()));
         step.setTransformation(transformationForTemplate(template));
@@ -59,7 +59,7 @@ public class AnalysisGenerator {
 
     /**
      * Generates a transformation for the given template.
-     * 
+     *
      * @param template the template.
      * @return the generated transformation.
      */

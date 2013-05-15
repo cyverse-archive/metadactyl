@@ -24,12 +24,12 @@ public class WorkflowImporter {
     /**
      * Used to map JSON keys to their respective importers.
      */
-    private Map<String, ObjectImporter> importerMap = new HashMap<String, ObjectImporter>();
+    private final Map<String, ObjectImporter> importerMap = new HashMap<String, ObjectImporter>();
 
     /**
      * Used to keep track of the order in which top-level elements are supposed to be processed.
      */
-    private List<String> keysToProcess = new ArrayList<String>();
+    private final List<String> keysToProcess = new ArrayList<String>();
 
     /**
      * Adds an importer to the importer map.
@@ -88,15 +88,18 @@ public class WorkflowImporter {
      * Imports a workflow.
      * 
      * @param json the JSON object representing the workflow.
+     * @return
      * @throws JSONException if the JSON object doesn't meet the expectations of this class.
      * @throws WorkflowException if an unrecognized top-level key is received.
      */
-    public void importWorkflow(JSONObject json) throws JSONException {
+    public String importWorkflow(JSONObject json) throws JSONException {
         JSONArray keys = json.names();
         if (keys != null) {
             validateKeys(keys);
-            importWorkflowElements(json);
+            return importWorkflowElements(json);
         }
+
+        return new JSONObject().toString();
     }
 
     /**
@@ -119,15 +122,19 @@ public class WorkflowImporter {
      * Imports the individual workflow elements.
      * 
      * @param json the JSON object representing all of the workflow elements.
+     * @return
      * @throws JSONException if the JSON object doesn't meet the expectations of this class.
      * @throws WorkflowException if an unrecognized top-level key is received.
      */
-    private void importWorkflowElements(JSONObject json) throws JSONException {
+    private String importWorkflowElements(JSONObject json) throws JSONException {
+        JSONObject ret = new JSONObject();
         for (String key : keysToProcess) {
             ObjectImporter importer = importerMap.get(key);
             if (json.has(key)) {
-                importer.importObjectList(json.getJSONArray(key));
+                ret.put(key, importer.importObjectList(json.getJSONArray(key)));
             }
         }
+
+        return ret.toString();
     }
 }

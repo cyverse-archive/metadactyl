@@ -35,7 +35,7 @@ public class JobDto {
    * Creates a new JobDto.
    */
   public JobDto() {
-    uuid = "j" + UUID.randomUUID().toString();
+    uuid = UUID.randomUUID().toString().toUpperCase();
   }
 
   /**

@@ -5,7 +5,6 @@ import static org.iplantc.workflow.integration.util.JsonUtils.optBoolean;
 import static org.iplantc.workflow.integration.util.JsonUtils.optString;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,7 +17,6 @@ import org.iplantc.persistence.dto.data.DataSource;
 import org.iplantc.workflow.UnknownDataSourceException;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.dao.DaoFactory;
-import org.iplantc.workflow.data.DataElementPreservation;
 import org.iplantc.workflow.data.DataObject;
 import org.iplantc.workflow.data.InfoType;
 import org.iplantc.workflow.data.Multiplicity;
@@ -101,7 +99,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
      */
     @Override
     public Template fromJson(JSONObject json) throws JSONException {
-        templateId = ImportUtils.getId(json, "id", "t");
+        templateId = ImportUtils.getId(json, "id");
         inputs = new LinkedList<DataObject>();
         outputs = new LinkedList<DataObject>();
 
@@ -193,10 +191,10 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
      */
     private PropertyGroup propertyGroupFromJson(JSONObject json) throws JSONException {
         PropertyGroup propertyGroup = new PropertyGroup();
-        propertyGroup.setId(ImportUtils.getId(json, "id", "g"));
+        propertyGroup.setId(ImportUtils.getId(json, "id"));
         propertyGroup.setName(json.optString("name", ""));
         propertyGroup.setLabel(json.optString("label", ""));
-        propertyGroup.setGroupType(json.getString("type"));
+        propertyGroup.setGroupType(json.optString("type", ""));
         propertyGroup.setVisible(optBoolean(json, true, "visible", "isVisible"));
         propertyGroup.setProperties(propertyListFromJson(json.getJSONArray("properties")));
         return propertyGroup;
@@ -226,7 +224,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
      */
     private Property propertyFromJson(JSONObject json, int listIndex) throws JSONException {
         Property property = new Property();
-        property.setId(ImportUtils.getId(json, "id", "p"));
+        property.setId(ImportUtils.getId(json, "id"));
         property.setPropertyType(getPropertyType(json.getString("type")));
         property.setDefaultValue(extractDefaultValue(json));
         property.setName(json.optString("name", ""));
@@ -260,7 +258,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
         Validator validator = null;
         if (json != null) {
             validator = new Validator();
-            validator.setId(ImportUtils.getId(json, "id", "v"));
+            validator.setId(ImportUtils.getId(json, "id"));
             validator.setName(JsonUtils.optString(json, "", "name", "label"));
             validator.setRequired(json.optBoolean("required", false));
             validator.setRules(ruleListFromJson(json.optJSONArray("rules")));
@@ -295,7 +293,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
     private Rule ruleFromJson(JSONObject json) throws JSONException {
         Rule rule = new Rule();
         RuleType ruleType = ruleTypeFromRuleJson(json);
-        rule.setId(ImportUtils.generateId("r"));
+        rule.setId(ImportUtils.generateId());
         rule.setRuleType(ruleType);
         rule.setArguments(ruleArgumentListFromJson(json.getJSONArray(ruleType.getName())));
         return rule;
@@ -392,11 +390,8 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
             return null;
         }
 
-        // any named-data-format that does not exist (which is indicated by `dataFmt` being null)
-        // will need to tracked until a set of "supported info-type/data format" combos is created
         DataFormat dataFmt = getDataFormat(json.optString("format", null));
         InfoType infoType = getInfoType(JsonUtils.optString(json, "File", "file_info_type", "type"));
-        boolean isSupported = infoType != null && dataFmt != null;
 
         DataObject dataObject = new DataObject();
         dataObject.setId(propertyId);
@@ -408,10 +403,6 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
         dataObject.setDescription(json.optString("description", ""));
         dataObject.setRequired(json.optBoolean("required", true));
 
-        // preserve any unsupported data objects
-        if (!isSupported) { // the dataObject is being mutated
-            preserveUnsupportedAndReclassifyAsFileUnspecified(dataObject, json);
-        }
         return dataObject;
     }
 
@@ -522,63 +513,6 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
     }
 
     /**
-     * Persists a DataObject representing a currently unsupported info-type/data-format.
-     *
-     * This "preservation" method is meant to be short-lived while the process of
-     * collecting info-type/data-formats is going on. Eventually a set of supported
-     * info-type/data-formats must be enforced.
-     *
-     * @param templateId string representing the identifier for the template
-     * @param dataObject
-     * @param json
-     */
-    private void preserveUnsupportedAndReclassifyAsFileUnspecified(DataObject dataObject,
-            JSONObject json) { // build a data-format object from provided JSON
-        DataFormat dataFmt = new DataFormat(json.optString("id", "no-id"),
-                json.optString("format", json.optString("name", "no-fmt-or-name")),
-                json.optString("label", "no-label"));
-        InfoType infoType = new InfoType(json.optString("id", "no-id"),
-                json.optString("type", json.optString("name", "no-fmt-or-name")),
-                json.optString("label", "no-label"),
-                json.optString("description", "no-desc"));
-
-        DataElementPreservation dataEl = new DataElementPreservation();
-        dataEl.setTemplateId(templateId);
-        dataEl.setInfoTypeName(infoType.getName());
-        dataEl.setFileFormatName(dataFmt.toString());
-        dataEl.setDateCreated(DATE_FMT.format(new Date()));
-
-        // register for later persistence in WorkflowImportService
-        registry.add(DataElementPreservation.class,
-                dataEl.getInfoTypeName() + "/" + dataFmt.getName(), dataEl);
-
-        reclassifyAsInfoTypeUnspecified(dataObject);
-        reclassifyAsFileFormatUnspecified(dataObject);
-    }
-
-    /**
-     * Mark the information type as unspecified if it's null.
-     *
-     * @param dataObject the data object to reclassify.
-     */
-    private void reclassifyAsInfoTypeUnspecified(DataObject dataObject) {
-        if (dataObject.getInfoType() == null) {
-            dataObject.setInfoType(getInfoType(FILE_INFO_TYPE));
-        }
-    }
-
-    /**
-     * Mark the data format as unspecified if it's null.
-     *
-     * @param dataObject the data object to reclassify.
-     */
-    private void reclassifyAsFileFormatUnspecified(DataObject dataObject) {
-        if (dataObject.getDataFormat() == null) {
-            dataObject.setDataFormat(getNamedDataFormat(UNSPECIFIED_DATA_FORMAT));
-        }
-    }
-
-    /**
      * Pulls the default value or value stated as the default from the JSON object.
      *
      * @param json the JSON object (collection of keys & values)
@@ -586,7 +520,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
      * @throws JSONException
      */
     private String extractDefaultValue(JSONObject json) throws JSONException {
-        String key = "";
+        String key;
         if (json.has("default_value")) {
             key = json.getString("default_value");
         }
@@ -608,7 +542,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
      * @return the data format.
      */
     private DataFormat getDataFormat(String name) {
-        return name == null ? getNamedDataFormat(UNSPECIFIED_DATA_FORMAT) : getNamedDataFormat(name);
+        return StringUtils.isBlank(name) ? getNamedDataFormat(UNSPECIFIED_DATA_FORMAT) : getNamedDataFormat(name);
     }
 
     /**
@@ -620,17 +554,7 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
      */
     private DataFormat getNamedDataFormat(String name) throws WorkflowException {
         DataFormat dataFormat = daoFactory.getDataFormatDao().findByName(name);
-
-        // DEVN => {guilty-party: alenards, date: 2011/05/21}
-        // Ideally - unsupported named-data-format will cause an exception in a future
-        // implementation of the metadata-workflow backend. Why this is commented out
-        // is that we need to allow the ad-hoc specification of named-data-formats as
-        // a "collection" mechanism such that they can be defined at a later point.
-        // (...and now you have the 'rest of the story')
-        // if (dataFormat == null) {
-        // throw new WorkflowException("data format, " + name + " not found");
-        // }
-        return dataFormat;
+        return dataFormat == null ? getNamedDataFormat(UNSPECIFIED_DATA_FORMAT) : dataFormat;
     }
 
     /**

@@ -25,7 +25,6 @@ import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupDto;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupHierarchyList;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisGroupList;
 import org.iplantc.workflow.service.dto.analysis.list.AnalysisList;
-import org.iplantc.workflow.service.dto.analysis.list.AnalysisSearchList;
 import org.iplantc.workflow.service.dto.analysis.list.UserRating;
 
 /**
@@ -73,7 +72,7 @@ public class AnalysisListingService {
 
     /**
      * Lists the analysis group hierarchy.
-     * 
+     *
      * @param workspaceToken either the workspace identifier or the user's e-mail address.
      * @return a JSON string representing the analysis group hierarchy listings.
      */
@@ -91,7 +90,7 @@ public class AnalysisListingService {
 
     /**
      * Lists all of the public analyses.
-     * 
+     *
      * @return a JSON string representing the list of public analyses.
      */
     public String listPublicAnalyses() {
@@ -108,7 +107,7 @@ public class AnalysisListingService {
 
     /**
      * Lists all analyses that are visible to a user.
-     * 
+     *
      * @param analysisGroupId the group ID
      * @return a JSON string representing the list of public analyses.
      */
@@ -140,35 +139,10 @@ public class AnalysisListingService {
     }
 
     /**
-     * Lists all analyses, that are visible to a user, that contain the given searchTerm in the name or
-     * description.
-     * 
-     * @param searchTerm the search term
-     * @return a JSON string representing the list of public analyses.
-     */
-    public String searchAnalyses(final String searchTerm) {
-        return new SessionTaskWrapper(sessionFactory).performTask(new SessionTask<String>() {
-            @Override
-            public String perform(Session session) {
-                DaoFactory daoFactory = new HibernateDaoFactory(session);
-
-                AnalysisGroupFinder analysisGroupFinder = new AnalysisGroupFinder(daoFactory);
-                Workspace workspace = workspaceInitializer.getWorkspace(daoFactory);
-
-                List<AnalysisGroup> groups = analysisGroupFinder.findDefaultGroups(workspace);
-                AnalysisGroup favoritesGroup = analysisGroupFinder.findFavoritesGroup();
-                Set<AnalysisListing> favorites = new HashSet<AnalysisListing>(favoritesGroup.getAllActiveAnalyses());
-
-                return new AnalysisSearchList(session, searchTerm, groups, favorites).toString();
-            }
-        });
-    }
-
-    /**
      * Lists an analysis corresponding to a given identifier.  The result is a JSON string representing an object
      * containing a list of analyses.  If an analysis with the given identifier exists then the list will contain
      * that analysis.  Otherwise, the list will be empty.
-     * 
+     *
      * @param analysisId the analysis identifier.
      * @return a JSON string representing an object containing a list of analyses.
      */
@@ -184,7 +158,7 @@ public class AnalysisListingService {
     /**
      * Lists all of the deployed components associated with an analysis.  There may be multiple deployed components
      * associated with a single analysis if the analysis happens to have multiple steps.
-     * 
+     *
      * @param analysisId the analysis identifier.
      * @return the list of deployed components.
      */
@@ -202,7 +176,7 @@ public class AnalysisListingService {
      * Finds analysis groups.
      */
     private class AnalysisGroupFinder {
-        
+
         /**
          * Used to obtain data access objects.
          */
@@ -217,7 +191,7 @@ public class AnalysisListingService {
 
         /**
          * Finds and returns the list of root public analysis groups.
-         * 
+         *
          * @return the list of root public analysis groups.
          */
         public List<AnalysisGroup> findPublicGroups() {
@@ -255,7 +229,7 @@ public class AnalysisListingService {
 
         /**
          * Finds the analysis group containing the current user's favorite analyses.
-         * 
+         *
          * @return the analysis group
          * @throws WorkflowException if the user doesn't have a favorites group
          */
@@ -273,7 +247,7 @@ public class AnalysisListingService {
 
         /**
          * Finds the analysis group with the given identifier.
-         * 
+         *
          * @param groupId the analysis group identifier
          * @return the analysis group
          * @throws WorkflowException if the analysis group isn't found
@@ -288,7 +262,7 @@ public class AnalysisListingService {
 
         /**
          * Adds the public root analysis groups to a list of analysis groups.
-         * 
+         *
          * @param groups the list of analysis groups
          */
         private void addPublicGroups(List<AnalysisGroup> groups) {
@@ -302,7 +276,7 @@ public class AnalysisListingService {
 
         /**
          * Gets the root analysis group for a workspace.
-         * 
+         *
          * @param workspace the workspace
          * @return the root analysis group
          */
@@ -313,7 +287,7 @@ public class AnalysisListingService {
 
         /**
          * Adds the root analysis group for a user to a list of analysis groups.
-         * 
+         *
          * @param groups the list of analysis groups
          * @param workspace the user's workspace
          */
@@ -328,7 +302,7 @@ public class AnalysisListingService {
 
         /**
          * Gets the workspace for a workspace identifier or e-mail address.
-         * 
+         *
          * @param workspaceToken the workspace identifier or e-mail address
          * @return the workspace or null if a workspace can't be found
          */

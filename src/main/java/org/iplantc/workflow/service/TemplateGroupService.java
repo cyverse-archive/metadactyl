@@ -88,10 +88,13 @@ public class TemplateGroupService {
                     fillIntegrationDatum(daoFactory, transformationActivity);
                     fillReferences(transformationActivity);
                     fillSuggestedGroups(daoFactory, transformationActivity);
-                    transformationActivity.setDescription(input.getString("desc"));
+                    transformationActivity.setDescription(input.optString("desc", transformationActivity.getDescription()));
+                    transformationActivity.setName(input.optString("name", transformationActivity.getName()));
                     transformationActivity.setWikiurl(input.getString("wiki_url"));
 
-                    transformationActivity.setIntegrationDate(new Date());
+                    if (transformationActivity.getIntegrationDate() == null) {
+                        transformationActivity.setIntegrationDate(new Date());
+                    }
 
                     // Remove Analysis from it's current groups
                     List<TemplateGroup> currentGroups = templateGroupDao.findTemplateGroupsContainingAnalysis(transformationActivity);
@@ -120,8 +123,8 @@ public class TemplateGroupService {
             private void fillIntegrationDatum(DaoFactory daoFactory, TransformationActivity transformationActivity) throws JSONException {
                 // Fill in the transformation activity information
             	IntegrationDatumDao integrationDatumDao = daoFactory.getIntegrationDatumDao();
-            	String email = input.getString("email");
-            	String integrator = input.getString("integrator");
+            	String email = userSessionService.getUser().getEmail();
+            	String integrator = userSessionService.getUser().getShortUsername();
                 IntegrationDatum integrationDatum = integrationDatumDao.findByNameAndEmail(integrator, email);
 
                 if(integrationDatum == null){

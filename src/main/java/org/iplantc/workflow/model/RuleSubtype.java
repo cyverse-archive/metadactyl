@@ -3,11 +3,11 @@ package org.iplantc.workflow.model;
 import static org.iplantc.workflow.util.ValidationUtils.validateFieldLength;
 
 import org.iplantc.workflow.WorkflowException;
-import org.iplantc.workflow.marshaller.BaseTemplateMarshaller;
+import org.iplantc.workflow.marshaler.BaseTemplateMarshaller;
 
 /**
  * Represents a sub-category for property validation rules.
- * 
+ *
  * @author Dennis Roberts
  */
 public class RuleSubtype extends WorkflowElement {
