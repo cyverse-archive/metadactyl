@@ -2,6 +2,7 @@ package org.iplantc.workflow.experiment.dto;
 
 import net.sf.json.JSONObject;
 import org.iplantc.workflow.core.TransformationActivity;
+import org.iplantc.workflow.util.SfJsonUtils;
 
 /**
  * Helper class used to build a job.  Used to fill out parts of the Job object
@@ -43,7 +44,7 @@ public class JobConstructor {
     job.setDescription(experimentJson.optString("description", ""));
     job.setNotify(experimentJson.getBoolean("notify"));
     job.setWorkspaceId(experimentJson.getString("workspace_id"));
-    job.setOutputDir(experimentJson.optString("output_dir", ""));
+    job.setOutputDir(SfJsonUtils.optString(experimentJson, "", "outputDirectory", "output_dir"));
     job.setCreateOutputSubdir(experimentJson.optBoolean("create_output_subdir", true));
   }
 
