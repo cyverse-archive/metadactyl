@@ -3,6 +3,7 @@ package org.iplantc.workflow.service.dto.analysis;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import org.iplantc.persistence.dto.listing.AnalysisListing;
 import org.iplantc.persistence.dto.listing.DeployedComponentListing;
 import org.iplantc.workflow.service.dto.AbstractDto;
@@ -20,7 +21,7 @@ public class DeployedComponentListDto extends AbstractDto {
     /**
      * The list of deployed components.
      */
-    @JsonField(name = "deployed_components")
+    @JsonField(name = "components")
     List<DeployedComponentDto> deployedComponents = new ArrayList<DeployedComponentDto>();
 
     /**
