@@ -1,8 +1,10 @@
 package org.iplantc.workflow.user;
 
+import org.iplantc.persistence.dto.workspace.Workspace;
+
 /**
  * Encapsulated user information.
- * 
+ *
  * @author Dennis Roberts
  */
 public class UserInfo {
@@ -10,7 +12,20 @@ public class UserInfo {
     /**
      * The workspace ID.
      */
-    private String workspaceId;
+    private final String workspaceId;
+
+    /**
+     * True if the workspace is new.
+     */
+    private final boolean newWorkspace;
+
+    /**
+     * @param workspace the user's workspace.
+     */
+    public UserInfo(Workspace workspace) {
+        workspaceId = String.valueOf(workspace.getId());
+        newWorkspace = workspace.getIsNew();
+    }
 
     /**
      * @return the workspace ID.
@@ -20,16 +35,9 @@ public class UserInfo {
     }
 
     /**
-     * @param workspaceId the workspace ID.
+     * @return true if the workspace was just created.
      */
-    public void setWorkspaceId(String workspaceId) {
-        this.workspaceId = workspaceId;
-    }
-
-    /**
-     * @param workspaceId the workspace ID as a long integer.
-     */
-    public void setWorkspaceId(long workspaceId) {
-        this.workspaceId = String.valueOf(workspaceId);
+    public boolean isNewWorkspace() {
+        return newWorkspace;
     }
 }

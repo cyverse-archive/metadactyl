@@ -22,7 +22,7 @@ import org.iplantc.workflow.user.UserInfo;
 
 /**
  * A service that can be used to obtain information about a user.
- * 
+ *
  * @author Dennis Roberts
  */
 public class UserService {
@@ -88,7 +88,7 @@ public class UserService {
 
     /**
      * Gets information about the current user as a JSON string.
-     * 
+     *
      * @return the JSON string representing the current user.
      */
     public UserInfo getCurrentUserInfo() {
@@ -102,7 +102,7 @@ public class UserService {
 
     /**
      * Gets information about the current user from the UserSessionService instance.
-     * 
+     *
      * @return the user details.
      * @throws org.iplantc.authn.exception.UserNotFoundException if the user can't be found.
      */
@@ -116,7 +116,7 @@ public class UserService {
      * Creates a user's workspace and any required components of the user's workspace if the user doesn't have a
      * workspace yet.  If the user does have a workspace and the required components of the workspace haven't been
      * created yet, then the components will be created.
-     * 
+     *
      * @param DaoFactory used to obtain data access objects.
      * @param username the user's e-mail address.
      * @return the workspace ID.
@@ -127,37 +127,34 @@ public class UserService {
 
     /**
      * Gets information about the current user.
-     * 
+     *
      * @param daoFactory used to obtain data access objects.
      * @return the user information.
      */
     private UserInfo getUserInfo(DaoFactory daoFactory) {
-        Workspace workspace = getOrCreateWorkspace(daoFactory);
-        UserInfo userInfo = new UserInfo();
-        userInfo.setWorkspaceId(workspace.getId());
-        return userInfo;
+        return new UserInfo(getOrCreateWorkspace(daoFactory));
     }
 
     /**
      * Gets the user's workspace or creates a new workspace if the user doesn't have one yet.  If the user's workspace
      * doesn't have a root analysis category associated with it then the default analysis categories will be created.
-     * 
+     *
      * @note If a user doesn't exist for the currently logged in user a new user will be created as well.
-     * 
+     *
      * @param daoFactory used to obtain data access objects.
      * @return the workspace.
      */
     public Workspace getOrCreateWorkspace(DaoFactory daoFactory) {
-        String username = userSessionService.getUser().getUsername();  
+        String username = userSessionService.getUser().getUsername();
         return getOrCreateWorkspaceForUsername(daoFactory, username);
     }
 
     /**
      * Gets the user's workspace or creates a new workspace if the user doesn't have one yet.  If the user's workspace
      * doesn't have a root analysis category associated with it then the default analysis categories will be created.
-     * 
+     *
      * @note If a user doesn't exist for the given username a new user will be created as well.
-     * 
+     *
      * @param daoFactory used to obtain data access objects.
      * @param username Username of the user we are creating a new workspace for.
      * @return the workspace.
@@ -169,19 +166,20 @@ public class UserService {
     /**
      * Gets the user's workspace or creates a new workspace if the user doesn't have one yet.  If the user's workspace
      * doesn't have a root analysis category associated with it then the default analysis categories will be created.
-     * 
+     *
      * @param daoFactory used to obtain data access objects.
      * @param user the user we are creating a new workspace for.
      * @return the workspace.
      */
     private Workspace getOrCreateWorkspace(DaoFactory daoFactory, User user) {
-        WorkspaceDao workspaceDao = daoFactory.getWorkspaceDao(); 
+        WorkspaceDao workspaceDao = daoFactory.getWorkspaceDao();
 
         Workspace workspace = workspaceDao.findByUser(user);
         if (workspace == null) {
             workspace = new Workspace();
             workspace.setIsPublic(false);
             workspace.setUser(user);
+            workspace.setIsNew(true);
             workspaceDao.save(workspace);
         }
 
@@ -194,7 +192,7 @@ public class UserService {
 
     /**
      * Gets or creates a new user.
-     * 
+     *
      * @param daoFactory used to obtain data access objects.
      * @param username the name of the user.
      * @return the user.
@@ -212,7 +210,7 @@ public class UserService {
 
     /**
      * Creates the analysis categories.
-     * 
+     *
      * @param daoFactory used to obtain data access objects.
      * @param workspace the user's workspace.
      */
@@ -228,7 +226,7 @@ public class UserService {
 
     /**
      * Creates a template group.
-     * 
+     *
      * @param workspaceId the workspace ID.
      * @param name the template group name.
      * @return the template group.
