@@ -50,7 +50,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     private static final Pattern FILE_URL_PATTERN = Pattern.compile("^(?:file://|/)");
 
     private static final String[] IGNORED_PROPERTY_TYPE_NAMES = {"EnvironmentVariable"};
-    
+
     private static final Set<String> IGNORED_PROPERTY_TYPES
             = new HashSet<String>(Arrays.asList(IGNORED_PROPERTY_TYPE_NAMES));
 
@@ -618,11 +618,11 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             long workspaceId, String stepName) {
         List<JSONObject> jprops = new ArrayList<JSONObject>();
         String propertyTypeName = property.getPropertyTypeName();
-        if (StringUtils.equals(propertyTypeName, "Selection") || StringUtils.equals(propertyTypeName, "ValueSelection")) {
-            CollectionUtils.addIgnoreNull(jprops, formatSelectionProperty(property, value));
-        }
-        else if (StringUtils.equals(propertyTypeName, "TreeSelection")) {
+        if (StringUtils.equals(propertyTypeName, "TreeSelection")) {
             jprops.addAll(formatTreeSelectionProperty(property, value));
+        }
+        else if (StringUtils.endsWith(propertyTypeName, "Selection")) {
+            CollectionUtils.addIgnoreNull(jprops, formatSelectionProperty(property, value));
         }
         else if (StringUtils.equals(propertyTypeName, "Flag")) {
             CollectionUtils.addIgnoreNull(jprops, formatFlagProperty(property, value));
