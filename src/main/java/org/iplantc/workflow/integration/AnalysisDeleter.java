@@ -253,7 +253,12 @@ public class AnalysisDeleter {
                 throw new WorkflowException(e);
             }
 
-            return selected;
+            return ListUtils.filter(new Predicate<TransformationActivity>() {
+                @Override
+                public Boolean call(TransformationActivity arg) {
+                    return arg != null;
+                }
+            }, selected);
         }
 
         /**

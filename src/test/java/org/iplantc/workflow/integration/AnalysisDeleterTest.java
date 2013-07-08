@@ -1,11 +1,11 @@
 package org.iplantc.workflow.integration;
 
-import org.iplantc.persistence.dto.user.User;
-import org.iplantc.persistence.dto.workspace.Workspace;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.iplantc.persistence.dto.user.User;
+import org.iplantc.persistence.dto.workspace.Workspace;
 import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.mock.MockDaoFactory;
@@ -14,6 +14,7 @@ import org.iplantc.workflow.dao.mock.MockTransformationActivityDao;
 import org.iplantc.workflow.dao.mock.MockUserDao;
 import org.iplantc.workflow.dao.mock.MockWorkspaceDao;
 import org.iplantc.workflow.template.groups.TemplateGroup;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -514,10 +515,14 @@ public class AnalysisDeleterTest {
     private JSONObject createPartialDeletionRequest(String id, String name, Boolean rootRequest) throws JSONException {
         JSONObject json = new JSONObject();
         if (id != null) {
-            json.put("analysis_id", id);
+            JSONArray analysisIds = new JSONArray();
+            analysisIds.put(id);
+            json.put("analysis_ids", analysisIds);
         }
         if (name != null) {
-            json.put("analysis_name", name);
+            JSONArray analysisNames = new JSONArray();
+            analysisNames.put(name);
+            json.put("analysis_names", analysisNames);
         }
         if (rootRequest != null) {
             json.put("root_deletion_request", rootRequest);
