@@ -1,5 +1,6 @@
 package org.iplantc.workflow.integration;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -18,6 +19,7 @@ import org.iplantc.workflow.integration.util.JsonUtils;
 import org.iplantc.workflow.template.groups.TemplateGroup;
 import org.iplantc.workflow.util.ListUtils;
 import org.iplantc.workflow.util.Predicate;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,27 +33,27 @@ public class AnalysisDeleter {
     /**
      * Used to retrieve and save analyses.
      */
-    private TransformationActivityDao analysisDao;
+    private final TransformationActivityDao analysisDao;
 
     /**
      * Used to remove analyses from template groups.
      */
-    private TemplateGroupDao templateGroupDao;
+    private final TemplateGroupDao templateGroupDao;
 
     /**
      * Used to delete templates.
      */
-    private TemplateDao templateDao;
+    private final TemplateDao templateDao;
 
     /**
      * Used to find the user's workspace identifier.
      */
-    private WorkspaceDao workspaceDao;
+    private final WorkspaceDao workspaceDao;
 
     /**
      * Used to find the user.
      */
-    private UserDao userDao;
+    private final UserDao userDao;
 
     /**
      * @param daoFactory used to obtain data access objects.
@@ -145,14 +147,14 @@ public class AnalysisDeleter {
     private class AnalysisDeletionRequest {
 
         /**
-         * The analysis identifier.
+         * The analysis identifiers.
          */
-        private String analysisId;
+        private JSONArray analysisIds;
 
         /**
-         * The analysis name.
+         * The analysis names.
          */
-        private String analysisName;
+        private JSONArray analysisNames;
 
         /**
          * The fully qualified username.
@@ -174,8 +176,8 @@ public class AnalysisDeleter {
          */
         public AnalysisDeletionRequest(JSONObject json) {
             try {
-                analysisId = json.optString("analysis_id");
-                analysisName = json.optString("analysis_name");
+                analysisIds = json.optJSONArray("analysis_ids");
+                analysisNames = json.optJSONArray("analysis_names");
                 username = JsonUtils.nonEmptyOptString(json, "", "full_username", "email");
                 rootDeletionRequest = json.optBoolean("root_deletion_request", false);
                 validate();
@@ -192,8 +194,8 @@ public class AnalysisDeleter {
          * @throws WorkflowException if the deletion request is invalid.
          */
         private void validate() {
-            if (StringUtils.isEmpty(analysisId) && StringUtils.isEmpty(analysisName)) {
-                throw new WorkflowException("no analysis identifier or name provided");
+            if (JsonUtils.isEmpty(analysisIds) && JsonUtils.isEmpty(analysisNames)) {
+                throw new WorkflowException("no analysis identifiers or names provided");
             }
             if (!rootDeletionRequest && StringUtils.isEmpty(username)) {
                 throw new WorkflowException("no username provided for non-root deletion request");
@@ -235,9 +237,23 @@ public class AnalysisDeleter {
          * @return the list of analyses.
          */
         private List<TransformationActivity> getSelectedAnalyses() {
-            return StringUtils.isEmpty(analysisId)
-                    ? analysisDao.findByName(analysisName)
-                    : ListUtils.asListWithoutNulls(analysisDao.findById(analysisId));
+            List<TransformationActivity> selected = new ArrayList<TransformationActivity>();
+            try {
+                if (!JsonUtils.isEmpty(analysisNames)) {
+                    for (int i = 0; i < analysisNames.length(); i++) {
+                        selected.addAll(analysisDao.findByName(analysisNames.getString(i)));
+                    }
+                }
+                if (!JsonUtils.isEmpty(analysisIds)) {
+                    for (int i = 0; i < analysisIds.length(); i++) {
+                        selected.add(analysisDao.findById(analysisIds.getString(i)));
+                    }
+                }
+            } catch (JSONException e) {
+                throw new WorkflowException(e);
+            }
+
+            return selected;
         }
 
         /**

@@ -119,9 +119,17 @@ public class JsonUtils {
      * @throws JSONException if a JSON error occurs.
      */
     public static void putIfNotEmpty(JSONObject json, String key, JSONArray value) throws JSONException {
-        if (value != null && value.length() != 0) {
+        if (!isEmpty(value)) {
             json.put(key, value);
         }
+    }
+
+    /**
+     * @param value the JSON array.
+     * @return true if the given array is empty or null.
+     */
+    public static boolean isEmpty(JSONArray value) {
+        return value == null || value.length() < 1;
     }
 
     /**
