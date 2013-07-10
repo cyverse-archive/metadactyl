@@ -321,6 +321,11 @@ public class TitoAnalysisUnmarshaller implements TitoUnmarshaller<Transformation
     public Set<Rating> unmarshalRatings(JSONObject json) throws JSONException {
         Set<Rating> result = new HashSet<Rating>();
 
+        // If the workspace initializer is null then we don't care about ratings.
+        if (workspaceInitializer == null) {
+            return result;
+        }
+
         try {
             JSONArray ratingsArray = json.getJSONArray("ratings");
 

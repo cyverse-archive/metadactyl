@@ -10,7 +10,6 @@ import org.iplantc.hibernate.util.SessionTaskWrapper;
 import org.iplantc.persistence.dto.data.IntegrationDatum;
 import org.iplantc.workflow.AnalysisNotFoundException;
 import org.iplantc.workflow.AnalysisOwnershipException;
-import org.iplantc.workflow.AnalysisPublicException;
 import org.iplantc.workflow.AnalysisStepCountException;
 import org.iplantc.workflow.TemplateNotFoundException;
 import org.iplantc.workflow.WorkflowException;
@@ -118,7 +117,6 @@ public class AnalysisEditService {
         TransformationActivity analysis = getAnalysis(daoFactory, analysisId);
         UserDetails userDetails = userService.getCurrentUserDetails();
         verifyUserOwnership(analysis, userDetails);
-        verifyAnalysisNotPublic(daoFactory, analysis);
         verifyNumberOfSteps(analysis);
         return AddObjectWrapper(marshalAnalysis(daoFactory, analysis, new CopyIdRetentionStrategy())).toString();
     }
@@ -184,23 +182,10 @@ public class AnalysisEditService {
      * @throws AnalysisOwnershipException if the user does not own the analysis.
      */
     private void verifyUserOwnership(TransformationActivity analysis, UserDetails userDetails) {
-        String integratorName = analysis.getIntegrationDatum().getIntegratorName();
-        String authenticatedName = userDetails.getShortUsername();
-        if (!StringUtils.equals(integratorName, authenticatedName)) {
-            throw new AnalysisOwnershipException(authenticatedName, analysis.getId());
-        }
-    }
-
-    /**
-     * Verifies that an analysis has not been made public.
-     *
-     * @param daoFactory used to obtain data access objects.
-     * @param analysis the analysis that the user is trying to edit.
-     * @throws AnalysisPublicException if the analysis has already been made public.
-     */
-    private void verifyAnalysisNotPublic(DaoFactory daoFactory, TransformationActivity analysis) {
-        if (daoFactory.getAnalysisListingDao().findByExternalId(analysis.getId()).isPublic()) {
-            throw new AnalysisPublicException(analysis.getId());
+        String integratorEmail = analysis.getIntegrationDatum().getIntegratorEmail();
+        String authenticatedEmail = userDetails.getEmail();
+        if (!StringUtils.equals(integratorEmail, authenticatedEmail)) {
+            throw new AnalysisOwnershipException(userDetails.getShortUsername(), analysis.getId());
         }
     }
 
@@ -318,7 +303,7 @@ public class AnalysisEditService {
     private IntegrationDatum createIntegrationDatum(UserDetails userDetails) {
         IntegrationDatum integrationDatum = new IntegrationDatum();
         integrationDatum.setIntegratorEmail(userDetails.getEmail());
-        integrationDatum.setIntegratorName(userDetails.getShortUsername());
+        integrationDatum.setIntegratorName(userDetails.getFirstName() + " " + userDetails.getLastName());
         return integrationDatum;
     }
 }

@@ -60,7 +60,9 @@ public class FapiJobRequestFormatterTest {
         String password = "S3cret";
         String email = "someuser@example.com";
         String shortUsername = "someuser";
-        userDetails = new UserDetails(username, password, email, shortUsername);
+        String firstName = "Some";
+        String lastName = "User";
+        userDetails = new UserDetails(username, password, email, shortUsername, firstName, lastName);
     }
 
     /**

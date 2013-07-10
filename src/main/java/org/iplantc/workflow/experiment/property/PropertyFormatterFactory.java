@@ -11,14 +11,14 @@ import org.iplantc.workflow.model.Property;
 
 /**
  * Used to generate property formatters.
- * 
+ *
  * @author Dennis Roberts
  */
 public class PropertyFormatterFactory {
 
     /**
      * Generates the property formatter for the given property type name.
-     * 
+     *
      * @param config the experiment configuration.
      * @param step the transformation step.
      * @param property the property being formatted.
@@ -59,14 +59,14 @@ public class PropertyFormatterFactory {
 
     /**
      * Determines whether or not the given property type name refers to a selection property.
-     * 
+     *
      * @param propertyTypeName the property type name.
      * @return true if the property type name refers to a selection property.
      */
     private static boolean isSelectionProperty(String propertyTypeName) {
         boolean result = false;
         if (propertyTypeName != null) {
-            result = propertyTypeName.equals("Selection") || propertyTypeName.equals("ValueSelection");
+            result = propertyTypeName.endsWith("Selection");
         }
         return result;
     }
