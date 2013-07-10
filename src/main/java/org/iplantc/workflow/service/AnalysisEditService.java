@@ -182,10 +182,10 @@ public class AnalysisEditService {
      * @throws AnalysisOwnershipException if the user does not own the analysis.
      */
     private void verifyUserOwnership(TransformationActivity analysis, UserDetails userDetails) {
-        String integratorName = analysis.getIntegrationDatum().getIntegratorName();
-        String authenticatedName = userDetails.getShortUsername();
-        if (!StringUtils.equals(integratorName, authenticatedName)) {
-            throw new AnalysisOwnershipException(authenticatedName, analysis.getId());
+        String integratorEmail = analysis.getIntegrationDatum().getIntegratorEmail();
+        String authenticatedEmail = userDetails.getEmail();
+        if (!StringUtils.equals(integratorEmail, authenticatedEmail)) {
+            throw new AnalysisOwnershipException(userDetails.getShortUsername(), analysis.getId());
         }
     }
 
@@ -303,7 +303,7 @@ public class AnalysisEditService {
     private IntegrationDatum createIntegrationDatum(UserDetails userDetails) {
         IntegrationDatum integrationDatum = new IntegrationDatum();
         integrationDatum.setIntegratorEmail(userDetails.getEmail());
-        integrationDatum.setIntegratorName(userDetails.getShortUsername());
+        integrationDatum.setIntegratorName(userDetails.getFirstName() + " " + userDetails.getLastName());
         return integrationDatum;
     }
 }
