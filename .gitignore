@@ -7,3 +7,5 @@
 stale
 target
 bin
+.idea
+*.iml
