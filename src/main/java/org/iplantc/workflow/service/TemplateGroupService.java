@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.iplantc.authn.service.UserSessionService;
+import org.iplantc.authn.user.User;
 import org.iplantc.hibernate.util.SessionTask;
 import org.iplantc.hibernate.util.SessionTaskWrapper;
 import org.iplantc.persistence.dao.data.IntegrationDatumDao;
@@ -18,6 +19,7 @@ import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
 import org.iplantc.workflow.integration.validation.TemplateValidator;
 import org.iplantc.workflow.model.Template;
 import org.iplantc.workflow.template.groups.TemplateGroup;
+import org.iplantc.workflow.user.UserInfo;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -123,8 +125,9 @@ public class TemplateGroupService {
             private void fillIntegrationDatum(DaoFactory daoFactory, TransformationActivity transformationActivity) throws JSONException {
                 // Fill in the transformation activity information
             	IntegrationDatumDao integrationDatumDao = daoFactory.getIntegrationDatumDao();
-            	String email = userSessionService.getUser().getEmail();
-            	String integrator = userSessionService.getUser().getShortUsername();
+                User user = userSessionService.getUser();
+            	String email = user.getEmail();
+            	String integrator = user.getFirstName() + " " + user.getLastName();
                 IntegrationDatum integrationDatum = integrationDatumDao.findByNameAndEmail(integrator, email);
 
                 if(integrationDatum == null){
