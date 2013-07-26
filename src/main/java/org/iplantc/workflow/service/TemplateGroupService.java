@@ -144,8 +144,8 @@ public class TemplateGroupService {
 
                 if(integrationDatum == null){
 	                integrationDatum = new IntegrationDatum();
-	                integrationDatum.setIntegratorEmail(input.getString("email"));
-	                integrationDatum.setIntegratorName(input.getString("integrator"));
+	                integrationDatum.setIntegratorEmail(email);
+	                integrationDatum.setIntegratorName(integrator);
                 }
                 transformationActivity.setIntegrationDatum(integrationDatum);
             }
