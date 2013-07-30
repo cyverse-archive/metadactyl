@@ -11,6 +11,8 @@ import org.iplantc.hibernate.util.SessionTask;
 import org.iplantc.hibernate.util.SessionTaskWrapper;
 import org.iplantc.persistence.dao.data.IntegrationDatumDao;
 import org.iplantc.persistence.dto.data.IntegrationDatum;
+import org.iplantc.persistence.dto.listing.AnalysisListing;
+import org.iplantc.workflow.AnalysisPublicException;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.core.TransformationActivityReference;
 import org.iplantc.workflow.dao.DaoFactory;
@@ -84,7 +86,7 @@ public class TemplateGroupService {
 
                     TemplateGroup group = templateGroupDao.findById(BETA_TEMPLATE_GROUP_ID);
                     TransformationActivity transformationActivity = getTransformationActivity(daoFactory, analysisId);
-
+                    validateAnalysis(daoFactory, analysisId);
                     validateTemplates(daoFactory, transformationActivity);
 
                     fillIntegrationDatum(daoFactory, transformationActivity);
@@ -114,6 +116,16 @@ public class TemplateGroupService {
                 }
             }
 
+            private void validateAnalysis(DaoFactory factory, String analysisId) {
+                AnalysisListing listing = factory.getAnalysisListingDao().findByExternalId(analysisId);
+                if (listing == null) {
+                    throw new RuntimeException("unable to find the listing for analysis, " + analysisId);
+                }
+                if (listing.isPublic()) {
+                    throw new IllegalArgumentException("analysis, " + analysisId + ", is already public");
+                }
+            }
+
             private void validateTemplates(DaoFactory daoFactory, TransformationActivity analysis) {
                 if (templateValidator != null) {
                     for (Template template : daoFactory.getTemplateDao().findTemplatesInAnalysis(analysis)) {
@@ -132,8 +144,8 @@ public class TemplateGroupService {
 
                 if(integrationDatum == null){
 	                integrationDatum = new IntegrationDatum();
-	                integrationDatum.setIntegratorEmail(input.getString("email"));
-	                integrationDatum.setIntegratorName(input.getString("integrator"));
+	                integrationDatum.setIntegratorEmail(email);
+	                integrationDatum.setIntegratorName(integrator);
                 }
                 transformationActivity.setIntegrationDatum(integrationDatum);
             }
@@ -152,7 +164,12 @@ public class TemplateGroupService {
                 JSONArray groups = input.getJSONArray("groups");
 
                 for (int i = 0; i < groups.length(); i++) {
-                    transformationActivity.getSuggestedGroups().add(templateGroupDao.findById(groups.getString(i)));
+                    String id = groups.getString(i);
+                    TemplateGroup templateGroup = templateGroupDao.findById(id);
+                    if (templateGroup == null) {
+                        throw new IllegalArgumentException("suggested app group, " + id + ", not found");
+                    }
+                    transformationActivity.getSuggestedGroups().add(templateGroup);
                 }
             }
         });
