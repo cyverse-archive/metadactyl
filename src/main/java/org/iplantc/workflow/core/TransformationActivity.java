@@ -2,8 +2,6 @@ package org.iplantc.workflow.core;
 
 import static org.iplantc.workflow.util.ValidationUtils.validateFieldLength;
 
-import org.iplantc.persistence.dto.listing.JobType;
-import org.iplantc.persistence.dto.data.IntegrationDatum;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
@@ -13,6 +11,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.iplantc.persistence.NamedAndUnique;
+import org.iplantc.persistence.dto.data.IntegrationDatum;
+import org.iplantc.persistence.dto.listing.JobType;
 import org.iplantc.persistence.dto.listing.PipelineCandidate;
 import org.iplantc.persistence.dto.step.TransformationStep;
 import org.iplantc.workflow.data.DataObject;
@@ -68,6 +68,8 @@ public class TransformationActivity implements NamedAndUnique, PipelineCandidate
     private Date editedDate;
 
     private Set<String> jobTypeNames;
+
+    private boolean disabled;
 
     public TransformationActivity() {
     }
@@ -211,6 +213,14 @@ public class TransformationActivity implements NamedAndUnique, PipelineCandidate
         this.type = type;
     }
 
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
     public boolean isDeleted() {
         return deleted;
     }
@@ -226,6 +236,7 @@ public class TransformationActivity implements NamedAndUnique, PipelineCandidate
         copyOutput(other.getOutput());
         workspaceId = other.getWorkspaceId();
         type = other.getType();
+        disabled = other.isDisabled();
         deleted = other.isDeleted();
 
         name = other.getName();

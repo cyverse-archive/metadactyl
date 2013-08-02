@@ -15,6 +15,7 @@
 			not-null="true" />
 		<property name="type" column="type" />
 		<property name="deleted" column="deleted" />
+        <property name="disabled" column="disabled" />
         <property name="wikiurl" column="wikiurl" />
         <property name="integrationDate" column="integration_date" not-null="false" />
         <property name="editedDate" column="edited_date" not-null="false" />
