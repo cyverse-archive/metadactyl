@@ -2,7 +2,9 @@ package org.iplantc.workflow.experiment;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+
 import net.sf.json.JSONObject;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -14,7 +16,9 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.iplantc.hibernate.util.HibernateAccessor;
+import org.iplantc.workflow.AnalysisNotFoundException;
 import org.iplantc.workflow.client.OsmClient;
+import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.dao.hibernate.HibernateDaoFactory;
 import org.iplantc.workflow.experiment.util.JobConfigUtils;
@@ -74,8 +78,16 @@ public class ExperimentRunner extends HibernateAccessor {
 
         try {
             UserDetails userDetails = userService.getCurrentUserDetails();
+            DaoFactory daoFactory = new HibernateDaoFactory(session);
 
-            JSONObject job = formatJobRequest(experiment, session, userDetails);
+            TransformationActivity app = findAnalysis(daoFactory, experiment.getString("analysis_id"));
+            if (app.isDisabled()) {
+                throw new Exception(String.format(
+                        "The App \"%1$s\" is disabled and cannot be run at this time (App ID %2$s).",
+                        app.getName(), app.getId()));
+            }
+
+            JSONObject job = formatJobRequest(experiment, daoFactory, userDetails);
             storeJobSubmission(experiment, job.getString("uuid"));
             submitJob(job);
             return formatResponse(job);
@@ -84,6 +96,14 @@ public class ExperimentRunner extends HibernateAccessor {
             LOG.error("Caught exception when processing", ex);
             throw new Exception("ExperimentRunner error: " + ex.getMessage(), ex);
         }
+    }
+
+    protected TransformationActivity findAnalysis(DaoFactory daoFactory, String id) {
+        TransformationActivity analysis = daoFactory.getTransformationActivityDao().findById(id);
+        if (analysis == null) {
+            throw new AnalysisNotFoundException(id);
+        }
+        return analysis;
     }
 
     private String formatResponse(JSONObject job) {
@@ -102,8 +122,8 @@ public class ExperimentRunner extends HibernateAccessor {
         }
     }
 
-    protected JSONObject formatJobRequest(JSONObject experiment, Session session, UserDetails userDetails) {
-        DaoFactory daoFactory = new HibernateDaoFactory(session);
+    protected JSONObject formatJobRequest(JSONObject experiment, DaoFactory daoFactory,
+            UserDetails userDetails) {
         JobNameUniquenessEnsurer jobNameUniquenessEnsurer = new TimestampJobNameUniquenessEnsurer();
         JobRequestFormatterFactory factory = new JobRequestFormatterFactory(daoFactory, urlAssembler,
                 userDetails, jobNameUniquenessEnsurer);
