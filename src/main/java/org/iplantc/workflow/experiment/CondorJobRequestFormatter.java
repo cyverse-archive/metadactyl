@@ -187,7 +187,6 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
     private void formatUnreferencedOutputProperties(Template template, Transformation transformation, JSONArray params) {
         for (DataObject outputObject : template.findUnreferencedOutputs()) {
-            JSONObject out = new JSONObject();
             int order = getDataObjectOrder(outputObject);
             if (order < 0) {
                 continue;
@@ -541,7 +540,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         return order;
     }
 
-    public String retrieveValueForProperty(String property, TransformationStep step, JSONObject jstep) {
+    private String retrieveValueForProperty(String property, TransformationStep step, JSONObject jstep) {
 
         Transformation transformation = step.getTransformation();
 
@@ -557,6 +556,11 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
                 throw new WorkflowException("A value for property " + step.getName() + "_" + originalName
                         + " needs to be input in order to be used in a mapping.");
             }
+        }
+
+        String userInput = outputPropertyValues.get(originalName);
+        if (!StringUtils.isEmpty(userInput)) {
+            return userInput;
         }
 
         if (transformation.containsProperty(originalName)) {
