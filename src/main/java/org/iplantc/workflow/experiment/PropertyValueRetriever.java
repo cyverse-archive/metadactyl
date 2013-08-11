@@ -314,7 +314,7 @@ public class PropertyValueRetriever {
     /**
      * The list of property types to omit from the output of this service.
      */
-    private static final List<String> PROPERTY_TYPES_TO_OMIT = Arrays.asList("Info", "Output");
+    private static final List<String> PROPERTY_TYPES_TO_OMIT = Arrays.asList("Info");
 
     /**
      * Determines whether or not a property should be omitted from the output of this service.
@@ -323,6 +323,16 @@ public class PropertyValueRetriever {
      * @return true if the property should be omitted from the output.
      */
     private boolean propertyShouldBeOmitted(Property prop) {
-        return PROPERTY_TYPES_TO_OMIT.contains(prop.getPropertyTypeName());
+        return PROPERTY_TYPES_TO_OMIT.contains(prop.getPropertyTypeName()) || isImplicitOutput(prop);
     }
+
+    /**
+     * @param prop the property to examine.
+     * @return true if the property is is an implicit output.
+     */
+    private boolean isImplicitOutput(Property prop) {
+        return StringUtils.equals(prop.getPropertyTypeName(), "Output")
+                && prop.getDataObject() != null
+                && prop.getDataObject().isImplicit();
+   }
 }
