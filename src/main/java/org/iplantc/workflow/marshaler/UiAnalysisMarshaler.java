@@ -4,20 +4,20 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.step.TransformationStep;
+import org.iplantc.workflow.TemplateNotFoundException;
+import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.data.DataObject;
 import org.iplantc.workflow.integration.util.HeterogeneousRegistry;
+import org.iplantc.workflow.integration.util.JsonUtils;
 import org.iplantc.workflow.integration.util.NullHeterogeneousRegistry;
 import org.iplantc.workflow.model.Property;
 import org.iplantc.workflow.model.PropertyGroup;
 import org.iplantc.workflow.model.Rule;
+import org.iplantc.workflow.model.RuleType;
 import org.iplantc.workflow.model.Template;
 import org.iplantc.workflow.model.Validator;
-import org.iplantc.workflow.TemplateNotFoundException;
-import org.iplantc.workflow.WorkflowException;
-import org.iplantc.workflow.integration.util.JsonUtils;
-import org.iplantc.workflow.model.RuleType;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,7 +27,7 @@ import org.json.JSONObject;
  */
 public class UiAnalysisMarshaler {
 
-    private DaoFactory daoFactory;
+    private final DaoFactory daoFactory;
 
     private HeterogeneousRegistry registry = new NullHeterogeneousRegistry();
 
@@ -45,6 +45,7 @@ public class UiAnalysisMarshaler {
         json.put("name", analysis.getName());
         json.put("label", analysis.getName());
         json.put("type", analysis.getType());
+        json.put("disabled", analysis.isDisabled());
         JsonUtils.putIfNotEmpty(json, "groups", marshalAnalysisPropertyGroups(analysis));
         return json;
     }

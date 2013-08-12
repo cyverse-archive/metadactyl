@@ -1,6 +1,7 @@
 package org.iplantc.workflow.service;
 
 import java.util.List;
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -70,9 +71,13 @@ public class DeployedComponentRetrievalService extends BaseWorkflowElementRetrie
      * @return the list of filtered deployed components.
      */
     private List<RepresentableAsJson> filterComponents(Session session, String searchTerm) {
-        String searchClause = "lower(%1$s) like '%%' || lower(:search) || '%%' escape '\\'";
+        String searchClause = "lower(%1$s) like '%%' || lower(:search) || '%%'";
 
+        // Escape SQL wildcard characters.
         String escapedSearchTerm = searchTerm.replaceAll("([\\\\%_])", "\\\\$1");
+        // Replace client wildcard characters with SQL wildcard characters.
+        escapedSearchTerm = escapedSearchTerm.replace("*", "%").replace("?", "_");
+
         String filter = String.format("where %1$s OR %2$s",
                                       String.format(searchClause, "name"),
                                       String.format(searchClause, "description"));
