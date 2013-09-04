@@ -4,9 +4,11 @@
 <hibernate-mapping package="org.iplantc.workflow.template.notifications"
                    default-cascade="all" default-lazy="false">
     <class name="NotificationSet" table="notification_set">
-        <generator class="native" >
-            <param name="sequence">notification_set_id_seq</param>
-        </generator>
+        <id name="hid" column="hid" type="long">
+            <generator class="native" >
+                <param name="sequence">notification_set_id_seq</param>
+            </generator>
+        </id>
 
         <property name="idc" column="id" />
         <property name="name" column="name" />
@@ -21,7 +23,9 @@
 
     <class name="Notification" table="notification">
         <id name="hid" column="hid" type="long">
-            <generator class="increment" />
+            <generator class="native" >
+                <param name="sequence">notification_id_seq</param>
+            </generator>
         </id>
 
         <property name="idc" column="id" />
