@@ -8,7 +8,9 @@
     <class name="Template" table="template">
 
         <id name="hid" column="hid">
-            <generator class="increment" />
+            <generator class="native" >
+                <param name="sequence">template_id_seq</param>
+            </generator>
         </id>
 
         <property name="id" column="id" not-null="true" />
@@ -42,7 +44,9 @@
     <class name="PropertyGroup" table="property_group">
 
         <id name="hid" column="hid">
-            <generator class="increment" />
+            <generator class="native" >
+                <param name="sequence">property_group_id_seq</param>
+            </generator>
         </id>
 
         <property name="id" column="id" not-null="true" />
@@ -64,7 +68,9 @@
     <class name="Property" table="property">
 
         <id name="hid" column="hid">
-            <generator class="increment" />
+            <generator class="native" >
+                <param name="sequence">property_id_seq</param>
+            </generator>
         </id>
 
         <property name="id" column="id" not-null="true" />
@@ -86,7 +92,9 @@
     <class name="PropertyType" table="property_type">
 
         <id name="hid" column="hid">
-            <generator class="increment" />
+            <generator class="native" >
+                <param name="sequence">property_type_id_seq</param>
+            </generator>
         </id>
 
         <property name="id" column="id" not-null="true" />
@@ -100,7 +108,9 @@
 
     <class name="ValueType" table="value_type">
         <id name="hid" column="hid">
-            <generator class="increment" />
+            <generator class="native" >
+                <param name="sequence">value_type_id_seq</param>
+            </generator>
         </id>
 
         <property name="id" column="id" not-null="true" />
@@ -112,7 +122,9 @@
     <class name="Validator" table="validator">
 
         <id name="hid" column="hid">
-            <generator class="increment" />
+            <generator class="native" >
+                <param name="sequence">validator_id_seq</param>
+            </generator>
         </id>
 
         <property name="id" column="id" not-null="true" />
@@ -132,7 +144,9 @@
     <class name="Rule" table="rule">
 
         <id name="hid" column="hid" type="long">
-            <generator class="increment" />
+            <generator class="native" >
+                <param name="sequence">rule_id_seq</param>
+            </generator>
         </id>
 
         <property name="id" column="id" not-null="true" />
@@ -151,7 +165,9 @@
     <!-- Specifies the type of a rule. -->
     <class name="RuleType" table="rule_type">
         <id name="hid" column="hid">
-            <generator class="increment" />
+            <generator class="native" >
+                <param name="sequence">rule_type_id_seq</param>
+            </generator>
         </id>
 
         <property name="id" column="id" not-null="true" />
@@ -171,7 +187,9 @@
 
     <class name="RuleSubtype" table="rule_subtype">
         <id name="hid" column="hid">
-            <generator class="increment" />
+            <generator class="native" >
+                <param name="sequence">rule_subtype_id_seq</param>
+            </generator>
         </id>
 
         <property name="id" column="id" not-null="true" />
@@ -181,7 +199,9 @@
 
     <class name="org.iplantc.workflow.data.DataObject" table="dataobjects">
         <id name="hid" column="hid">
-            <generator class="increment" />
+            <generator class="native" >
+                <param name="sequence">dataobjects_id_seq</param>
+            </generator>
         </id>
 
         <property name="id" column="id" />
@@ -201,7 +221,9 @@
 
     <class name="org.iplantc.workflow.data.Multiplicity" table="multiplicity">
         <id name="hid" column="hid">
-            <generator class="increment" />
+            <generator class="native" >
+                <param name="sequence">multiplicity_id_seq</param>
+            </generator>
         </id>
 
         <property name="id" column="id" />
@@ -213,7 +235,9 @@
 
     <class name="org.iplantc.workflow.data.InfoType" table="info_type">
         <id name="hid" column="hid">
-            <generator class="increment" />
+            <generator class="native" >
+                <param name="sequence">info_type_id_seq</param>
+            </generator>
         </id>
 
         <property name="id" column="id" />

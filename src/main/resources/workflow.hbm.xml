@@ -5,7 +5,9 @@
                    default-lazy="false" default-cascade="all">
     <class name="TransformationActivity" table="transformation_activity">
         <id name="hid" column="hid">
-            <generator class="increment" />
+            <generator class="native" >
+                <param name="sequence">transformation_activity_id_seq</param>
+            </generator>
         </id>
 
         <property name="name" column="name" />
@@ -63,7 +65,9 @@
 
     <class name="org.iplantc.workflow.data.InputOutputMap" table="input_output_mapping">
         <id name="hid" column="hid">
-            <generator class="increment"></generator>
+            <generator class="native" >
+                <param name="sequence">input_output_mapping_id_seq</param>
+            </generator>
         </id>
 
         <many-to-one name="source" class="org.iplantc.persistence.dto.step.TransformationStep" not-null="true" cascade="none" />
