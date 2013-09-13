@@ -41,22 +41,27 @@ public class FapiJobRequestFormatter implements JobRequestFormatter {
     /**
      * Used to create data access objects.
      */
-    private DaoFactory daoFactory;
+    private final DaoFactory daoFactory;
 
     /**
      * The details of the user who submitted the job.
      */
-    private UserDetails userDetails;
+    private final UserDetails userDetails;
 
     /**
      * The configuration of the experiment.
      */
-    private JSONObject experiment;
+    private final JSONObject experiment;
 
     /**
      * The object used to ensure job name uniqueness.
      */
-    private JobNameUniquenessEnsurer jobNameUniquenessEnsurer;
+    private final JobNameUniquenessEnsurer jobNameUniquenessEnsurer;
+
+    /**
+     * The path to the home directory in iRODS.
+     */
+    private final String irodsHome;
 
     /**
      * @param daoFactory the factory used to create data access objects.
@@ -65,12 +70,13 @@ public class FapiJobRequestFormatter implements JobRequestFormatter {
      * @param jobNameUniquenessEnsurer used to ensure that jobs are uniquely named.
      */
     public FapiJobRequestFormatter(DaoFactory daoFactory, UserDetails userDetails, JSONObject experiment,
-        JobNameUniquenessEnsurer jobNameUniquenessEnsurer)
+        JobNameUniquenessEnsurer jobNameUniquenessEnsurer, String irodsHome)
     {
         this.daoFactory = daoFactory;
         this.userDetails = userDetails;
         this.experiment = experiment;
         this.jobNameUniquenessEnsurer = jobNameUniquenessEnsurer;
+        this.irodsHome = irodsHome;
     }
 
     /**
@@ -112,7 +118,7 @@ public class FapiJobRequestFormatter implements JobRequestFormatter {
         Map<String, List<String>> propertyValues = new HashMap<String, List<String>>();
         for (TransformationStep step : analysis.getSteps()) {
             FapiStepFormatter formatter = new FapiStepFormatter(daoFactory, JOB_TYPE, userDetails.getShortUsername(),
-                    experiment, analysis, step, propertyValues);
+                    experiment, analysis, step, propertyValues, irodsHome);
             steps.add(formatter.formatStep());
         }
         return steps;

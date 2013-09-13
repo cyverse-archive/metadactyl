@@ -272,7 +272,7 @@ public class FapiJobRequestFormatterTest {
     /**
      * Creates an empty template for testing.
      *
-     * @return
+     * @return the template.
      */
     private Template createEmptyTemplate() {
         Template template = new Template();
@@ -317,7 +317,7 @@ public class FapiJobRequestFormatterTest {
     /**
      * Creates the input/output mapping for our multistep analysis.
      *
-     * @return
+     * @return the mapping.
      */
     private InputOutputMap createMultistepInputOutputMap(TransformationStep source, TransformationStep target) {
         InputOutputMap map = new InputOutputMap();
@@ -553,6 +553,7 @@ public class FapiJobRequestFormatterTest {
         json.put("notify", false);
         json.put("workspace_id", 1);
         json.put("analysis_id", analysisId);
+        json.put("outputDirectory", "/iplant/home/someuser/analyses");
         return json;
     }
 
@@ -801,6 +802,7 @@ public class FapiJobRequestFormatterTest {
         json.put("workspace_id", 1);
         json.put("analysis_id", analysisId);
         json.put("debug", debug);
+        json.put("outputDirectory", "/iplant/home/someuser/analyses");
         json.put("config", createExperimentConfiguration());
         return json;
     }
@@ -832,7 +834,8 @@ public class FapiJobRequestFormatterTest {
      * @return the new job request formatter.
      */
     protected FapiJobRequestFormatter createFormatter(JSONObject experiment) {
-        return new FapiJobRequestFormatter(daoFactory, userDetails, experiment, jobNameUniquenessEnsurer);
+        String irodsHome = "/iplant/home";
+        return new FapiJobRequestFormatter(daoFactory, userDetails, experiment, jobNameUniquenessEnsurer, irodsHome);
     }
 
     /**

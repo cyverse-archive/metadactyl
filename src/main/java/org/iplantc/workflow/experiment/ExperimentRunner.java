@@ -46,6 +46,8 @@ public class ExperimentRunner extends HibernateAccessor {
 
     private OsmClient jobRequestOsmClient;
 
+    private String irodsHome;
+
     public ExperimentRunner() {
     }
 
@@ -126,7 +128,7 @@ public class ExperimentRunner extends HibernateAccessor {
             UserDetails userDetails) {
         JobNameUniquenessEnsurer jobNameUniquenessEnsurer = new TimestampJobNameUniquenessEnsurer();
         JobRequestFormatterFactory factory = new JobRequestFormatterFactory(daoFactory, urlAssembler,
-                userDetails, jobNameUniquenessEnsurer);
+                userDetails, jobNameUniquenessEnsurer, irodsHome);
         return factory.getFormatter(experiment).formatJobRequest();
     }
 
@@ -176,5 +178,13 @@ public class ExperimentRunner extends HibernateAccessor {
 
     public OsmClient getJobRequestOsmClient() {
         return jobRequestOsmClient;
+    }
+
+    public void setIrodsHome(String irodsHome) {
+        this.irodsHome = irodsHome;
+    }
+
+    public String getIrodsHome() {
+        return irodsHome;
     }
 }

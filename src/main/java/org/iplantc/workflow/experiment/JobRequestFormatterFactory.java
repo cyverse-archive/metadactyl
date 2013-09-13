@@ -24,35 +24,43 @@ public class JobRequestFormatterFactory {
     /**
      * Used to create data access objects.
      */
-    private DaoFactory daoFactory;
+    private final DaoFactory daoFactory;
 
     /**
      * Used to create URLs to be used by the jobs.
      */
-    private UrlAssembler urlAssembler;
+    private final UrlAssembler urlAssembler;
 
     /**
      * Used to ensure the uniqueness of the job name.
      */
-    private JobNameUniquenessEnsurer jobNameUniquenessEnsurer;
+    private final JobNameUniquenessEnsurer jobNameUniquenessEnsurer;
 
     /**
      * The details of the user who submitted the job.
      */
-    private UserDetails userDetails;
+    private final UserDetails userDetails;
+
+    /**
+     * The path to the home directory in iRODS.
+     */
+    private final String irodsHome;
 
     /**
      * @param daoFactory used to create data access objects.
      * @param urlAssembler used to create URLs that will be used by the jobs.
-     * @param username the name of the user who submitted the jobs.
+     * @param userDetails information about the user who submitted the jobs.
      * @param jobNameUniquenessEnsurer the object used to ensure that job names are unique.
+     * @param irodsHome the path to the home directory in iRODS.
      */
     public JobRequestFormatterFactory(DaoFactory daoFactory, UrlAssembler urlAssembler,
-            UserDetails userDetails, JobNameUniquenessEnsurer jobNameUniquenessEnsurer) {
+            UserDetails userDetails, JobNameUniquenessEnsurer jobNameUniquenessEnsurer,
+            String irodsHome) {
         this.daoFactory = daoFactory;
         this.urlAssembler = urlAssembler;
         this.userDetails = userDetails;
         this.jobNameUniquenessEnsurer = jobNameUniquenessEnsurer;
+        this.irodsHome = irodsHome;
     }
 
     /**
@@ -69,7 +77,8 @@ public class JobRequestFormatterFactory {
             formatter = new CondorJobRequestFormatter(daoFactory, urlAssembler, userDetails, experiment);
         }
         else if (StringUtils.equals(firstComponentType, "fAPI")) {
-            formatter = new FapiJobRequestFormatter(daoFactory, userDetails, experiment, jobNameUniquenessEnsurer);
+            formatter = new FapiJobRequestFormatter(daoFactory, userDetails, experiment, jobNameUniquenessEnsurer,
+                    irodsHome);
         }
         else {
             throw new WorkflowException("unrecognized component type: " + firstComponentType);
