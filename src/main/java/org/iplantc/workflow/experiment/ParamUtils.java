@@ -33,8 +33,8 @@ public class ParamUtils {
             param.put("value", name + StringUtils.defaultString(value));
         }
         else {
-            param.put("name", name);
-            param.put("value", value);
+            param.put("name", StringUtils.defaultString(name));
+            param.put("value", StringUtils.defaultString(value));
         }
     }
 
