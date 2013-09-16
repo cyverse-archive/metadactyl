@@ -709,52 +709,30 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         return jprop;
     }
 
-    private JSONObject formatSelectionProperty(Property property, String arg) {
-        JSONObject result;
-        JSONObject jsonArg = jsonObjectFromString(arg);
-        if (jsonArg != null) {
-            result = formatNewStyleSelectionProperty(property, jsonArg);
-        }
-        else {
-            result = formatOldStyleSelectionProperty(property, arg);
-        }
-        return result;
-    }
-
     /**
-     * Formats an old-style selection property. Note that this method ignores the property's omit-if-blank setting,
-     * which isn't required for old-style properties because the property and value are both encoded in the value that
-     * is specified for each selection.
-     *
-     * @param property the property.
-     * @param arg the argument.
-     * @return the formatted parameter or null if the parameter shouldn't be formatted.
-     */
-    private JSONObject formatOldStyleSelectionProperty(Property property, String arg) {
-        JSONObject result = null;
-        String[] possibleValues = property.getName().split(",");
-        int index = Integer.parseInt(arg);
-        if (index >= 0 && possibleValues.length > index) {
-            result = initialPropertyJson(property);
-            String selectedValue = possibleValues[index];
-            String[] components = selectedValue.split("\\s+|=", 2);
-            result.put("id", property.getId());
-            String value = components.length > 1 ? components[1] : null;
-            setParamNameAndValue(result, components[0], value);
-        }
-        return result;
-    }
-
-    /**
-     * Formats a new-style selection property. Note that this method ignores the property's omit-if-blank setting, which
-     * isn't required for new-style selection properties because the name and value are specified separately for each
+     * Formats a selection property. Note that this method ignores the property's omit-if-blank setting, which
+     * isn't required for selection properties because the name and value are specified separately for each
      * selection.
      *
      * @param property the property.
      * @param arg the argument.
      * @return the formatted parameter or null if the parameter shouldn't be formatted.
      */
-    private JSONObject formatNewStyleSelectionProperty(Property property, JSONObject arg) {
+    private JSONObject formatSelectionProperty(Property property, String arg) {
+        JSONObject jsonArg = jsonObjectFromString(arg);
+        return jsonArg == null ? null : formatSelectionProperty(property, jsonArg);
+    }
+
+    /**
+     * Formats a selection property. Note that this method ignores the property's omit-if-blank setting, which
+     * isn't required for selection properties because the name and value are specified separately for each
+     * selection.
+     *
+     * @param property the property.
+     * @param arg the argument.
+     * @return the formatted parameter or null if the parameter shouldn't be formatted.
+     */
+    private JSONObject formatSelectionProperty(Property property, JSONObject arg) {
         JSONObject result = null;
         String name = arg.optString("name");
         String value = arg.optString("value");
@@ -772,7 +750,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
         if (args != null) {
             for (int i = 0; i < args.size(); i++) {
-                JSONObject result = formatNewStyleSelectionProperty(property, args.getJSONObject(i));
+                JSONObject result = formatSelectionProperty(property, args.getJSONObject(i));
                 CollectionUtils.addIgnoreNull(params, result);
             }
         }
