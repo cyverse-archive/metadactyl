@@ -104,9 +104,6 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
         job.put("email", userDetails.getEmail());
 
-        // this Hash Table is used when resolving the mappings between steps
-        HashMap<String, JSONObject> stepMap = new HashMap<String, JSONObject>();
-
         JSONObject config = experiment.getJSONObject("config");
 
         List<TransformationStep> steps = analysis.getSteps();
@@ -121,7 +118,6 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
             step1.put("name", currentStep.getName());
             step1.put("type", CONDOR_TYPE);
-            stepMap.put(step1.getString("name"), step1);
 
             Transformation transformation = currentStep.getTransformation();
 
@@ -141,8 +137,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
                     analysis, stepArray);
 
             // Format the properties.
-            formatProperties(analysis, template, currentStep, transformation, params, keyset, config, jinputs,
-                    stepArray);
+            formatProperties(analysis, template, currentStep, transformation, params, keyset, config, stepArray);
 
             // Format the environment-variable settings.
             CondorEnvironmentVariableFormatter envFormatter
@@ -219,7 +214,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
     private void formatOutputs(Template template, JSONArray outputs_section) {
         formatDefinedOutputs(template, outputs_section);
-        formatLogOutput(template, outputs_section);
+        formatLogOutput(outputs_section);
     }
 
     private void formatDefinedOutputs(Template template, JSONArray outputs_section) {
@@ -241,7 +236,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         }
     }
 
-    private void formatLogOutput(Template template, JSONArray outputs_section) {
+    private void formatLogOutput(JSONArray outputs_section) {
         JSONObject out = new JSONObject();
         out.put("name", "logs");
         out.put("property", "logs");
@@ -252,11 +247,9 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     }
 
     private void formatProperties(TransformationActivity analysis, Template template, TransformationStep currentStep,
-            Transformation transformation, JSONArray params, Set<String> keyset, JSONObject config, JSONArray inputs,
-            JSONArray stepArray)
+            Transformation transformation, JSONArray params, Set<String> keyset, JSONObject config, JSONArray stepArray)
             throws NumberFormatException {
 
-        long workspaceId = Long.parseLong(experiment.getString("workspace_id"));
         String stepName = currentStep.getName();
         for (PropertyGroup group : template.getPropertyGroups()) {
             List<Property> properties = group.getProperties();
@@ -275,7 +268,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
                     String value = StringUtils.defaultString(
                             keyset.contains(key) ? config.getString(key) : getDefaultValue(p)
                     );
-                    List<JSONObject> objects = buildParamsForProperty(p, value, inputs, workspaceId, stepName);
+                    List<JSONObject> objects = buildParamsForProperty(p, value, stepName);
                     params.addAll(objects);
                 }
                 else if (p.getDataObject() != null && analysis.isTargetInMapping(currentStep.getName(), p.getId())) {
@@ -523,7 +516,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     /**
      * Returns an array of objects representing the given input objects
      *
-     * @param dataobject the data object for which the param needs to be retrieved
+     * @param dataObject the data object for which the param needs to be retrieved
      * @param path the relative path to the file.
      */
     private JSONObject getParameterDefinitionForDataObject(DataObject dataObject, String path) {
@@ -579,7 +572,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     }
 
     protected String getPropertyName(String originalName, Template template) {
-        String retval = null;
+        String retval;
         try {
             retval = template.getOutputName(originalName);
         }
@@ -620,8 +613,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         return null;
     }
 
-    private List<JSONObject> buildParamsForProperty(Property property, String value, JSONArray inputs,
-            long workspaceId, String stepName) {
+    private List<JSONObject> buildParamsForProperty(Property property, String value, String stepName) {
         List<JSONObject> jprops = new ArrayList<JSONObject>();
         String propertyTypeName = property.getPropertyTypeName();
         if (StringUtils.equals(propertyTypeName, "TreeSelection")) {
