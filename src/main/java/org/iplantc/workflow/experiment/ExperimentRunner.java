@@ -17,6 +17,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.iplantc.hibernate.util.HibernateAccessor;
 import org.iplantc.workflow.AnalysisNotFoundException;
+import org.iplantc.workflow.AppSubmissionException;
 import org.iplantc.workflow.client.OsmClient;
 import org.iplantc.workflow.core.TransformationActivity;
 import org.iplantc.workflow.dao.DaoFactory;
@@ -147,7 +148,12 @@ public class ExperimentRunner extends HibernateAccessor {
         post.setEntity(new StringEntity(job.toString(), "application/json", "UTF-8"));
 
         HttpResponse response = client.execute(post);
-        LOG.debug("Response status from HttpClient post: " + response.getStatusLine().getStatusCode());
+        int responseStatus = response.getStatusLine().getStatusCode();
+        LOG.debug("Response status from HttpClient post: " + responseStatus);
+
+        if ((responseStatus < 200) || (responseStatus > 299)) {
+            throw new AppSubmissionException(responseStatus, job.toString(2));
+        }
 
         return IOUtils.toString(response.getEntity().getContent());
     }
