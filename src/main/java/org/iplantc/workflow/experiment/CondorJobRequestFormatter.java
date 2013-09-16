@@ -272,7 +272,9 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
                 }
                 else if (keyset.contains(key) || !p.getIsVisible()) {
-                    String value = keyset.contains(key) ? config.getString(key) : getDefaultValue(p);
+                    String value = StringUtils.defaultString(
+                            keyset.contains(key) ? config.getString(key) : getDefaultValue(p)
+                    );
                     List<JSONObject> objects = buildParamsForProperty(p, value, inputs, workspaceId, stepName);
                     params.addAll(objects);
                 }
