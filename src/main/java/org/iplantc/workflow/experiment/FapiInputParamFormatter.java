@@ -218,8 +218,11 @@ public class FapiInputParamFormatter {
                 files.addAll(jsonFiles);
             }
         }
-        else {
+        else if (!StringUtils.isBlank(specifiedFiles)) {
             files = Arrays.asList(specifiedFiles);
+        }
+        else {
+            files = new ArrayList<String>();
         }
         updatePaths(files);
         return files;

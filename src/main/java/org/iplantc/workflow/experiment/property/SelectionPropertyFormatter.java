@@ -54,7 +54,7 @@ public class SelectionPropertyFormatter extends PropertyFormatter {
     /**
      * Formats a new-style property, in which the name and value are specified by a JSON object.
      * 
-     * @param value the property value.
+     * @param propertyJson the JSON object describing the property.
      * @return the formatted property.
      */
     protected JSONObject formatNewStyleProperty(JSONObject propertyJson) {
