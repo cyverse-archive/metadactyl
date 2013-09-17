@@ -34,6 +34,7 @@ import org.iplantc.workflow.model.Template;
 import org.iplantc.workflow.user.UserDetails;
 import org.iplantc.workflow.util.ListUtils;
 import org.iplantc.workflow.util.Predicate;
+import org.iplantc.workflow.util.SfJsonUtils;
 
 /**
  * Formats a submission request for a job that will be executed on Condor. The code in this class was mostly extracted
@@ -125,19 +126,16 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
             JSONObject finalConfig = new JSONObject();
 
-            @SuppressWarnings("unchecked")
-            Set<String> keyset = config.keySet();
-
             JSONArray jinputs = new JSONArray();
             JSONArray params = new JSONArray();
 
             // Format inputs and properties for inputs that are not referenced by other properties.
-            formatInputs(template, currentStep, keyset, config, jinputs);
-            formatUnreferencedInputProperties(template, currentStep, keyset, config, params, transformation,
+            formatInputs(template, currentStep, config, jinputs);
+            formatUnreferencedInputProperties(template, currentStep, config, params, transformation,
                     analysis, stepArray);
 
             // Format the properties.
-            formatProperties(analysis, template, currentStep, transformation, params, keyset, config, stepArray);
+            formatProperties(analysis, template, currentStep, transformation, params, config, stepArray);
 
             // Format the environment-variable settings.
             CondorEnvironmentVariableFormatter envFormatter
@@ -247,7 +245,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     }
 
     private void formatProperties(TransformationActivity analysis, Template template, TransformationStep currentStep,
-            Transformation transformation, JSONArray params, Set<String> keyset, JSONObject config, JSONArray stepArray)
+            Transformation transformation, JSONArray params, JSONObject config, JSONArray stepArray)
             throws NumberFormatException {
 
         String stepName = currentStep.getName();
@@ -264,10 +262,9 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
                     params.add(formatPropertyFromTransformation(p, transformation));
 
                 }
-                else if (keyset.contains(key) || !p.getIsVisible()) {
-                    String value = StringUtils.defaultString(
-                            keyset.contains(key) ? config.getString(key) : getDefaultValue(p)
-                    );
+                else if (config.containsKey(key) || !p.getIsVisible()) {
+                    String value
+                            = config.containsKey(key) ? SfJsonUtils.defaultString(config, key) : getDefaultValue(p);
                     List<JSONObject> objects = buildParamsForProperty(p, value, stepName);
                     params.addAll(objects);
                 }
@@ -278,9 +275,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         }
     }
 
-    private void formatUnreferencedInputProperties(Template template, TransformationStep currentStep,
-            Set<String> keyset, JSONObject config, JSONArray params, Transformation transformation,
-            TransformationActivity analysis, JSONArray stepArray) {
+    private void formatUnreferencedInputProperties(Template template, TransformationStep currentStep, JSONObject config,
+            JSONArray params, Transformation transformation, TransformationActivity analysis, JSONArray stepArray) {
         for (DataObject currentInput : template.findUnreferencedInputs()) {
             // this is temporary - we're skipping the resolution of
             // any input DataObject of type "ReconcileTaxa" because
@@ -290,7 +286,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             }
 
             String key = currentStep.getName() + "_" + currentInput.getId();
-            if (keyset.contains(key)) {
+            if (config.containsKey(key)) {
                 String path = config.getString(key);
                 if (!StringUtils.isBlank(path)) {
                     JSONArray objects = getInputJSONObjects(currentInput, path);
@@ -333,8 +329,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         }
     }
 
-    private void formatInputs(Template template, TransformationStep currentStep,
-            Set<String> keyset, JSONObject config, JSONArray jinputs) {
+    private void formatInputs(Template template, TransformationStep currentStep, JSONObject config, JSONArray jinputs) {
         for (DataObject currentInput : template.getInputs()) {
             // this is temporary - we're skipping the resolution of
             // any input DataObject of type "ReconcileTaxa" because
@@ -343,7 +338,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
                 continue;
             }
             String key = currentStep.getName() + "_" + currentInput.getId();
-            if (keyset.contains(key)) {
+            if (config.containsKey(key)) {
                 String path = config.getString(key);
                 if (!StringUtils.isBlank(path)) {
                     jinputs.addAll(getInputJSONObjects(currentInput, path));
@@ -400,7 +395,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
     private String extractInputName(String path) {
         JSONObject json = jsonObjectFromString(path);
-        return json == null ? path : json.optString("name");
+        return json == null ? path : SfJsonUtils.defaultString(json, "name");
     }
 
     private JSONObject jsonObjectFromString(String json) {
@@ -734,12 +729,12 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
      */
     private JSONObject formatSelectionProperty(Property property, JSONObject arg) {
         JSONObject result = null;
-        String name = arg.optString("name");
-        String value = arg.optString("value");
+        String name = SfJsonUtils.defaultString(arg, "name");
+        String value = SfJsonUtils.defaultString(arg, "value");
         if (!StringUtils.isEmpty(name) || !StringUtils.isEmpty(value)) {
             result = initialPropertyJson(property);
             result.put("id", property.getId());
-            setParamNameAndValue(result, StringUtils.defaultString(name), value);
+            setParamNameAndValue(result, name, value);
         }
         return result;
     }
