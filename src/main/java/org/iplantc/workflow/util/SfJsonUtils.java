@@ -14,6 +14,16 @@ public class SfJsonUtils {
     private SfJsonUtils() {}
 
     /**
+     * Returns true if an object is null or an instance of JSONNull.
+     *
+     * @param o the object.
+     * @return true if the object is null or an instance of JSONNull. False, otherwise.
+     */
+    private static boolean isNull(Object o) {
+        return o == null || o instanceof JSONNull;
+    }
+
+    /**
      * Provides access to a string field that can have one of several names.
      * 
      * @param json the JSON object.
@@ -24,7 +34,10 @@ public class SfJsonUtils {
     public static String optString(JSONObject json, String defaultValue, String... keys) {
         for (String key : keys) {
             if (json.containsKey(key)) {
-                return json.getString(key);
+                Object val = json.get(key);
+                if (!isNull(val)) {
+                    return val.toString();
+                }
             }
         }
         return defaultValue;
@@ -45,7 +58,7 @@ public class SfJsonUtils {
             return defaultValue;
         }
         Object value = json.get(key);
-        if (value == null || value instanceof JSONNull) {
+        if (isNull(value)) {
             return defaultValue;
         }
         return value.toString();
@@ -73,6 +86,6 @@ public class SfJsonUtils {
      * @return true if the key exists and is not associated with a null value. False, otherwise.
      */
     public static boolean contains(JSONObject json, Object key) {
-        return json.containsKey(key) && !(json.get(key) instanceof JSONNull);
+        return json.containsKey(key) && !isNull(json.get(key));
     }
 }
