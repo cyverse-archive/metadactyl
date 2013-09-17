@@ -262,11 +262,11 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
                     params.add(formatPropertyFromTransformation(p, transformation));
 
                 }
-                else if (config.containsKey(key) || !p.getIsVisible()) {
-                    String value
-                            = config.containsKey(key) ? SfJsonUtils.defaultString(config, key) : getDefaultValue(p);
-                    List<JSONObject> objects = buildParamsForProperty(p, value, stepName);
-                    params.addAll(objects);
+                else if (SfJsonUtils.contains(config, key)) {
+                    params.addAll(buildParamsForProperty(p, SfJsonUtils.defaultString(config, key), stepName));
+                }
+                else if (!p.getIsVisible()) {
+                    params.addAll(buildParamsForProperty(p, getDefaultValue(p), stepName));
                 }
                 else if (p.getDataObject() != null && analysis.isTargetInMapping(currentStep.getName(), p.getId())) {
                     formatMappedInput(analysis, currentStep, p.getDataObject(), stepArray, params);
@@ -286,7 +286,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             }
 
             String key = currentStep.getName() + "_" + currentInput.getId();
-            if (config.containsKey(key)) {
+            if (SfJsonUtils.contains(config, key)) {
                 String path = config.getString(key);
                 if (!StringUtils.isBlank(path)) {
                     JSONArray objects = getInputJSONObjects(currentInput, path);
@@ -338,7 +338,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
                 continue;
             }
             String key = currentStep.getName() + "_" + currentInput.getId();
-            if (config.containsKey(key)) {
+            if (SfJsonUtils.contains(config, key)) {
                 String path = config.getString(key);
                 if (!StringUtils.isBlank(path)) {
                     jinputs.addAll(getInputJSONObjects(currentInput, path));

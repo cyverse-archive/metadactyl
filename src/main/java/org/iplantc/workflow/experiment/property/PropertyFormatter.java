@@ -10,6 +10,7 @@ import net.sf.json.JSONObject;
 import org.iplantc.persistence.dto.step.TransformationStep;
 import org.iplantc.persistence.dto.transformation.Transformation;
 import org.iplantc.workflow.model.Property;
+import org.iplantc.workflow.util.SfJsonUtils;
 
 /**
  * Formats properties for submission to the job execution framework.
@@ -78,7 +79,7 @@ public abstract class PropertyFormatter {
         String value = null;
         if (!config.isNullObject()) {
             String key = step.getName() + "_" + property.getId();
-            if (config.has(key)) {
+            if (SfJsonUtils.contains(config, key)) {
                 value = config.getString(key);
             }
         }

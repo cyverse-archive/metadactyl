@@ -63,4 +63,16 @@ public class SfJsonUtils {
     public static String defaultString(JSONObject json, String key) {
         return defaultString(json, key, "");
     }
+
+    /**
+     * Returns true if the JSON object contains the specified key and the value associated with the key is not
+     * null.
+     *
+     * @param json the JSON object.
+     * @param key the key.
+     * @return true if the key exists and is not associated with a null value. False, otherwise.
+     */
+    public static boolean contains(JSONObject json, Object key) {
+        return json.containsKey(key) && !(json.get(key) instanceof JSONNull);
+    }
 }

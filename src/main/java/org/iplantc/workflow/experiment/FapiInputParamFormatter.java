@@ -18,6 +18,7 @@ import org.iplantc.workflow.data.DataObject;
 import org.iplantc.workflow.data.InputOutputMap;
 import org.iplantc.workflow.model.Template;
 import org.iplantc.persistence.dto.transformation.Transformation;
+import org.iplantc.workflow.util.SfJsonUtils;
 
 import static org.iplantc.workflow.experiment.ParamUtils.setParamNameAndValue;
 
@@ -246,7 +247,7 @@ public class FapiInputParamFormatter {
      * @return true if the file was specified by the user.
      */
     protected boolean filesSpecifiedByUser(String key) {
-        return config != null && !config.isNullObject() && config.has(key);
+        return config != null && !config.isNullObject() && SfJsonUtils.contains(config, key);
     }
 
     /**
