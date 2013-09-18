@@ -6,6 +6,7 @@ import org.iplantc.persistence.dto.transformation.Transformation;
 import org.iplantc.workflow.model.Property;
 import org.iplantc.workflow.model.PropertyGroup;
 import org.iplantc.workflow.model.Template;
+import org.iplantc.workflow.util.SfJsonUtils;
 
 /**
  * Formats the string used to send environment variable settings to the JEX.
@@ -81,7 +82,7 @@ public class CondorEnvironmentVariableFormatter {
         }
         else {
             String key = stepName + "_" + prop.getId();
-            value = propertyValues.containsKey(key) ? propertyValues.getString(key) : prop.getDefaultValue();
+            value = SfJsonUtils.contains(propertyValues, key) ? propertyValues.getString(key) : prop.getDefaultValue();
         }
         return prop.getOmitIfBlank() && StringUtils.isBlank(value) ? null : value;
     }

@@ -41,7 +41,7 @@ public class TreeSelectionPropertyFormatter extends SelectionPropertyFormatter {
         if (paramArray != null) {
             result = new JSONArray();
             for (int i = 0; i < paramArray.size(); i++) {
-                JSONObject param = formatNewStyleProperty(paramArray.getJSONObject(i));
+                JSONObject param = formatProperty(paramArray.getJSONObject(i));
                 CollectionUtils.addIgnoreNull(result, param);
             }
         }

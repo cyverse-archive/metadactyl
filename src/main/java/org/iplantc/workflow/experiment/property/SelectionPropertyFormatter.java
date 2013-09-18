@@ -42,11 +42,8 @@ public class SelectionPropertyFormatter extends PropertyFormatter {
         if (StringUtils.isBlank(value)) {
             result = null;
         }
-        else if (StringUtils.isNumeric(value)) {
-            result = formatOldStyleProperty(Integer.parseInt(value));
-        }
         else {
-            result = formatNewStyleProperty((JSONObject)JSONSerializer.toJSON(value));
+            result = formatProperty((JSONObject) JSONSerializer.toJSON(value));
         }
         return result;
     }
@@ -54,28 +51,11 @@ public class SelectionPropertyFormatter extends PropertyFormatter {
     /**
      * Formats a new-style property, in which the name and value are specified by a JSON object.
      * 
-     * @param value the property value.
+     * @param propertyJson the JSON object describing the property.
      * @return the formatted property.
      */
-    protected JSONObject formatNewStyleProperty(JSONObject propertyJson) {
+    protected JSONObject formatProperty(JSONObject propertyJson) {
         return formatProperty(propertyJson.getString("name"), propertyJson.optString("value"));
-    }
-
-    /**
-     * Formats an old-style property, in which the name is specified by an element in the property name, which is a
-     * comma-delimited string, and a numeric value is used to indicate which element is selected.
-     * 
-     * @param index
-     * @return
-     */
-    private JSONObject formatOldStyleProperty(int index) {
-        JSONObject result = null;
-        String[] values = property.getName().split(",");
-        if (index >= 0 && values.length > index) {
-            String[] components = values[index].split("\\s+|=", 2);
-            result = formatProperty(components[0], components.length > 1 ? components[1] : "");
-        }
-        return result;
     }
 
     /**

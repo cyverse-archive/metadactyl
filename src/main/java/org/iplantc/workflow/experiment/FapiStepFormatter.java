@@ -2,6 +2,7 @@ package org.iplantc.workflow.experiment;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
@@ -62,6 +63,11 @@ public class FapiStepFormatter {
     private final Map<String, List<String>> propertyValues;
 
     /**
+     * The path to the home directory in iRODS.
+     */
+    private final String irodsHome;
+
+    /**
      * @param daoFactory the factory used to create data access objects.
      * @param stepType the type of step being formatted.
      * @param username the name of the user who submitted the request.
@@ -71,7 +77,8 @@ public class FapiStepFormatter {
      * @param propertyValues a map of property names to property values.
      */
     public FapiStepFormatter(DaoFactory daoFactory, String stepType, String username, JSONObject experiment,
-        TransformationActivity analysis, TransformationStep step, Map<String, List<String>> propertyValues)
+        TransformationActivity analysis, TransformationStep step, Map<String, List<String>> propertyValues,
+        String irodsHome)
     {
         this.daoFactory = daoFactory;
         this.stepType = stepType;
@@ -80,12 +87,12 @@ public class FapiStepFormatter {
         this.analysis = analysis;
         this.step = step;
         this.propertyValues = propertyValues;
+        this.irodsHome = irodsHome;
     }
 
     /**
      * Formats the step.
      * 
-     * @param step the step to format.
      * @return the formatted step.
      */
     public JSONObject formatStep() {
@@ -158,8 +165,9 @@ public class FapiStepFormatter {
      * @param params the list of parameters.
      */
     private void addArchivePathParam(JSONArray params) {
-        String jobName = experiment.getString("name");
-        String archivePath = "/" + username + "/analyses/" + jobName;
+        String baseDir = experiment.getString("outputDirectory").replaceAll("^" + Pattern.quote(irodsHome), "");
+        baseDir = baseDir.replaceAll("/$", "");
+        String archivePath = baseDir + "/" + experiment.getString("name");
         params.add(generateParam(1, "--archivePath=", archivePath, "archivePath"));
     }
 
@@ -282,8 +290,8 @@ public class FapiStepFormatter {
     /**
      * Adds the given param to the given params array if the param has an order of 0 or more.
      * 
-     * @param params
-     * @param param
+     * @param params the array of parameters being built.
+     * @param param the parameter to add to the array.
      */
     private void addParamForProperties(JSONArray params, JSONObject param) {
         if (param != null && param.optInt("order", -1) >= 0) {

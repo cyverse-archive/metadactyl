@@ -42,35 +42,6 @@ public class SelectionPropertyFormatterTest extends BasePropertyFormatterTester 
     }
 
     /**
-     * Verifies that we can format an old-style property with a default value, which is the only time we should
-     * encounter old-style properties.
-     */
-    @Test
-    public void testOldStylePropertyWithDefaultValue() {
-        JSONObject config = createConfig();
-        Property property = createProperty("-foo,-bar,-baz", "2", 2, "Selection");
-        SelectionPropertyFormatter formatter = new SelectionPropertyFormatter(config, createStep(), property,
-            createPropertyValueMap());
-        JSON formattedProperty = formatter.formatProperty();
-        assertJSONObject(formattedProperty);
-        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "-baz", 2, "");
-    }
-
-    /**
-     * Verifies that we can format an old-style parameter with a specified name and value.
-     */
-    @Test
-    public void testOldStylePropertyWithOptionNameAndValue() {
-        JSONObject config = createConfig();
-        Property property = createProperty("-foo foo,-bar bar,-baz baz", "0", 2, "Selection");
-        SelectionPropertyFormatter formatter = new SelectionPropertyFormatter(config, createStep(), property,
-            createPropertyValueMap());
-        JSON formattedProperty = formatter.formatProperty();
-        assertJSONObject(formattedProperty);
-        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "-foo", 2, "foo");
-    }
-
-    /**
      * Verifies that we can format a property with a specified value.
      */
     @Test

@@ -28,13 +28,13 @@ public class ParamUtils {
      * @param value the value of the parameter.
      */
     public static void setParamNameAndValue(JSONObject param, String name, String value) {
-        if (name.endsWith("=")) {
+        if (StringUtils.defaultString(name).endsWith("=")) {
             param.put("name", "");
             param.put("value", name + StringUtils.defaultString(value));
         }
         else {
-            param.put("name", name);
-            param.put("value", value);
+            param.put("name", StringUtils.defaultString(name));
+            param.put("value", StringUtils.defaultString(value));
         }
     }
 
@@ -45,6 +45,9 @@ public class ParamUtils {
      * @return JSONArray on success, or null on errors.
      */
     public static JSONArray jsonArrayFromString(String value) {
+        if (StringUtils.isBlank(value)) {
+            return null;
+        }
         try {
             return (JSONArray) JSONSerializer.toJSON(value);
         }

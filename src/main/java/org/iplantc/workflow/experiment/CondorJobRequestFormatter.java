@@ -34,6 +34,7 @@ import org.iplantc.workflow.model.Template;
 import org.iplantc.workflow.user.UserDetails;
 import org.iplantc.workflow.util.ListUtils;
 import org.iplantc.workflow.util.Predicate;
+import org.iplantc.workflow.util.SfJsonUtils;
 
 /**
  * Formats a submission request for a job that will be executed on Condor. The code in this class was mostly extracted
@@ -104,9 +105,6 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
         job.put("email", userDetails.getEmail());
 
-        // this Hash Table is used when resolving the mappings between steps
-        HashMap<String, JSONObject> stepMap = new HashMap<String, JSONObject>();
-
         JSONObject config = experiment.getJSONObject("config");
 
         List<TransformationStep> steps = analysis.getSteps();
@@ -121,7 +119,6 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
             step1.put("name", currentStep.getName());
             step1.put("type", CONDOR_TYPE);
-            stepMap.put(step1.getString("name"), step1);
 
             Transformation transformation = currentStep.getTransformation();
 
@@ -129,20 +126,16 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
             JSONObject finalConfig = new JSONObject();
 
-            @SuppressWarnings("unchecked")
-            Set<String> keyset = config.keySet();
-
             JSONArray jinputs = new JSONArray();
             JSONArray params = new JSONArray();
 
             // Format inputs and properties for inputs that are not referenced by other properties.
-            formatInputs(template, currentStep, keyset, config, jinputs);
-            formatUnreferencedInputProperties(template, currentStep, keyset, config, params, transformation,
+            formatInputs(template, currentStep, config, jinputs);
+            formatUnreferencedInputProperties(template, currentStep, config, params, transformation,
                     analysis, stepArray);
 
             // Format the properties.
-            formatProperties(analysis, template, currentStep, transformation, params, keyset, config, jinputs,
-                    stepArray);
+            formatProperties(analysis, template, currentStep, transformation, params, config, stepArray);
 
             // Format the environment-variable settings.
             CondorEnvironmentVariableFormatter envFormatter
@@ -219,7 +212,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
     private void formatOutputs(Template template, JSONArray outputs_section) {
         formatDefinedOutputs(template, outputs_section);
-        formatLogOutput(template, outputs_section);
+        formatLogOutput(outputs_section);
     }
 
     private void formatDefinedOutputs(Template template, JSONArray outputs_section) {
@@ -241,7 +234,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         }
     }
 
-    private void formatLogOutput(Template template, JSONArray outputs_section) {
+    private void formatLogOutput(JSONArray outputs_section) {
         JSONObject out = new JSONObject();
         out.put("name", "logs");
         out.put("property", "logs");
@@ -252,11 +245,9 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     }
 
     private void formatProperties(TransformationActivity analysis, Template template, TransformationStep currentStep,
-            Transformation transformation, JSONArray params, Set<String> keyset, JSONObject config, JSONArray inputs,
-            JSONArray stepArray)
+            Transformation transformation, JSONArray params, JSONObject config, JSONArray stepArray)
             throws NumberFormatException {
 
-        long workspaceId = Long.parseLong(experiment.getString("workspace_id"));
         String stepName = currentStep.getName();
         for (PropertyGroup group : template.getPropertyGroups()) {
             List<Property> properties = group.getProperties();
@@ -271,10 +262,11 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
                     params.add(formatPropertyFromTransformation(p, transformation));
 
                 }
-                else if (keyset.contains(key) || !p.getIsVisible()) {
-                    String value = keyset.contains(key) ? config.getString(key) : getDefaultValue(p);
-                    List<JSONObject> objects = buildParamsForProperty(p, value, inputs, workspaceId, stepName);
-                    params.addAll(objects);
+                else if (SfJsonUtils.contains(config, key)) {
+                    params.addAll(buildParamsForProperty(p, SfJsonUtils.defaultString(config, key), stepName));
+                }
+                else if (!p.getIsVisible()) {
+                    params.addAll(buildParamsForProperty(p, getDefaultValue(p), stepName));
                 }
                 else if (p.getDataObject() != null && analysis.isTargetInMapping(currentStep.getName(), p.getId())) {
                     formatMappedInput(analysis, currentStep, p.getDataObject(), stepArray, params);
@@ -283,9 +275,8 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         }
     }
 
-    private void formatUnreferencedInputProperties(Template template, TransformationStep currentStep,
-            Set<String> keyset, JSONObject config, JSONArray params, Transformation transformation,
-            TransformationActivity analysis, JSONArray stepArray) {
+    private void formatUnreferencedInputProperties(Template template, TransformationStep currentStep, JSONObject config,
+            JSONArray params, Transformation transformation, TransformationActivity analysis, JSONArray stepArray) {
         for (DataObject currentInput : template.findUnreferencedInputs()) {
             // this is temporary - we're skipping the resolution of
             // any input DataObject of type "ReconcileTaxa" because
@@ -295,7 +286,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
             }
 
             String key = currentStep.getName() + "_" + currentInput.getId();
-            if (keyset.contains(key)) {
+            if (SfJsonUtils.contains(config, key)) {
                 String path = config.getString(key);
                 if (!StringUtils.isBlank(path)) {
                     JSONArray objects = getInputJSONObjects(currentInput, path);
@@ -338,8 +329,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         }
     }
 
-    private void formatInputs(Template template, TransformationStep currentStep,
-            Set<String> keyset, JSONObject config, JSONArray jinputs) {
+    private void formatInputs(Template template, TransformationStep currentStep, JSONObject config, JSONArray jinputs) {
         for (DataObject currentInput : template.getInputs()) {
             // this is temporary - we're skipping the resolution of
             // any input DataObject of type "ReconcileTaxa" because
@@ -348,7 +338,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
                 continue;
             }
             String key = currentStep.getName() + "_" + currentInput.getId();
-            if (keyset.contains(key)) {
+            if (SfJsonUtils.contains(config, key)) {
                 String path = config.getString(key);
                 if (!StringUtils.isBlank(path)) {
                     jinputs.addAll(getInputJSONObjects(currentInput, path));
@@ -405,7 +395,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
     private String extractInputName(String path) {
         JSONObject json = jsonObjectFromString(path);
-        return json == null ? path : json.optString("name");
+        return json == null ? path : SfJsonUtils.defaultString(json, "name");
     }
 
     private JSONObject jsonObjectFromString(String json) {
@@ -521,7 +511,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     /**
      * Returns an array of objects representing the given input objects
      *
-     * @param dataobject the data object for which the param needs to be retrieved
+     * @param dataObject the data object for which the param needs to be retrieved
      * @param path the relative path to the file.
      */
     private JSONObject getParameterDefinitionForDataObject(DataObject dataObject, String path) {
@@ -577,7 +567,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
     }
 
     protected String getPropertyName(String originalName, Template template) {
-        String retval = null;
+        String retval;
         try {
             retval = template.getOutputName(originalName);
         }
@@ -618,8 +608,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         return null;
     }
 
-    private List<JSONObject> buildParamsForProperty(Property property, String value, JSONArray inputs,
-            long workspaceId, String stepName) {
+    private List<JSONObject> buildParamsForProperty(Property property, String value, String stepName) {
         List<JSONObject> jprops = new ArrayList<JSONObject>();
         String propertyTypeName = property.getPropertyTypeName();
         if (StringUtils.equals(propertyTypeName, "TreeSelection")) {
@@ -715,59 +704,37 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
         return jprop;
     }
 
-    private JSONObject formatSelectionProperty(Property property, String arg) {
-        JSONObject result;
-        JSONObject jsonArg = jsonObjectFromString(arg);
-        if (jsonArg != null) {
-            result = formatNewStyleSelectionProperty(property, jsonArg);
-        }
-        else {
-            result = formatOldStyleSelectionProperty(property, arg);
-        }
-        return result;
-    }
-
     /**
-     * Formats an old-style selection property. Note that this method ignores the property's omit-if-blank setting,
-     * which isn't required for old-style properties because the property and value are both encoded in the value that
-     * is specified for each selection.
-     *
-     * @param property the property.
-     * @param arg the argument.
-     * @return the formatted parameter or null if the parameter shouldn't be formatted.
-     */
-    private JSONObject formatOldStyleSelectionProperty(Property property, String arg) {
-        JSONObject result = null;
-        String[] possibleValues = property.getName().split(",");
-        int index = Integer.parseInt(arg);
-        if (index >= 0 && possibleValues.length > index) {
-            result = initialPropertyJson(property);
-            String selectedValue = possibleValues[index];
-            String[] components = selectedValue.split("\\s+|=", 2);
-            result.put("id", property.getId());
-            String value = components.length > 1 ? components[1] : null;
-            setParamNameAndValue(result, components[0], value);
-        }
-        return result;
-    }
-
-    /**
-     * Formats a new-style selection property. Note that this method ignores the property's omit-if-blank setting, which
-     * isn't required for new-style selection properties because the name and value are specified separately for each
+     * Formats a selection property. Note that this method ignores the property's omit-if-blank setting, which
+     * isn't required for selection properties because the name and value are specified separately for each
      * selection.
      *
      * @param property the property.
      * @param arg the argument.
      * @return the formatted parameter or null if the parameter shouldn't be formatted.
      */
-    private JSONObject formatNewStyleSelectionProperty(Property property, JSONObject arg) {
+    private JSONObject formatSelectionProperty(Property property, String arg) {
+        JSONObject jsonArg = jsonObjectFromString(arg);
+        return jsonArg == null ? null : formatSelectionProperty(property, jsonArg);
+    }
+
+    /**
+     * Formats a selection property. Note that this method ignores the property's omit-if-blank setting, which
+     * isn't required for selection properties because the name and value are specified separately for each
+     * selection.
+     *
+     * @param property the property.
+     * @param arg the argument.
+     * @return the formatted parameter or null if the parameter shouldn't be formatted.
+     */
+    private JSONObject formatSelectionProperty(Property property, JSONObject arg) {
         JSONObject result = null;
-        String name = arg.optString("name");
-        String value = arg.optString("value");
+        String name = SfJsonUtils.defaultString(arg, "name");
+        String value = SfJsonUtils.defaultString(arg, "value");
         if (!StringUtils.isEmpty(name) || !StringUtils.isEmpty(value)) {
             result = initialPropertyJson(property);
             result.put("id", property.getId());
-            setParamNameAndValue(result, StringUtils.defaultString(name), value);
+            setParamNameAndValue(result, name, value);
         }
         return result;
     }
@@ -778,7 +745,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
         if (args != null) {
             for (int i = 0; i < args.size(); i++) {
-                JSONObject result = formatNewStyleSelectionProperty(property, args.getJSONObject(i));
+                JSONObject result = formatSelectionProperty(property, args.getJSONObject(i));
                 CollectionUtils.addIgnoreNull(params, result);
             }
         }
