@@ -1,5 +1,7 @@
 package org.iplantc.workflow.model;
 
+import static org.iplantc.workflow.util.ValidationUtils.validateFieldLength;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.NamedAndUnique;
@@ -8,8 +10,6 @@ import org.iplantc.workflow.WorkflowException;
 import org.iplantc.workflow.marshaler.BaseTemplateMarshaller;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import static org.iplantc.workflow.util.ValidationUtils.validateFieldLength;
 
 /**
  * Represents a single generic element in a workflow. This abstract class contains all of the properties that are common
@@ -91,7 +91,6 @@ public abstract class WorkflowElement implements RepresentableAsJson, NamedAndUn
      * @param label the label.
      */
     public void setLabel(String label) {
-        validateFieldLength(this.getClass(), "label", label, 255);
         this.label = label;
     }
 
@@ -140,7 +139,6 @@ public abstract class WorkflowElement implements RepresentableAsJson, NamedAndUn
     protected WorkflowElement(String id, String name, String label, String description) {
         validateFieldLength(this.getClass(), "id", id, 255);
         validateFieldLength(this.getClass(), "name", name, 255);
-        validateFieldLength(this.getClass(), "label", label, 255);
         validateFieldLength(this.getClass(), "description", description, 255);
         this.id = id;
         this.name = name;

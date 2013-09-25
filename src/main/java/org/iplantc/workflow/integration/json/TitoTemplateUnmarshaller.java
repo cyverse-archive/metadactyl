@@ -223,16 +223,22 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
      * @throws JSONException if the JSON object is invalid.
      */
     private Property propertyFromJson(JSONObject json, int listIndex) throws JSONException {
+        PropertyType propertyType = getPropertyType(json.getString("type"));
+        boolean visible = optBoolean(json, true, "visible", "isVisible");
+        if (!visible && !propertyType.isHidable()) {
+            throw new IllegalArgumentException("properties of type " + propertyType.getName() + " may not be hidden.");
+        }
+
         Property property = new Property();
         property.setId(ImportUtils.getId(json, "id"));
-        property.setPropertyType(getPropertyType(json.getString("type")));
+        property.setPropertyType(propertyType);
         property.setDefaultValue(extractDefaultValue(json));
         property.setName(json.optString("name", ""));
         property.setLabel(json.optString("label", ""));
         property.setDescription(json.optString("description", ""));
         property.setOrder(json.optInt("order", listIndex));
         property.setValidator(validatorFromJson(json.optJSONObject("validator")));
-        property.setIsVisible(optBoolean(json, true, "visible", "isVisible"));
+        property.setIsVisible(visible);
         property.setOmitIfBlank(JsonUtils.optBoolean(json, true, "omit_if_blank", "omitIfBlank"));
 
         if (property.getPropertyTypeName().equalsIgnoreCase("input")) {
@@ -379,7 +385,6 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
     /**
      * Converts the given JSON object to a data object.
      *
-     * @param templateId string representing the identifier for the template
      * @param json the JSON representation of a DataObject.
      * @param propertyId the property identifier.
      * @return the data object.
@@ -409,7 +414,6 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
     /**
      * Converts the given JSON object to an output data object.
      *
-     * @param templateId string representing the identifier for the template
      * @param json the JSON representation of a DataObject.
      * @param propertyId the property identifier.
      * @return the data object.
@@ -430,7 +434,6 @@ public class TitoTemplateUnmarshaller implements TitoUnmarshaller<Template> {
     /**
      * Converts the given JSON object to an input data object.
      *
-     * @param templateId string representing the identifier for the template
      * @param json the JSON representation of a DataObject.
      * @param propertyId the property identifier.
      * @return the data object.

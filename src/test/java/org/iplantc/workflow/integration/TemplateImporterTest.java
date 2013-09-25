@@ -207,6 +207,7 @@ public class TemplateImporterTest {
         propertyType.setName("propertytypename");
         propertyType.setLabel("propertytypelabel");
         propertyType.setDescription("propertytypedescription");
+        propertyType.setHidable(true);
         propertyTypeRetriever.save(propertyType);
 
         propertyType = new PropertyType("inputtypeid", "Input", "inputtypelabel", "inputtypedescription");

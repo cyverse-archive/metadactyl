@@ -246,22 +246,6 @@ public abstract class WorkflowElementTest<T extends WorkflowElement> {
     }
 
     /**
-     * Verifies that the label length is validated in the constructor.
-     */
-    @Test(expected = FieldLengthValidationException.class)
-    public void shouldValidateLabelLengthInConstructor() {
-        createInstance("a", "b", longString(256), "d");
-    }
-
-    /**
-     * Verifies that the label length is validated in the setter.
-     */
-    @Test(expected = FieldLengthValidationException.class)
-    public void shouldValidateLabelLengthInSetter() {
-        createInstance("a", "b", "c", "d").setLabel(longString(256));
-    }
-
-    /**
      * Verifies that the description length is validated in the constructor.
      */
     @Test(expected = FieldLengthValidationException.class)
