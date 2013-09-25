@@ -23,6 +23,11 @@ public class PropertyType extends WorkflowElement {
     private boolean deprecated;
 
     /**
+     * True if properties of this type may be hidden.
+     */
+    private boolean hidable;
+
+    /**
      * Used to specify the display order relative to other property types.
      */
     private int displayOrder;
@@ -44,6 +49,20 @@ public class PropertyType extends WorkflowElement {
      */
     public boolean isDeprecated() {
         return deprecated;
+    }
+
+    /**
+     * @param hidable the new hidable flag.
+     */
+    public void setHidable(boolean hidable) {
+        this.hidable = hidable;
+    }
+
+    /**
+     * @return true if properties of this type can be hidden.
+     */
+    public boolean isHidable() {
+        return hidable;
     }
 
     /**

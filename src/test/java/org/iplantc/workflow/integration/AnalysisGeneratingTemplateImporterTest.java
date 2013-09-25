@@ -234,6 +234,7 @@ public class AnalysisGeneratingTemplateImporterTest {
         propertyType.setId("propertytypeid");
         propertyType.setName("propertytypename");
         propertyType.setLabel("propertytypelabel");
+        propertyType.setHidable(true);
         propertyType.setDescription("propertytypedescription");
         propertyTypeRetriever.save(propertyType);
 

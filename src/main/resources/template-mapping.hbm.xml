@@ -102,6 +102,7 @@
         <property name="description" column="description" />
         <property name="label" column="label" />
         <property name="deprecated" column="deprecated" />
+        <property name="hidable" column="hidable" />
         <property name="displayOrder" column="display_order" />
         <many-to-one name="valueType" class="ValueType" column="value_type_id" cascade="none" />
     </class>
