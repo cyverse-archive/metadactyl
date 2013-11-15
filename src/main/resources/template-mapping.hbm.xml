@@ -232,6 +232,7 @@
         <property name="label" column="label" />
         <property name="description" column="description" />
         <property name="typeName" column="type_name" />
+        <property name="outputTypeName" column="output_type_name" />
     </class>
 
     <class name="org.iplantc.workflow.data.InfoType" table="info_type">

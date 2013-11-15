@@ -109,7 +109,7 @@ public class UiAnalysisMarshaler {
             json.put("label", prop.getLabel());
             json.put("isVisible", prop.getIsVisible());
             JsonUtils.putIfNotNull(json, "value", prop.getDefaultValue());
-            JsonUtils.putIfNotNull(json, "type", prop.getPropertyTypeName());
+            JsonUtils.putIfNotNull(json, "type", prop.getOutputTypeName());
             json.put("description", StringUtils.defaultString(prop.getDescription()));
             json.put("validator", marshalOutputPropertyValidator(prop.getDataObject()));
             result.put(json);

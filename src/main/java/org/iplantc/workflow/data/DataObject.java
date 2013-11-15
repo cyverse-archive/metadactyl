@@ -189,6 +189,13 @@ public class DataObject implements NamedAndUnique {
         return dataSource == null ? "" : dataSource.getName();
     }
 
+    /**
+     * @return the name of the output type to use.
+     */
+    public String getOutputTypeName() {
+        return multiplicity == null ? "" : multiplicity.getOutputTypeName();
+    }
+
     @Override
     public String toString() {
         return toJson().toString();
