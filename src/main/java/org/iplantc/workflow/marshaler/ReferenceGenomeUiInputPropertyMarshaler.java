@@ -36,14 +36,14 @@ public class ReferenceGenomeUiInputPropertyMarshaler extends UiInputPropertyMars
 
     /**
      * Gets the name of the property type to use for an input property.  For reference genome properties, this is
-     * always {@code ValueSelection}.
+     * always {@code TextSelection}.
      *
      * @param input the input data object.
      * @return the property type name to use.
      */
     @Override
     protected String getPropertyTypeName(DataObject input) {
-        return "ValueSelection";
+        return "TextSelection";
     }
 
     /**
