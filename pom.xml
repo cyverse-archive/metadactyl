@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.iplantc.core</groupId>
     <artifactId>metadactyl</artifactId>
-    <version>1.8.2-SNAPSHOT</version>
+    <version>1.8.4-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>metadactyl</name>
     <url>http://projects.iplantcollaborative.org</url>
@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.iplantc.core</groupId>
         <artifactId>base-pom</artifactId>
-        <version>1.8.2-SNAPSHOT</version>
+        <version>1.8.4-SNAPSHOT</version>
     </parent>
 
     <build>
@@ -139,17 +139,17 @@
         <dependency>
             <groupId>org.iplantc.core</groupId>
             <artifactId>authn</artifactId>
-            <version>1.8.2-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.iplantc.core</groupId>
             <artifactId>hibernatetoolkit</artifactId>
-            <version>1.8.2-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.iplantc.core</groupId>
             <artifactId>persistence</artifactId>
-            <version>1.8.2-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-httpclient</groupId>
