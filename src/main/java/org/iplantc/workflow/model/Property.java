@@ -77,6 +77,13 @@ public class Property extends WorkflowElement {
     }
 
     /**
+     * @return the property type name to use for output properties.
+     */
+    public String getOutputTypeName() {
+        return dataObject == null ? "" : dataObject.getOutputTypeName();
+    }
+
+    /**
      * Sets the validator to use when validating objects.
      *
      * @param validator the new validator.
