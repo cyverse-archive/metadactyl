@@ -15,6 +15,16 @@
         <version>dev-SNAPSHOT</version>
     </parent>
 
+    <properties>
+        <scm.repo>metadactyl.git</scm.repo>
+    </properties>
+
+    <scm>
+        <connection>scm:git:${scm.base}/${scm.repo}</connection>
+        <developerConnection>scm:git:${scm.base}/${scm.repo}</developerConnection>
+        <url>${scm.base}/${scm.repo}</url>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>
