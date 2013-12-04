@@ -62,12 +62,4 @@
             <version>2.1.0</version>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>iplantCollaborative</id>
-            <name>iPlant Collaborative local repository</name>
-            <url>http://projects.iplantcollaborative.org/archiva/repository/internal/</url>
-        </repository>
-    </repositories>
 </project>
