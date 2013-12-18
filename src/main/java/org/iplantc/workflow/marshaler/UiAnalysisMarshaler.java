@@ -128,7 +128,7 @@ public class UiAnalysisMarshaler {
             Property prop) throws JSONException {
         if (inputPropertyVisible(analysis, step, prop)) {
             DataObject input = prop.getDataObject();
-            result.put(UiInputPropertyMarshaler.instance(daoFactory, input).marshalInputProperty(step, input));
+            result.put(UiInputPropertyMarshaler.instance(daoFactory, input).marshalInputProperty(step, prop, input));
         }
     }
 
