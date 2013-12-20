@@ -401,7 +401,7 @@ public class TitoTemplateMarshaller implements TitoMarshaller<Template> {
     /**
      * Marshals a single validator.
      *
-     * @param valiator the validator to marshal.
+     * @param validator the validator to marshal.
      * @return the marshaled validator.
      * @throws JSONException if a JSON error occurs.
      */

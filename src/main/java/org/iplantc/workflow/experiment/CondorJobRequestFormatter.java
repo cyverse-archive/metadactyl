@@ -395,7 +395,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
     private String extractInputName(String path) {
         JSONObject json = jsonObjectFromString(path);
-        return json == null ? path : SfJsonUtils.defaultString(json, "name");
+        return json == null ? path : SfJsonUtils.optString(json, "", "uuid", "name");
     }
 
     private JSONObject jsonObjectFromString(String json) {

@@ -4,6 +4,7 @@ import org.iplantc.persistence.dao.refgenomes.ReferenceGenomeDao;
 import org.iplantc.persistence.dto.refgenomes.ReferenceGenome;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.data.DataObject;
+import org.iplantc.workflow.model.Property;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,5 +33,16 @@ public class ReferenceGenomeUiInputPropertyMarshaler extends UiInputPropertyMars
     @Override
     protected String getPropertyName(DataObject input) {
         return "";
+    }
+
+    /**
+     * Gets the default value for a reference genome input property.
+     *
+     * @param prop the input property.
+     * @return the default value.
+     */
+    @Override
+    protected String getDefaultValue(Property prop) {
+        return prop.getDefaultValue();
     }
 }

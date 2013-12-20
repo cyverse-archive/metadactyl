@@ -229,7 +229,7 @@ public class AnalysisEditService {
     /**
      * Saves an app using the metadata import service.
      *
-     * @param analysis the analysis identifier.
+     * @param jsonString the JSON representation of the analysis.
      */
     private void importAnalysis(String jsonString) {
         try {

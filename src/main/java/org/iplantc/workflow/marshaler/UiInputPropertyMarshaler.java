@@ -1,10 +1,12 @@
 package org.iplantc.workflow.marshaler;
 
+import net.sf.json.util.JSONUtils;
 import org.apache.commons.lang.StringUtils;
 import org.iplantc.persistence.dto.step.TransformationStep;
 import org.iplantc.workflow.dao.DaoFactory;
 import org.iplantc.workflow.data.DataObject;
 import org.iplantc.workflow.integration.util.JsonUtils;
+import org.iplantc.workflow.model.Property;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,11 +41,13 @@ public class UiInputPropertyMarshaler {
      * Generates the JSON representing an input property.
      *
      * @param step the transformation step.
+     * @param prop the input property.
      * @param input the data object for the input property.
      * @return the JSON representation of the input property.
      * @throws JSONException if a JSON error occurs.
      */
-    public JSONObject marshalInputProperty(TransformationStep step, DataObject input) throws JSONException {
+    public JSONObject marshalInputProperty(TransformationStep step, Property prop, DataObject input)
+            throws JSONException {
         JSONObject json = new JSONObject();
         json.put("id", step.getName() + "_" + input.getId());
         json.put("name", getPropertyName(input));
@@ -52,6 +56,7 @@ public class UiInputPropertyMarshaler {
         json.put("type", getPropertyTypeName(input));
         json.put("description", StringUtils.defaultString(input.getDescription()));
         json.put("validator", marshalValidator(input));
+        JsonUtils.putIfNotNull(json, "value", getDefaultValue(prop));
         return json;
     }
 
@@ -63,6 +68,17 @@ public class UiInputPropertyMarshaler {
      */
     protected String getPropertyName(DataObject input) {
         return input.getSwitchString();
+    }
+
+    /**
+     * Gets the default value to use for an input property. In the most common case, the default value is always
+     * null.
+     *
+     * @param prop the input property.
+     * @return the default value.
+     */
+    protected String getDefaultValue(Property prop) {
+        return null;
     }
 
     /**
