@@ -68,4 +68,30 @@ public class FlagPropertyFormatterTest extends BasePropertyFormatterTester {
         JSON formattedProperty = formatter.formatProperty();
         assertNull(formattedProperty);
     }
+
+    /**
+     * Verifies that long arguments work correctly when the flag is set to {@code true}.
+     */
+    @Test
+    public void testTruePropertyWithLongName() {
+        JSONObject config = createConfig("true");
+        Property property = createProperty("--foo=1, --foo=2", "false", 1, "Selection");
+        FlagPropertyFormatter formatter = new FlagPropertyFormatter(config, createStep(), property,
+                createPropertyValueMap());
+        JSON formattedProperty = formatter.formatProperty();
+        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "", 1, "--foo=1");
+    }
+
+    /**
+     * Verifies that long arguments work correctly when the flag is set to {@code false}.
+     */
+    @Test
+    public void testFalsePropertyWithLongName() {
+        JSONObject config = createConfig("false");
+        Property property = createProperty("--foo=1, --foo=2", "false", 1, "Selection");
+        FlagPropertyFormatter formatter = new FlagPropertyFormatter(config, createStep(), property,
+                createPropertyValueMap());
+        JSON formattedProperty = formatter.formatProperty();
+        assertFormattedPropertyValid((JSONObject)formattedProperty, "id", "", 1, "--foo=2");
+    }
 }

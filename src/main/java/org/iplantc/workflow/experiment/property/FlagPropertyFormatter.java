@@ -13,7 +13,7 @@ import org.iplantc.workflow.model.Property;
 
 /**
  * The property formatter to use for Flag arguments.
- * 
+ *
  * @author Dennis Roberts
  */
 public class FlagPropertyFormatter extends PropertyFormatter {
@@ -36,25 +36,28 @@ public class FlagPropertyFormatter extends PropertyFormatter {
     @Override
     public JSON formatProperty() {
         JSONObject json = null;
-        String name = determinePropertyName();
-        if (name != null) {
-            registerPropertyValue("");
+        String selectedOption = determineSelectedOption();
+        if (selectedOption != null) {
+            String[] components = selectedOption.split("\\s+|(?<==)", 2);
+            String name = components[0];
+            String value = components.length == 2 ? components[1] : null;
+            registerPropertyValue(value);
             json = new JSONObject();
             json.put("order", property.getOrder());
             json.put("id", property.getId());
-            setParamNameAndValue(json, name, "");
+            setParamNameAndValue(json, name, value);
         }
         return json;
     }
 
     /**
      * Determines the name to use for the formatted property.
-     * 
+     *
      * @return the name to use.
      */
-    private String determinePropertyName() {
+    private String determineSelectedOption() {
         String name;
-        String[] possibleNames = property.getName().split(",");
+        String[] possibleNames = property.getName().split("\\s*,\\s*");
         boolean enabled = Boolean.parseBoolean(getValue());
         if (possibleNames.length == 1) {
             name = enabled ? possibleNames[0] : null;
