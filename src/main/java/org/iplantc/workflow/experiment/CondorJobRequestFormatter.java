@@ -686,7 +686,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
         // Parse the boolean value and the list of possible values.
         boolean booleanValue = Boolean.parseBoolean(value.trim());
-        String[] values = property.getName().split(",");
+        String[] values = property.getName().split("\\s*,\\s*");
 
         // Determine which value was selected.
         int index = booleanValue ? 0 : 1;
@@ -694,7 +694,7 @@ public class CondorJobRequestFormatter implements JobRequestFormatter {
 
         // Format the property only if a value was selected.
         if (selectedValue != null && !StringUtils.isBlank(selectedValue)) {
-            String[] components = selectedValue.split("\\s+|=", 2);
+            String[] components = selectedValue.split("\\s+|(?<==)", 2);
             jprop = new JSONObject();
             jprop.put("id", property.getId());
             setParamNameAndValue(jprop, components[0], components.length > 1 ? components[1] : "");

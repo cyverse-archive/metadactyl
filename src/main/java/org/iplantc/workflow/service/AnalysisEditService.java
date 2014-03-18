@@ -265,6 +265,8 @@ public class AnalysisEditService {
      */
     private String copyAnalysis(DaoFactory daoFactory, TransformationActivity analysis, UserDetails userDetails) {
         JSONObject json = marshalAnalysis(daoFactory, analysis, new NoIdRetentionStrategy());
+        json.remove("published_date");
+        json.remove("edited_date");
         String newId = UUID.randomUUID().toString().toUpperCase();
         json = convertAnalysisToCopy(json, newId, userDetails);
         importAnalysis(json.toString());
